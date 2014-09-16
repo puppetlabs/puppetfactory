@@ -47,7 +47,7 @@ for an SSH console login.
 
 ## Usage
 
-1. Start with a standard Puppetlabs Training VM (tested on PE 3.2.3)
+1. Start with a standard Puppetlabs Training VM
 1. Configure it as `master.puppetlabs.vm` and install PE.
 1. Install this module and the `puppetlabs/pe_gem` module.
 1. Classify the master only (not default) with `puppetfactory`.
