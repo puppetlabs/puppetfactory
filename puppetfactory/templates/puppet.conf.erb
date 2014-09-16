@@ -1,0 +1,10 @@
+[main]
+    certname = <%= @username %>.puppetlabs.vm
+    server = master.puppetlabs.vm
+
+[agent]
+    report = true
+    classfile = $vardir/classes.txt
+    localconfig = $vardir/localconfig
+    pluginsync = true
+    environment = <%= @username %>

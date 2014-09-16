@@ -1,0 +1,43 @@
+# -*- coding: utf-8 -*-
+locale = "en_US"
+pam_service = "login"
+syslog_facility = "daemon"
+syslog_host = None
+enable_unix_socket = False
+port = 8043
+uid = "0"
+url_prefix = "/"
+user_dir = "/opt/gateone/users"
+dtach = True
+certificate = "certificate.pem"
+log_to_stderr = False
+session_logs_max_age = "30d"
+gid = "0"
+pid_file = "/var/run/gateone.pid"
+sso_realm = None
+cookie_secret = "MzViMjE1YTkzZWQwNDZlY2JlZDVkOGU3MmQ1MTdmZTMwY"
+pam_realm = "master.puppetlabs.vm"
+sso_service = "HTTP"
+https_redirect = False
+syslog_session_logging = False
+disable_ssl = True
+debug = False
+session_dir = "/tmp/gateone"
+auth = "none"
+address = ""
+api_timestamp_window = "30s"
+log_file_num_backups = 10
+logging = "info"
+embedded = True
+origins = "http://master.puppetlabs.vm;http://<%= @ipaddress %>"
+#origins = "*"
+session_logging = True
+unix_socket_path = "/var/run/gateone.sock"
+ssl_auth = "none"
+log_file_max_size = 104857600
+session_timeout = "5d"
+command = "/opt/gateone/plugins/ssh/scripts/ssh_connect.py -S '/tmp/gateone/%SESSION%/%SHORT_SOCKET%' --sshfp -a '-oUserKnownHostsFile=%USERDIR%/%USER%/ssh/known_hosts' ssh://localhost"
+ca_certs = None
+js_init = ""
+keyfile = "keyfile.pem"
+log_file_prefix = "/opt/gateone/logs/webserver.log"

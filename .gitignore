@@ -1,0 +1,8 @@
+.DS_Store
+*.swp
+*.gem
+.bundle
+Gemfile.lock
+.rake_t_cache
+pkg/
+

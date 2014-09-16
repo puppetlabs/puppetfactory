@@ -1,0 +1,39 @@
+#! /usr/bin/env ruby
+
+require 'rubygems'
+require 'doppelganger'
+
+def usage()
+  puts "This is a simple non-root package management simulation."
+  puts "The following actions are available:"
+  puts
+  puts "  * pl-packages list"
+  puts "  * pl-packages install <package>"
+  puts "  * pl-packages uninstall <package>"
+  puts
+  exit 1
+end
+
+action = ARGV[0]
+name   = ARGV[1] if ARGV.size == 2
+
+packages = Doppelganger.new('packages')
+case action
+when 'list'
+  packages.list
+
+when 'install'
+  usage() unless defined?(name)
+
+  packages.insert(name)
+  packages.save
+
+when 'uninstall', 'remove', 'erase'
+  usage() unless defined?(name)
+
+  packages.remove(name)
+  packages.save
+
+else
+  usage()
+end

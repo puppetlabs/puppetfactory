@@ -1,0 +1,20 @@
+#! /usr/bin/env ruby
+
+require 'rubygems'
+require 'puppetfactory'
+
+opts = {
+        :Port               => 80,
+        :Logger             => WEBrick::Log::new(LOGFILE, WEBrick::Log::DEBUG),
+        :ServerType         => WEBrick::Daemon,
+        :DocumentRoot       => DOCROOT,
+        :SSLEnable          => false,
+#         :SSLVerifyClient    => OpenSSL::SSL::VERIFY_NONE,
+#         :SSLCertificate     => OpenSSL::X509::Certificate.new(  File.open(File.join(CERT_PATH, 'server.crt')).read),
+#         :SSLPrivateKey      => OpenSSL::PKey::RSA.new(          File.open(File.join(CERT_PATH, 'server.key')).read),
+#         :SSLCertName        => [ [ "CN",WEBrick::Utils::getservername ] ]
+}
+
+Rack::Handler::WEBrick.run(Puppetfactory, opts) do |server|
+        [:INT, :TERM].each { |sig| trap(sig) { server.stop } }
+end

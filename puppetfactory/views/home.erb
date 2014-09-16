@@ -1,0 +1,33 @@
+<p>Welcome to the Puppet Labs Training Classroom.</p>
+
+<p>
+  A simulated Puppet Enterprise infrastructure has been constructed on the
+  classroom server. Each student has an environment providing a sandboxed
+  directory for Puppet code and configuration. The classroom server is also
+  running the unmodified Puppet Enterprise Console with an account for each
+  student.
+</p>
+
+<p>
+  The sandbox provided for each student is a non-root environment. This means that
+  you will not be able to make actual system-wide changes to the server.  Instead,
+  psuedo tools have been provided that will allow you to manage simulated hosts,
+  packages, services, and users. These tools have been integrated into the Puppet
+  Enterprise configuration, so you may interact with these simulated resources
+  exactly like you would any other resource. During the course, your instructor
+  will describe Puppet's Resource Abstraction Layer that makes this possible.
+</p>
+
+<p>
+  Documentation for the command line psuedo management tools can be found
+  on the <a href="/reference">Reference</a> tab.
+</p>
+
+<h3>Accessing your environment:</h3>
+
+<ol>
+  <li>First create your account on the Users tab.</li>
+  <li>Log in to your sandbox following the directions on the SSH Login tab.</li>
+  <li>Log in to the <a href="https://<%= request.host %>" target="_console">Puppet Enterprise Console</a></li>
+<ol>
+

@@ -1,0 +1,71 @@
+#!/bin/bash
+#
+# user-mcollective Manage all user MCollective services
+#
+# chkconfig: 2345 55 25
+# description: Stupidsimple user MCollective implementation.
+#
+# This is a pretty cruddy init script.
+
+# source function library
+#. /etc/rc.d/init.d/functions
+
+MCO=/opt/puppet/sbin/mcollectived
+RETVAL=0
+start()
+{
+	echo $"Starting MCollective servers: "
+  for path in /home/*
+  do
+    user=`basename $path`
+    sudo -iu ${user} ${MCO} --config="/home/${user}/etc/mcollective/server.cfg" >/dev/null 2>&1
+  done
+}
+
+stop()
+{
+  echo $"Stopping MCollective servers:"
+  for pid in `ps aux | grep mcollectived | grep -v root | grep -v grep | awk '{print $2}'`
+  do
+    kill ${pid}
+    echo -n '.'
+  done
+  echo
+}
+
+status()
+{
+  echo "MCollective servers running for:"
+  ps aux | grep mcollectived | grep -v root | grep -v grep | awk '{print "--"$1}'
+
+  if [ "`ps aux | grep mcollectived | grep -v root | grep -v grep`" != "" ]
+  then
+    RETVAL=0
+  else
+    RETVAL=1
+  fi
+}
+
+restart() {
+	stop
+	start
+}
+
+case "$1" in
+	start)
+		start
+		;;
+	stop)
+		stop
+		;;
+	restart)
+		restart
+		;;
+	status)
+		status
+		;;
+	*)
+		echo $"Usage: $0 {start|stop|restart|status}"
+		RETVAL=10
+esac
+exit $RETVAL

@@ -1,0 +1,30 @@
+#!/opt/puppet/bin/ruby
+require 'etc'
+
+Dir.glob('/home/*').each do |homedir|
+  user = File.basename homedir
+  uid  = Etc.getpwnam(user)
+
+  Process.fork do
+    # We're in the child. Set the process's user ID.
+    Process::UID.change_privilege(Etc.getpwnam(user).uid)
+
+    begin
+      require 'facter'
+      require 'facter/application'
+
+      Facter::Application.load_puppet
+
+      facts   = YAML.dump(Facter.to_hash)
+      mco_etc = File.expand_path("/home/#{user}/etc/mcollective")
+
+      File.open("#{mco_etc}/facts.yaml.new", 'w') do |f|
+        f.puts facts
+      end
+
+      File.rename("#{mco_etc}/facts.yaml.new", "#{mco_etc}/facts.yaml")
+    rescue Exception => e
+      puts e.message
+    end
+  end
+end

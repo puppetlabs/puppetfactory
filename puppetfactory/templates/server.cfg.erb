@@ -1,0 +1,61 @@
+# Centrally managed by Puppet version 3.4.3 (Puppet Enterprise 3.2.1)
+topicprefix     = /topic/
+main_collective = mcollective
+collectives     = mcollective
+libdir          = /opt/puppet/libexec/mcollective/
+logfile         = /home/<%= @username %>/var/log/pe-mcollective/mcollective.log
+loglevel        = info
+
+# Log plugin configuration
+plugin.rpcaudit.logfile = /home/<%= @username %>/var/log/pe-mcollective/mcollective-audit.log
+rpcaudit = 1
+rpcauditprovider = Logfile
+
+daemonize       = 1
+
+identity = <%= @username %>.puppetlabs.vm
+# Plugins
+securityprovider           = ssl
+plugin.ssl_server_private = /home/<%= @username %>/etc/mcollective/ssl/mcollective-private.pem
+plugin.ssl_server_public = /home/<%= @username %>/etc/mcollective/ssl/mcollective-public.pem
+plugin.ssl_client_cert_dir = /home/<%= @username %>/etc/mcollective/ssl/clients/
+plugin.ssl_serializer     = yaml
+
+connector = activemq
+plugin.activemq.pool.size = 1
+plugin.activemq.pool.1.host = master.puppetlabs.vm
+plugin.activemq.pool.1.port = 61613
+plugin.activemq.pool.1.user = mcollective
+plugin.activemq.pool.1.password = <%= @amqpasswd %>
+plugin.activemq.pool.1.ssl = true
+plugin.activemq.pool.1.ssl.ca = /home/<%= @username %>/etc/mcollective/ssl/mcollective-cacert.pem
+plugin.activemq.pool.1.ssl.key = /home/<%= @username %>/etc/mcollective/ssl/mcollective-private.pem
+plugin.activemq.pool.1.ssl.cert = /home/<%= @username %>/etc/mcollective/ssl/mcollective-cert.pem
+
+# Facts
+factsource = yaml
+plugin.yaml = /home/<%= @username %>/etc/mcollective/facts.yaml
+
+# Puppet Classes
+classesfile = /home/<%= @username %>/.puppet/var/classes.txt
+
+# Puppet Agent plugin configuration
+plugin.puppet.command = /opt/puppet/bin/puppet agent
+plugin.puppet.config  = /home/<%= @username %>/puppet/puppet.conf
+
+plugin.puppet.splay = true
+plugin.puppet.splaylimit = 120
+
+# Periodcally broadcast metdata for registration purposes.
+# This registration plugin will broadcast current Facter fact values.
+registration = Meta
+# registerinterval is intentionally "long" to prevent systems from being overly
+# chatty on the message bus by default.  If you want a higher frequency, this
+# may be set to 300 (5 minutes)
+registerinterval = 600
+
+# authorization
+rpcauthorization = 1
+rpcauthprovider = action_policy
+plugin.actionpolicy.allow_unconfigured = 1
+direct_addressing = 1

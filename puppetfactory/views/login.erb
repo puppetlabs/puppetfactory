@@ -1,0 +1,35 @@
+<div id="login">
+  <p>
+    <input type="button" id="show-alternate" value="Other ways to log in" />
+    Shell accounts have been created for each student for editing code and
+    running Puppet interactively. Log in using the user account and credentials
+    you created.
+  </p>
+  <p>
+    <iframe id="console" src="http://<%= request.host %>:4200"></iframe>
+  </p>
+  <div id="alternate">
+    <p>
+      If you prefer, you may also use any standard SSH client using the username
+      and password you specified. Some common SSH clients include:
+    <p>
+    <ul>
+      <li>
+        Built-in to Mac OSX and Linux:
+        <ol>
+          <li>Start Terminal.app or any terminal emulator to get to the command line</li>
+          <li>Run <code>ssh <%= request.host %></code></li>
+        </ol>
+      </li>
+      <li>
+        Windows:
+        <ul>
+          <li><a href="http://the.earth.li/~sgtatham/putty/latest/x86/putty.exe">PuTTY</a></li>
+          <li><a href="http://winscp.net/eng/download.php#download2" target="_new">WinSCP</a></li>
+          <li><a href="http://www.vandyke.com/download/securecrt/download.html" target="_new">SecureCRT</a></li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</div>
+<script type="text/javascript" src="loginscripts.js"></script>

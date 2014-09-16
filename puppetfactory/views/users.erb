@@ -1,0 +1,38 @@
+<div id="usercontent">
+  <div id="newuserwrapper">
+    <input type="button" id="showuser" value="+ New User" />
+    <div id="newuser">
+      <table>
+        <tr><td class="label">Username:</td><td><input type="text" id="user" value="" /></td></tr>
+        <tr><td class="label">Password:</td><td><input type="text" id="password" value="" /></td></tr>
+        <tr><td class="label">Repeat:</td><td><input type="text" id="password2" value="" /></td></tr>
+      </table>
+      <input type="button" id="hideuser" value="Cancel" />
+      <input type="button" id="save" value="Save" />
+    </div>
+  </div>
+
+  <table id="users">
+    <tr class="header">
+      <th>Status</th>
+      <th>SSH Username</th>
+      <th>Console Login</th>
+      <th>Certname</th>
+      <th>Last Puppet Run</th>
+    </tr>
+    <% if @users %>
+      <% even = true %>
+      <% @users.each do |key, user| %>
+        <tr class="<%= even ? "even":"odd" %>">
+          <td class="status"><%= user[:status] %></td>
+          <td class="username"><%= key %></td>
+          <td class="console"><%= user[:console] %></td>
+          <td class="certname"><%= user[:certname] %></td>
+          <td class="lastrun"><%= user[:lastrun] %></td>
+        </tr>
+        <% even = !even %>
+      <% end %>
+    <% end %>
+  </table>
+</div>
+<script type="text/javascript" src="usermanagement.js"></script>

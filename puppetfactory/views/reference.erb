@@ -1,0 +1,54 @@
+<h3>Managing simulated host records</h3>
+<p>
+  Edit your <code>~/etc/hosts</code> file as you would a standard system
+  wide <code>/etc/hosts</code> file. In your environment, Puppet will
+  interact with this file to manage host records.
+</p>
+
+<h3>Managing simulated packages</h3>
+<p>
+  Installing or removing simulated packages does not actually install them
+  on the system. They are simply recorded in a database file which allows
+  Puppet to work with them the same as it would with an ordinary system
+  package installed with Yum.
+</p>
+<p>The following command line actions are available:</p>
+<pre><code>
+  * pl-packages list
+  * pl-packages install &lt;package&gt;
+  * pl-packages uninstall &lt;package&gt;
+</code></pre>
+
+<h3>Managing simulated services</h3>
+<p>
+  Starting, stopping, enabling, or disabling simulated services does not
+  actually start any system service. They are recorded in a database file
+  similarly to the package resources. Puppet can also work with them the
+  same as it would with an ordinary system service.
+</p>
+<p>The following command line actions are available:</p>
+<pre><code>
+  * pl-service list
+  * pl-service &lt;service&gt; start|stop
+  * pl-service &lt;service&gt; enable|disable
+</code></pre>
+
+<h3>Managing simulated users</h3>
+<p>
+  Just the other resources, creating or removing simulated users records
+  them in a database file for Puppet to interact with instead of making
+  system wide changes.
+</p>
+<p>The following command line actions are available:</p>
+<pre><code>
+  * pl-user list
+  * pl-user create &lt;user&gt; [-d &lt;homedir&gt;] [-s &lt;shell&gt;] [-g &lt;group&gt;]
+  * pl-user modify &lt;user&gt; [-d &lt;homedir&gt;] [-s &lt;shell&gt;] [-g &lt;group&gt;]
+  * pl-user delete|remove &lt;user&gt;
+
+    -d, --home-dir HOMEDIR           Specify the user's home directory.
+    -s, --shell SHELL                Specify the user's shell.
+    -g, --group GROUP                Speficy the user's primary group.
+
+    -h, --help                       Displays this help
+</code></pre>
