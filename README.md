@@ -49,11 +49,14 @@ for an SSH console login.
 
 1. Start with a standard Puppetlabs Training VM
 1. Configure it as `master.puppetlabs.vm` and install PE.
-1. Install this module and the `puppetlabs/pe_gem` module.
+1. `puppet module install pltraining/puppetfactory`
 1. Classify the master only (not default) with `puppetfactory`.
 1. Run Puppet a few times to ensure that MCollective is completely configured.
 1. Load up [http://${ipaddress}](http://${ipaddress}) in a browser.
 1. Write the URL on the board and start class.
+
+*Note*: a UTF encoding issue currently requires two Puppet runs to get the gems
+installed properly. This is only cosmetic.
 
 Students will need to use the _Users_ tab to create their accounts. This tab
 will also list all known users along with statuses, including useful information
