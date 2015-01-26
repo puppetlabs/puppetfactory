@@ -26,6 +26,7 @@
   "description": "Puppetfactory creates a simulated Puppet Enterprise infrastructure on the classroom server. Each student has an environment providing a sandboxed directory for Puppet code and configuration. The classroom server will also be running the unmodified Puppet Enterprise Console with an account for each student.\n\nPseudo tools are provided to allow students to manage simulated hosts, packages, services, and users. These tools have been integrated into the Puppet Enterprise configuration, so students may interact with these simulated resources exactly like any other resource.\n\nMCollective servers are started up for each student and can be used with Live Management exactly as in production.",
   "dependencies": [
     {"name":"puppetlabs/pe_gem",    "version_requirement":">= 0.0.1"},
-    {"name":"pltraining/userprefs", "version_requirement":">= 1.0.0"}
+    {"name":"pltraining/userprefs", "version_requirement":">= 1.0.0"},
+    {"name":"puppetlabs/inifile", "version_requirement":">= 1.2.0"}
   ]
 }
