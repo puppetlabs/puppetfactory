@@ -82,7 +82,6 @@ class Puppetfactory  < Sinatra::Base
       def load_users()
         status = {}
         users  = {}
-        host_ip = `facter ipaddress_eth0`
 
         # build a quick list of all certificate statuses
         `/opt/puppet/bin/puppet cert list --all`.split.each do |line|
@@ -108,7 +107,6 @@ class Puppetfactory  < Sinatra::Base
 						:port			=> port,
             :certname => certname,
             :lastrun  => lastrun,
-            :host_ip  => host_ip,
           }
         end
 
@@ -136,24 +134,6 @@ class Puppetfactory  < Sinatra::Base
         output = `adduser #{username} -p '#{crypted}' -G pe-puppet,docker -m 2>&1`
         raise "Could not create login user #{username}: #{output}" unless $? == 0
 
-        # Get the uid of the new user and set up URL
-        port = "3" + `id -u #{username}`.chomp
-
-        # Create container with hostname set for username with port 80 mapped to 3000 + uid
-        `docker run --privileged --name="#{username}" -p #{port}:80 -h #{username}.#{USERSUFFIX} -e RUNLEVEL=3 -d #{CONTAINER_NAME} /sbin/init`
-
-        # Switch container runlevel to RUNLEVEL
-        `docker exec #{username} /etc/rc`
-
-        # Set default login to attache to container
-        bashrc = File.open("/home/#{username}/.bashrc", 'w')
-        bashrc.puts "docker exec -it #{username} bash"
-        bashrc.puts "exit 0"
-        bashrc.close
-
-        # Add docker route ip as master.puppetlabs.vm in the hosts file
-        `docker exec #{username} puppet apply -e 'host { "master.puppetlabs.vm": ensure=>present, host_aliases=>["master","puppet"], ip=>"172.17.42.1", target=>"/etc/hosts" }'`
-
         # pe console user
         attributes = "display_name=#{username} roles=Operators email=#{username}@puppetlabs.vm password=#{password}"
         output     = `#{PUPPET} resource rbac_user #{username} ensure=present #{attributes} 2>&1`
@@ -176,30 +156,27 @@ class Puppetfactory  < Sinatra::Base
           f.write ERB.new(File.read("#{templates}/site.pp.erb")).result(binding)
         end
 
-#        FileUtils.mkdir_p "/home/#{username}/.puppet/"
-
-#        FileUtils.ln_s "#{ENVIRONMENTS}/#{username}/manifests", "/home/#{username}/.puppet/manifests"
-#        FileUtils.ln_s "#{ENVIRONMENTS}/#{username}/modules", "/home/#{username}/.puppet/modules"
-#        FileUtils.ln_s "/home/#{username}/.puppet", "/home/#{username}/puppet"
-
-        # configure puppet agent
-#        File.open("/home/#{username}/.puppet/puppet.conf", 'w') do |f|
-#          f.write ERB.new(File.read("#{templates}/puppet.conf.erb")).result(binding)
-#        end
-
-        # configure mcollective server
-        FileUtils.mkdir_p "/home/#{username}/etc"
-        FileUtils.mkdir_p "/home/#{username}/var/log/pe-mcollective"
-        FileUtils.cp_r('/etc/puppetlabs/mcollective', "/home/#{username}/etc/mcollective")
-        File.open("/home/#{username}/etc/mcollective/server.cfg", 'w') do |f|
-          f.write ERB.new(File.read("#{templates}/server.cfg.erb")).result(binding)
-        end
-
         # make sure the user and pe-puppet can access all the needful
         FileUtils.chown_R username, 'pe-puppet', "#{ENVIRONMENTS}/#{username}"
-        FileUtils.chown_R username, 'pe-puppet', "/home/#{username}"
         FileUtils.chmod 0750, "#{ENVIRONMENTS}/#{username}"
-        FileUtils.chmod 0750, "/home/#{username}"
+
+
+        # Get the uid of the new user and set up URL
+        port = "3" + `id -u #{username}`.chomp
+
+        # Create container with hostname set for username with port 80 mapped to 3000 + uid
+        `docker run --name="#{username}" -p #{port}:80 -h #{username}.#{USERSUFFIX} -e RUNLEVEL=3 -d -v #{ENVIRONMENTS}/#{username}:/puppetcode #{CONTAINER_NAME} /sbin/init`
+        `docker exec #{username} /etc/rc`
+
+        # Set default login to attache to container
+        bashrc = File.open("/home/#{username}/.bashrc", 'w')
+        bashrc.puts "docker exec -it #{username} bash"
+        bashrc.puts "exit 0"
+        bashrc.close
+
+        # Add docker route ip as master.puppetlabs.vm in the hosts file
+        `docker exec #{username} puppet apply -e 'host { "master.puppetlabs.vm": ensure=>present, host_aliases=>["master","puppet"], ip=>"172.17.42.1", target=>"/etc/hosts" }'`
+
       end
 
       def classify(username, groups=['no mcollective'])

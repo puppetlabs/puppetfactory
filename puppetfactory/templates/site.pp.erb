@@ -12,12 +12,6 @@
 
 ## Active Configurations ##
 
-# This allows the host resource type to write to a non root owned file for
-# classroom demonstration purposes
-Host {
-  target => "/home/<%= @username %>/etc/hosts",
-}
-
 # PRIMARY FILEBUCKET
 # This configures puppet agent and puppet inspect to back up file contents when
 # they run. The Puppet Enterprise console needs this to display file contents
