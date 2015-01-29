@@ -129,8 +129,17 @@ class Puppetfactory  < Sinatra::Base
         console = "#{username}@#{USERSUFFIX}"
 
         # ssh login user
-        output = `adduser #{username} -p '#{crypted}' -g pe-puppet -m 2>&1`
+        output = `adduser #{username} -p '#{crypted}' -G pe-puppet,docker -m 2>&1`
         raise "Could not create login user #{username}: #{output}" unless $? == 0
+
+        # Create container with hostname set for username
+        `docker run --privileged --name="#{username}" -h #{username}.puppetlabs.vm -d centos:6 /sbin/init`
+
+        # Set default login to attache to container
+        bashrc = File.open("/home/#{username}/.bashrc", 'w')
+        bashrc.puts "docker exec -it #{username} bash"
+        bashrc.puts "exit 0"
+        bashrc.close
 
         # pe console user
         cwd = '/opt/puppet/share/puppet-dashboard'
