@@ -82,6 +82,7 @@ class Puppetfactory  < Sinatra::Base
       def load_users()
         status = {}
         users  = {}
+        host_ip = `facter ipaddress_eth0`
 
         # build a quick list of all certificate statuses
         `/opt/puppet/bin/puppet cert list --all`.split.each do |line|
@@ -92,6 +93,7 @@ class Puppetfactory  < Sinatra::Base
           username = File.basename path
           certname = "#{username}.#{USERSUFFIX}"
           console  = "#{username}@#{USERSUFFIX}"
+          port		 = "3" + `id -u #{username}`.chomp
 
           begin
             data    = YAML.load_file("/home/#{username}/.puppet/var/state/last_run_summary.yaml")
@@ -105,7 +107,8 @@ class Puppetfactory  < Sinatra::Base
             :console  => console,
 						:port			=> port,
             :certname => certname,
-            :lastrun  => lastrun
+            :lastrun  => lastrun,
+            :host_ip  => host_ip,
           }
         end
 
@@ -205,8 +208,8 @@ class Puppetfactory  < Sinatra::Base
       end
 
       def sign(username)
-        output = `sudo -iu #{username} #{PUPPET} agent -t 2>&1`
-        raise "Error creating certificates: #{output}, exit code #{$?}" unless $? == 256
+        output = `docker exec #{username} puppet agent -t 2>&1`
+        raise "Error creating certificates: #{output}, exit code #{$?}" unless $? == 0
 
         output = `#{PUPPET} cert sign #{username}.puppetlabs.vm 2>&1`
         raise "Error signing #{username}: #{output}" unless $? == 0

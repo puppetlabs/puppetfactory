@@ -16,6 +16,7 @@
     <tr class="header">
       <th>Status</th>
       <th>SSH Username</th>
+      <th>URL</th>
       <th>Console Login</th>
       <th>Certname</th>
       <th>Last Puppet Run</th>
@@ -26,6 +27,7 @@
         <tr class="<%= even ? "even":"odd" %>">
           <td class="status"><%= user[:status] %></td>
           <td class="username"><%= key %></td>
+          <td class="url"><a href="http://<% user[:host_ip] %>:<%= user[:port] %>"><%= key %></a></td>
           <td class="console"><%= user[:console] %></td>
           <td class="certname"><%= user[:certname] %></td>
           <td class="lastrun"><%= user[:lastrun] %></td>
