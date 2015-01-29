@@ -38,5 +38,6 @@ class puppetfactory {
   package { ['zsh', 'emacs', 'nano', 'vim-enhanced', 'rubygems', 'tree', 'git' ]:
     ensure  => present,
     require => Class'epel'],
+    before  => Class['puppetfactory::service'],
   }
 }
