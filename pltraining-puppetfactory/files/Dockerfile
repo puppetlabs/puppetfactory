@@ -1,7 +1,7 @@
 # Builds a basic Centos6 container with pe-agent installed.
 # This image is for training purposes and is not intended for production environments.
-MAINTAINER Josh Samuelson <js@puppetlabs.com>
 FROM centos:6
+MAINTAINER Josh Samuelson <js@puppetlabs.com>
 ENV HOME /root/
 ENV TERM xterm
 RUN yum -y install sudo tar dmidecode which logrotate cyrus-sasl libxslt cronie
