@@ -4,8 +4,13 @@ class puppetfactory {
   include docker
   include epel
 
+  file { '/etc/Dockerfile':
+    source => 'puppet:///modules/puppetfactory/Dockerfile'
+  }
+
   docker::image { 'puppetfactory':
-    docker_file => 'puppet:///modules/puppetfactory/Dockerfile'
+    docker_file => '/etc/Dockerfile',
+    require     => File['/etc/Dockerfile'],
   }
 
   file { '/etc/puppetlabs/puppet/environments/production/environment.conf':
