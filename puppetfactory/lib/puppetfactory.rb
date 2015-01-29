@@ -140,7 +140,10 @@ class Puppetfactory  < Sinatra::Base
         port = "3" + `id -u #{username}`.chomp
 
         # Create container with hostname set for username with port 80 mapped to 3000 + uid
-        `docker run --privileged --name="#{username}" -p #{port}:80 -h #{username}.#{USERSUFFIX} -d #{CONTAINER_NAME} /sbin/init`
+        `docker run --privileged --name="#{username}" -p #{port}:80 -h #{username}.#{USERSUFFIX} -e RUNLEVEL=3 -d #{CONTAINER_NAME} /sbin/init`
+
+        # Switch container runlevel to RUNLEVEL
+        `docker exec #{username} /etc/rc`
 
         # Set default login to attache to container
         bashrc = File.open("/home/#{username}/.bashrc", 'w')
