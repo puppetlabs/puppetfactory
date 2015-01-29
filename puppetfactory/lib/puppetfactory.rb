@@ -128,7 +128,7 @@ class Puppetfactory  < Sinatra::Base
         crypted = password.crypt("$5$a1")
         console = "#{username}@#{USERSUFFIX}"
 
-				# ssh login user
+        # ssh login user
         output = `adduser #{username} -p '#{crypted}' -G pe-puppet,docker -m 2>&1`
         raise "Could not create login user #{username}: #{output}" unless $? == 0
 
