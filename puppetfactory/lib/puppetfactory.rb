@@ -21,6 +21,7 @@ LOGFILE   = '/var/log/puppetfactory'
 CERT_PATH = 'certs'
 USER      = 'admin'
 PASSWORD  = 'admin'
+CONTAINER_NAME = 'puppetfactory'
 
 CONFDIR      = '/etc/puppetlabs/puppet'
 ENVIRONMENTS = "#{CONFDIR}/environments"
@@ -102,6 +103,7 @@ class Puppetfactory  < Sinatra::Base
           users[username] = {
             :status   => status[certname],
             :console  => console,
+						:port			=> port,
             :certname => certname,
             :lastrun  => lastrun
           }
@@ -126,20 +128,26 @@ class Puppetfactory  < Sinatra::Base
 
       def adduser(username, password)
         crypted = password.crypt("$5$a1")
-        console = "#{username}@#{USERSUFFIX}"
+        console = "#{username}"
 
         # ssh login user
         output = `adduser #{username} -p '#{crypted}' -G pe-puppet,docker -m 2>&1`
         raise "Could not create login user #{username}: #{output}" unless $? == 0
 
-        # Create container with hostname set for username
-        `docker run --privileged --name="#{username}" -h #{username}.puppetlabs.vm -d centos:6 /sbin/init`
+        # Get the uid of the new user and set up URL
+        port = "3" + `id -u #{username}`.chomp
+
+        # Create container with hostname set for username with port 80 mapped to 3000 + uid
+        `docker run --privileged --name="#{username}" -p #{port}:80 -h #{username}.#{USERSUFFIX} -d #{CONTAINER_NAME} /sbin/init`
 
         # Set default login to attache to container
         bashrc = File.open("/home/#{username}/.bashrc", 'w')
         bashrc.puts "docker exec -it #{username} bash"
         bashrc.puts "exit 0"
         bashrc.close
+
+        # Add docker route ip as master.puppetlabs.vm in the hosts file
+        `docker exec #{username} puppet apply -e 'host { "master.puppetlabs.vm": ensure=>present, host_aliases=>["master","puppet"], ip=>"172.17.42.1", target=>"/etc/hosts" }'`
 
         # pe console user
         cwd = '/opt/puppet/share/puppet-dashboard'
@@ -164,16 +172,16 @@ class Puppetfactory  < Sinatra::Base
           f.write ERB.new(File.read("#{templates}/site.pp.erb")).result(binding)
         end
 
-        FileUtils.mkdir_p "/home/#{username}/.puppet/"
+#        FileUtils.mkdir_p "/home/#{username}/.puppet/"
 
-        FileUtils.ln_s "#{ENVIRONMENTS}/#{username}/manifests", "/home/#{username}/.puppet/manifests"
-        FileUtils.ln_s "#{ENVIRONMENTS}/#{username}/modules", "/home/#{username}/.puppet/modules"
-        FileUtils.ln_s "/home/#{username}/.puppet", "/home/#{username}/puppet"
+#        FileUtils.ln_s "#{ENVIRONMENTS}/#{username}/manifests", "/home/#{username}/.puppet/manifests"
+#        FileUtils.ln_s "#{ENVIRONMENTS}/#{username}/modules", "/home/#{username}/.puppet/modules"
+#        FileUtils.ln_s "/home/#{username}/.puppet", "/home/#{username}/puppet"
 
         # configure puppet agent
-        File.open("/home/#{username}/.puppet/puppet.conf", 'w') do |f|
-          f.write ERB.new(File.read("#{templates}/puppet.conf.erb")).result(binding)
-        end
+#        File.open("/home/#{username}/.puppet/puppet.conf", 'w') do |f|
+#          f.write ERB.new(File.read("#{templates}/puppet.conf.erb")).result(binding)
+#        end
 
         # configure mcollective server
         FileUtils.mkdir_p "/home/#{username}/etc"
