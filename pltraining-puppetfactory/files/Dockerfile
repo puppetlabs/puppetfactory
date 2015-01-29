@@ -8,3 +8,4 @@ RUN yum -y install sudo tar dmidecode which logrotate cyrus-sasl libxslt cronie
 ADD https://s3.amazonaws.com/pe-builds/released/3.7.1/puppet-enterprise-3.7.1-el-6-x86_64-agent.tar.gz /tmp/pe-agent.tar.gz
 RUN tar xzvf /tmp/pe-agent.tar.gz
 RUN rpm -ivh --nodeps `ls /puppet-enterprise-3.7.1-el-6-x86_64-agent/agent_packages/el-6-x86_64/*rpm`
+RUN rm -rf /puppet-enterprise-3.7.1-el-6-x86_64-agent/
