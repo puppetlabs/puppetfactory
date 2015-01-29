@@ -10,6 +10,7 @@
 # source function library
 #. /etc/rc.d/init.d/functions
 
+PATH=/usr/local/bin:$PATH
 PID=`ps ax | grep "ruby.*puppetfactory$" | awk '{print $1}'`
 
 printstat()
