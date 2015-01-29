@@ -1,8 +1,6 @@
 class puppetfactory {
   include puppetfactory::service
-  include puppetfactory::doppelganger
   include puppetfactory::shellinabox
-  include puppetfactory::mcollective
   include docker
 
   docker::image { 'puppetfactory':
