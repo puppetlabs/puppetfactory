@@ -5,6 +5,7 @@ require 'puppetfactory'
 
 opts = {
         :Port               => 80,
+        :Host               => '0.0.0.0,
         :Logger             => WEBrick::Log::new(LOGFILE, WEBrick::Log::DEBUG),
         :ServerType         => WEBrick::Daemon,
         :DocumentRoot       => DOCROOT,

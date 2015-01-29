@@ -83,7 +83,7 @@ class Puppetfactory  < Sinatra::Base
         users  = {}
 
         # build a quick list of all certificate statuses
-        `/opt/puppet/bin/puppet cert list --all`.each do |line|
+        `/opt/puppet/bin/puppet cert list --all`.split.each do |line|
           status[$2] = $1 if line =~ /^([+-])?.*"([\w\.]*)"/
         end
 
