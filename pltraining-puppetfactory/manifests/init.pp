@@ -3,7 +3,6 @@ class puppetfactory {
   include puppetfactory::doppelganger
   include puppetfactory::shellinabox
   include puppetfactory::mcollective
-  include puppetfactory::evil          # default providers should only be used by root
   include docker
 
   docker::image { 'puppetfactory':
