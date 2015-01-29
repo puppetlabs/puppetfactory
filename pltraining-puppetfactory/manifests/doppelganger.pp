@@ -11,9 +11,15 @@ class puppetfactory::doppelganger {
 
   package { 'doppelganger':
     ensure   => present,
-    provider => pe_gem,
+    provider => pe_puppetserver_gem,
     source   => "${pe_staging::path}/puppetfactory/doppelganger-0.0.1.gem",
     require  => Pe_staging::File['doppelganger-0.0.1.gem'],
+  }
+
+  exec { 'doppelganger':
+    command => "/opt/puppet/bin/gem install ${pe_staging::path}/puppetfactory/doppelganger-0.0.1.gem",
+    creates => '/opt/puppet/bin/pl-package',
+    require => Pe_staging::File['doppelganger-0.0.1.gem'],
   }
 
   file { '/usr/local/bin/pl-package':

@@ -25,7 +25,7 @@ Host {
 
 # Define filebucket 'main':
 filebucket { 'main':
-  server => 'master.puppetlabs.vm',
+  server => '<%= @servername %>',
   path   => false,
 }
 

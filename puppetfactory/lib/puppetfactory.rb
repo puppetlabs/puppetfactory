@@ -126,25 +126,23 @@ class Puppetfactory  < Sinatra::Base
 
       def adduser(username, password)
         crypted = password.crypt("$5$a1")
-        console = "#{username}@#{USERSUFFIX}"
 
         # ssh login user
         output = `adduser #{username} -p '#{crypted}' -g pe-puppet -m 2>&1`
         raise "Could not create login user #{username}: #{output}" unless $? == 0
 
         # pe console user
-        cwd = '/opt/puppet/share/puppet-dashboard'
-        env = 'RAILS_ENV=production'
-        cmd = '/opt/puppet/bin/bundle exec rake -f /opt/puppet/share/console-auth/Rakefile'
-        api = "db:create_user USERNAME=#{console} PASSWORD=#{password} ROLE=Read-Write"
+        attributes = "display_name=#{username} roles=Operators email=#{username}@puppetlabs.vm password=#{password}"
+        output     = `#{PUPPET} resource rbac_user #{username} ensure=present #{attributes} 2>&1`
 
-        output = `cd #{cwd} && #{env} #{cmd} #{api}`
         raise "Could not create PE Console user #{console}: #{output}" unless $? == 0
       end
 
       def skeleton(username)
-        @username  = username
-        @amqpasswd = key = File.read('/etc/puppetlabs/mcollective/credentials')
+        @username   = username
+        @amqpasswd  = key = File.read('/etc/puppetlabs/mcollective/credentials')
+        @servername = `/bin/hostname`.chomp
+
         templates = "#{File.dirname(__FILE__)}/../templates"
 
         # configure environment
@@ -168,6 +166,7 @@ class Puppetfactory  < Sinatra::Base
 
         # configure mcollective server
         FileUtils.mkdir_p "/home/#{username}/etc"
+        FileUtils.mkdir_p "/home/#{username}/var/log/pe-mcollective"
         FileUtils.cp_r('/etc/puppetlabs/mcollective', "/home/#{username}/etc/mcollective")
         File.open("/home/#{username}/etc/mcollective/server.cfg", 'w') do |f|
           f.write ERB.new(File.read("#{templates}/server.cfg.erb")).result(binding)

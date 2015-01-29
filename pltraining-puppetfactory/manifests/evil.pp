@@ -20,4 +20,10 @@ class puppetfactory::evil {
     line  => 'defaultfor :role => :instructor',
     match => '^\s*defaultfor',
   }
+
+  file_line { 'hack systemd service provider':
+    path  => '/opt/puppet/lib/ruby/site_ruby/1.9.1/puppet/provider/service/systemd.rb',
+    line  => 'confine :role => :instructor',
+    after => 'commands :systemctl => "systemctl"',
+  }
 }
