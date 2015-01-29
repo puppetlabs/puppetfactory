@@ -4,6 +4,7 @@ class puppetfactory {
   include puppetfactory::shellinabox
   include puppetfactory::mcollective
   include puppetfactory::evil          # default providers should only be used by root
+  include docker
 
   Ini_setting {
     path    => '/etc/puppetlabs/puppet/puppet.conf',

@@ -27,6 +27,7 @@
   "dependencies": [
     {"name":"puppetlabs/pe_gem",    "version_requirement":">= 0.0.1"},
     {"name":"pltraining/userprefs", "version_requirement":">= 1.0.0"},
-    {"name":"puppetlabs/inifile", "version_requirement":">= 1.2.0"}
+    {"name":"puppetlabs/inifile", "version_requirement":">= 1.2.0"},
+    {"name":"garethr/docker", "version_requirement":">= 3.3.1"}
   ]
 }
