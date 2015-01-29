@@ -30,7 +30,7 @@ class puppetfactory {
   # installation labs appear to work properly.
   package { ['zsh', 'emacs', 'nano', 'vim-enhanced', 'rubygems', 'tree', 'git' ]:
     ensure  => present,
-    require => Class'epel'],
+    require => Class['epel'],
     before  => Class['puppetfactory::service'],
   }
 }
