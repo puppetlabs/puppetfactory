@@ -6,6 +6,10 @@ class puppetfactory {
   include puppetfactory::evil          # default providers should only be used by root
   include docker
 
+  docker::image { 'puppetfactory':
+    docker_file => 'puppet:///modules/puppetfactory/Dockerfile'
+  }
+
   Ini_setting {
     path    => '/etc/puppetlabs/puppet/puppet.conf',
     section => 'main',
@@ -14,31 +18,37 @@ class puppetfactory {
   File {
     notify  => Service['pe-httpd'],
   }
+  if versioncmp($::pe_version, '3.4.0') < 0 {
+    file { ['/etc/puppetlabs/puppet/environments','/etc/puppetlabs/puppet/environments/production']:
+      ensure => directory,
+    }
 
-  file { ['/etc/puppetlabs/puppet/environments','/etc/puppetlabs/puppet/environments/production']:
-    ensure => directory,
-  }
+    file { '/etc/puppetlabs/puppet/environments/production/modules':
+      ensure => link,
+      target => '/etc/puppetlabs/puppet/modules',
+    }
 
-  file { '/etc/puppetlabs/puppet/environments/production/modules':
-    ensure => link,
-    target => '/etc/puppetlabs/puppet/modules',
-  }
+    file { '/etc/puppetlabs/puppet/environments/production/manifests':
+      ensure => link,
+      target => '/etc/puppetlabs/puppet/manifests',
+    }
 
-  file { '/etc/puppetlabs/puppet/environments/production/manifests':
-    ensure => link,
-    target => '/etc/puppetlabs/puppet/manifests',
-  }
+    file { '/etc/puppetlabs/puppet/environments/production/environment.conf':
+      ensure  => file,
+      content => "environment_timeout = 0\n",
+      replace => false,
+    }
 
-  file { '/etc/puppetlabs/puppet/environments/production/environment.conf':
-    ensure  => file,
-    content => "environment_timeout = 0\n",
-    replace => false,
-  }
+    ini_setting { 'environmentpath':
+      ensure  => present,
+      setting => 'environmentpath',
+      value   => '/etc/puppetlabs/puppet/environments',
+    }
 
-  ini_setting { 'environmentpath':
-    ensure  => present,
-    setting => 'environmentpath',
-    value   => '/etc/puppetlabs/puppet/environments',
+    service {'pe-httpd':
+      ensure  => running,
+      enable  => true,
+    }
   }
 
   ini_setting { 'base modulepath':
@@ -52,12 +62,6 @@ class puppetfactory {
     setting => 'default_manifest',
     value   => '/etc/puppetlabs/puppet/manifests/site.pp',
   }
-
-  service {'pe-httpd':
-    ensure  => running,
-    enable  => true,
-  }
-
   # sloppy, get this gone
   user { 'vagrant':
     ensure     => absent,
