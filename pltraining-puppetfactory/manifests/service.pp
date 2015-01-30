@@ -1,15 +1,15 @@
 class puppetfactory::service {
   include pe_staging
 
-  pe_staging::file { 'puppetfactory-0.0.2.gem':
-    source  => 'puppet:///modules/puppetfactory/puppetfactory-0.0.2.gem'
+  pe_staging::file { 'puppetfactory-0.1.0.gem':
+    source  => 'puppet:///modules/puppetfactory/puppetfactory-0.1.0.gem'
   }
 
   package { 'puppetfactory':
     ensure   => present,
     provider => gem,
-    source   => "${pe_staging::path}/puppetfactory/puppetfactory-0.0.2.gem",
-    require  => Pe_staging::File['puppetfactory-0.0.2.gem'],
+    source   => "${pe_staging::path}/puppetfactory/puppetfactory-0.1.0.gem",
+    require  => Pe_staging::File['puppetfactory-0.1.0.gem'],
     before   => Service['puppetfactory'],
   }
 
