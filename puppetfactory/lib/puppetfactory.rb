@@ -170,7 +170,7 @@ class Puppetfactory  < Sinatra::Base
 
         # Set default login to attache to container
         bashrc = File.open("/home/#{username}/.bashrc", 'w')
-        bashrc.puts "docker exec -it #{username} bash"
+        bashrc.puts "docker exec -it #{username} su -"
         bashrc.puts "exit 0"
         bashrc.close
 
