@@ -165,7 +165,9 @@ class Puppetfactory  < Sinatra::Base
         port = "3" + `id -u #{username}`.chomp
 
         # Create container with hostname set for username with port 80 mapped to 3000 + uid
-        `docker run --name="#{username}" -p #{port}:80 -h #{username}.#{USERSUFFIX} -e RUNLEVEL=3 -d -v #{ENVIRONMENTS}/#{username}:/puppetcode #{CONTAINER_NAME} /sbin/init`
+        `docker run --add-host "master.puppetlabs.vm puppet:172.17.42.1" --name="#{username}" -p #{port}:80 -h #{username}.#{USERSUFFIX} -e RUNLEVEL=3 -d -v #{ENVIRONMENTS}/#{username}:/puppetcode #{CONTAINER_NAME} /sbin/init`
+
+        # Boot container to runlevel 3
         `docker exec #{username} /etc/rc`
 
         # Set default login to attache to container
@@ -175,7 +177,6 @@ class Puppetfactory  < Sinatra::Base
         bashrc.close
 
         # Add docker route ip as master.puppetlabs.vm in the hosts file
-        `docker exec #{username} puppet apply -e 'host { "master.puppetlabs.vm": ensure=>present, host_aliases=>["master","puppet"], ip=>"172.17.42.1", target=>"/etc/hosts" }'`
 
       end
 
