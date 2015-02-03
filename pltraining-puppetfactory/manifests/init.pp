@@ -1,17 +1,8 @@
 class puppetfactory {
   include puppetfactory::service
   include puppetfactory::shellinabox
-  include docker
+  include puppetfactory::dockerenv
   include epel
-
-  file { '/etc/Dockerfile':
-    source => 'puppet:///modules/puppetfactory/Dockerfile'
-  }
-
-  docker::image { 'puppetfactory':
-    docker_file => '/etc/Dockerfile',
-    require     => File['/etc/Dockerfile'],
-  }
 
   file { '/etc/puppetlabs/puppet/environments/production/environment.conf':
     ensure  => file,
