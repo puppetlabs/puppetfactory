@@ -13,31 +13,10 @@ Requiring them to manage their own virtual machine and debug networking issues
 takes up a great deal of classroom time.
 
 This project is intended to eliminate that need. Each student receives a simulated
-Puppet Enterprise environment that is sandboxed into a standard Unix user home
-directory. An MCollective server is configured for each user, allowing Live
-Management exercises to work properly, and custom providers have been written
-for certain core types allowing them to work seamlessly in rootless mode.
-
-## Resource types implemented
-
-Students may freely use the following types in their Puppet manifests.
-
-* `host`
-* `package`
-* `user`
-* `service`
-* `file` (only files the user has permissions to)
-
-## Dependencies
-
-The classroom depends on the following external tools, which are bundled in the
-`/files` directory:
-
-### Doppelganger gem
-
-This gem provides a simple library and command line tools for working with the
-rootless resource management databases. This library is used by the providers
-in the `puppetfactory` gem.
+Puppet Enterprise environment that is sandboxed in a docker container. An 
+MCollective server is configured for each user, allowing Live Management 
+exercises to work properly, and custom providers have been written for certain 
+core types allowing them to work seamlessly in rootless mode.
 
 ### PuppetFactory gem
 
@@ -67,43 +46,10 @@ or from the _SSH Login_ tab. Their Console login will use the same password.
 
 ## Behind the scenes
 
-### Providers:
-
-* `host`
-    * This provider uses `~/etc/hosts` for its host records.
-* `package`, `user`, `service`
-    * Doesn't actually manage resources.
-    * Simulates resource management by recording values in a database file.
-      * `~/etc/packages.yaml`
-      * `~/etc/users.yaml`
-      * `~/etc/services.yaml`
-
-### Command line tools.
-
-* `pl-package`
-* `pl-user`
-* `pl-service`
-
-User documentation is provided on the _Reference_ tab.
-
-### Puppet configuration
-
-The agent is configured by the user's `~/.puppet` directory. This is symlinked
-to `~/puppet` for convenience. The user's environment is set to their own username
-and the master's modulepath and manifest are configured to look in the user's
-home directory. The result is that the user installation will behave mostly as
-though it is a complete Puppet Enterprise standalone installation.
-
-An Agent daemon is *not started* per user, but the user can run the agent by
-hand with `puppet agent -t` or `puppet apply`.
-
-### MCollective configuration
-
-Each user's `~/etc/mcollective` directory is copied from the system-wide
-`/etc/puppetlabs/mcollective` with customization to `server.cfg` (per-user
-identity, log locations, etc.). This does mean that they are all reusing the
-same certificates which does not appear to cause a problem.
-
-Live Management is able to interact with that user's Puppet Agent (enable,
-disable, runonce, etc.) and can use the RAL to browse and modify the user's
-simulated hosts, packages, users, and services.
+As students create accounts in the puppetfactory UI, docker provisions containers
+tagged with the student's username. Accounts, groups, and environments on the 
+enterprise console are also created for each user. Each student's environment on
+the master is mapped to the /puppetcode directory inside their docker container.
+When they log in to the master via shellinabox or SSH with their credentials 
+their session is passed into their docker container. From the students perspective
+they are on a seperate machine running as root.
