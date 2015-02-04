@@ -104,7 +104,7 @@ class Puppetfactory  < Sinatra::Base
           users[username] = {
             :status   => status[certname],
             :console  => console,
-            :port			=> port,
+            :port     => port,
             :certname => certname,
             :lastrun  => lastrun,
           }
