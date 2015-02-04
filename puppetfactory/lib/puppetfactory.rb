@@ -119,7 +119,6 @@ class Puppetfactory  < Sinatra::Base
           skeleton(username)
           classify(username)
           sign(username)
-          restartmco()
 
           {:status => :success, :message => "Created user #{username}."}.to_json
         rescue Exception => e
@@ -143,7 +142,6 @@ class Puppetfactory  < Sinatra::Base
 
       def skeleton(username)
         @username   = username
-        @amqpasswd  = key = File.read('/etc/puppetlabs/mcollective/credentials')
         @servername = `/bin/hostname`.chomp
 
         templates = "#{File.dirname(__FILE__)}/../templates"
@@ -170,13 +168,11 @@ class Puppetfactory  < Sinatra::Base
         # Boot container to runlevel 3
         `docker exec #{username} /etc/rc`
 
-        # Set default login to attache to container
-        bashrc = File.open("/home/#{username}/.bashrc", 'w')
-        bashrc.puts "docker exec -it #{username} su -"
-        bashrc.puts "exit 0"
-        bashrc.close
-
-        # Add docker route ip as master.puppetlabs.vm in the hosts file
+        # Set default login to attach to container
+        File.open("/home/#{username}/.bashrc", 'w') do |bashrc|
+          bashrc.puts "docker exec -it #{username} su -"
+          bashrc.puts "exit 0"
+        end
 
       end
 
@@ -194,10 +190,6 @@ class Puppetfactory  < Sinatra::Base
 
         output = `#{PUPPET} cert sign #{username}.puppetlabs.vm 2>&1`
         raise "Error signing #{username}: #{output}" unless $? == 0
-      end
-
-      def restartmco()
-        system('service user-mcollective restart')
       end
 
       # Basic auth boilerplate
