@@ -15,11 +15,9 @@
   <table id="users">
     <tr class="header">
       <th>Status</th>
-      <th>SSH Username</th>
-      <th>URL</th>
-      <th>Console Login</th>
+      <th>Username</th>
+      <th>Sandbox URL</th>
       <th>Certname</th>
-      <th>Last Puppet Run</th>
     </tr>
     <% if @users %>
       <% even = true %>
@@ -27,10 +25,8 @@
         <tr class="<%= even ? "even":"odd" %>">
           <td class="status"><%= user[:status] %></td>
           <td class="username"><%= key %></td>
-	  <td class="url"><a href="http://<%= request.host %>:<%= user[:port] %>"><%= key %></a></td>
-          <td class="console"><%= user[:console] %></td>
+          <td class="url"><a href="http://<%= request.host %>:<%= user[:port] %>"><%= user[:certname] %></a></td>
           <td class="certname"><%= user[:certname] %></td>
-          <td class="lastrun"><%= user[:lastrun] %></td>
         </tr>
         <% even = !even %>
       <% end %>

@@ -59,10 +59,6 @@ class Puppetfactory  < Sinatra::Base
       erb :login
     end
 
-    get '/reference' do
-      erb :reference
-    end
-
     get '/new/:username' do |username|
       protected!
       create(username)
