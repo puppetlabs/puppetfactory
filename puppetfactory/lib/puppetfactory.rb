@@ -91,7 +91,7 @@ class Puppetfactory  < Sinatra::Base
           port     = "3" + `id -u #{username}`.chomp
 
           begin
-            data    = YAML.load_file("/home/#{username}/.puppet/var/state/last_run_summary.yaml")
+            data    = YAML.load(`docker exec #{username} cat /var/opt/lib/pe-puppet/state/last_run_summary.yaml`)
             lastrun = Time.at(data['time']['last_run'])
           rescue Exception
             lastrun = :never
