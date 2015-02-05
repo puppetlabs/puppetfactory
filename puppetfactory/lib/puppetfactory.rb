@@ -1,4 +1,4 @@
-#! /usr/bin/env ruby
+# /usr/bin/env ruby
 
 require 'rubygems'
 require 'sinatra/base'
@@ -149,30 +149,37 @@ class Puppetfactory  < Sinatra::Base
         # configure environment
         FileUtils.mkdir_p "#{ENVIRONMENTS}/#{username}/manifests"
         FileUtils.mkdir_p "#{ENVIRONMENTS}/#{username}/modules"
+        FileUtils.mkdir_p "/home/#{username}/share"
 
         File.open("#{ENVIRONMENTS}/#{username}/manifests/site.pp", 'w') do |f|
           f.write ERB.new(File.read("#{templates}/site.pp.erb")).result(binding)
+        end
+        
+        File.open("/home/#{username}/share/puppet.conf","w") do |f|
+          f.write ERB.new(File.read("#{templates}/puppet.conf.erb")).result(binding)
         end
 
         # make sure the user and pe-puppet can access all the needful
         FileUtils.chown_R username, 'pe-puppet', "#{ENVIRONMENTS}/#{username}"
         FileUtils.chmod 0750, "#{ENVIRONMENTS}/#{username}"
 
-
-        # Get the uid of the new user and set up URL
-        port = "3" + `id -u #{username}`.chomp
-
-        # Create container with hostname set for username with port 80 mapped to 3000 + uid
-        `docker run --add-host "master.puppetlabs.vm puppet:172.17.42.1" --name="#{username}" -p #{port}:80 -h #{username}.#{USERSUFFIX} -e RUNLEVEL=3 -e TERM=xterm -d -v #{ENVIRONMENTS}/#{username}:/puppetcode #{CONTAINER_NAME}`
-
-        # Boot container to runlevel 3
-        `docker exec #{username} /etc/rc`
-
         # Set default login to attach to container
         File.open("/home/#{username}/.bashrc", 'w') do |bashrc|
           bashrc.puts "docker exec -it #{username} su -"
           bashrc.puts "exit 0"
         end
+
+        # Get the uid of the new user and set up URL
+        port = "3" + `id -u #{username}`.chomp
+
+        # Create container with hostname set for username with port 80 mapped to 3000 + uid
+        `docker run --add-host "master.puppetlabs.vm puppet:172.17.42.1" --name="#{username}" -p #{port}:80 -h #{username}.#{USERSUFFIX} -e RUNLEVEL=3 -d -v #{ENVIRONMENTS}/#{username}:/puppetcode -v /home/#{username}/share:/share #{CONTAINER_NAME}`
+
+        # Boot container to runlevel 3
+        `docker exec #{username} /etc/rc`
+
+        # Copy puppet.conf in place
+        `docker exec #{username} cp -f /share/puppet.conf /etc/puppetlabs/puppet/puppet.conf`
 
       end
 
