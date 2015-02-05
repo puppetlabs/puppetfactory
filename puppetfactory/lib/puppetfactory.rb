@@ -92,7 +92,7 @@ class Puppetfactory  < Sinatra::Base
           username = File.basename path
           certname = "#{username}.#{USERSUFFIX}"
           console  = "#{username}@#{USERSUFFIX}"
-          port		 = "3" + `id -u #{username}`.chomp
+          port     = "3" + `id -u #{username}`.chomp
 
           begin
             data    = YAML.load_file("/home/#{username}/.puppet/var/state/last_run_summary.yaml")
