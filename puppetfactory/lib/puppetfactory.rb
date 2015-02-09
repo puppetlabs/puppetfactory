@@ -10,6 +10,15 @@ require 'json'
 require 'fileutils'
 require 'erb'
 require 'yaml'
+require 'puppetclassify'
+
+AUTH_INFO = {
+  "ca_certificate_path" => "/opt/puppet/share/puppet-dashboard/certs/ca_cert.pem",
+  "certificate_path"    => "/opt/puppet/share/puppet-dashboard/certs/pe-internal-dashboard.cert.pem",
+  "private_key_path"    => "/opt/puppet/share/puppet-dashboard/certs/pe-internal-dashboard.private_key.pem"
+}
+
+CLASSIFIER_URL = 'http://master.puppetlabs.vm:4433/classifier-api'
 
 PUPPET    = '/opt/puppet/bin/puppet'
 RAKE      = '/opt/puppet/bin/rake'
@@ -182,11 +191,18 @@ class Puppetfactory  < Sinatra::Base
       end
 
       def classify(username, groups=['no mcollective'])
+        puppetclassify = PuppetClassify.new(CLASSIFIER_URL, AUTH_INFO)
         certname = "#{username}.#{USERSUFFIX}"
         groupstr = groups.join('\,')
 
-        output = `#{RAKE_API} node:add['#{certname}','#{groupstr}'] 2>&1`
-        raise "Error classifying #{certname}: #{output}" unless $? == 0
+        puppetclassify.groups.create_group({
+          'name'               => certname,
+          'environment'        => username,
+          'environment_trumps' => true,
+          'parent'             => '00000000-0000-4000-8000-000000000000',
+          'classes'            => {},
+          'rule'               => ['or', ['=', 'name', certname]]
+        })
       end
 
       def sign(username)
