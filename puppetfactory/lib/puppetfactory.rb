@@ -21,7 +21,7 @@ LOGFILE   = '/var/log/puppetfactory'
 CERT_PATH = 'certs'
 USER      = 'admin'
 PASSWORD  = 'admin'
-CONTAINER_NAME = 'puppetbase'
+CONTAINER_NAME = 'centosagent'
 
 CONFDIR      = '/etc/puppetlabs/puppet'
 ENVIRONMENTS = "#{CONFDIR}/environments"
