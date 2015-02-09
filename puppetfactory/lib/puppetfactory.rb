@@ -180,7 +180,7 @@ class Puppetfactory  < Sinatra::Base
         port = "3" + `id -u #{username}`.chomp
 
         # Create container with hostname set for username with port 80 mapped to 3000 + uid
-        `docker run --add-host "master.puppetlabs.vm puppet:172.17.42.1" --name="#{username}" -p #{port}:80 -h #{username}.#{USERSUFFIX} -e RUNLEVEL=3 -d -v #{ENVIRONMENTS}/#{username}:/puppetcode -v /home/#{username}/share:/share #{CONTAINER_NAME} /sbin/init`
+        `docker run --add-host "master.puppetlabs.vm puppet:172.17.42.1" --name="#{username}" -p #{port}:80 -h #{username}.#{USERSUFFIX} -e RUNLEVEL=3 -d -v #{ENVIRONMENTS}/#{username}:/root/puppetcode -v /home/#{username}/share:/share #{CONTAINER_NAME} /sbin/init`
 
         # Boot container to runlevel 3
         `docker exec #{username} /etc/rc`
