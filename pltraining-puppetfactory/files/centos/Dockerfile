@@ -10,6 +10,7 @@ RUN tar xzvf /tmp/pe-agent.tar.gz
 RUN rpm -ivh --nodeps `ls /puppet-enterprise-3.7.1-el-6-x86_64-agent/agent_packages/el-6-x86_64/*rpm`
 RUN rm -rf /puppet-enterprise-3.7.1-el-6-x86_64-agent/
 RUN rm -f /tmp/pe-agent.tar.gz
+RUN rm /etc/yum.repos.d/CentOS*
 ADD base_local.repo /etc/yum.repos.d/base_local.repo
 ADD epel_local.repo /etc/yum.repos.d/epel_local.repo
 ADD updates_local.repo /etc/yum.repos.d/updates_local.repo
