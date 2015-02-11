@@ -53,3 +53,22 @@ the master is mapped to the /puppetcode directory inside their docker container.
 When they log in to the master via shellinabox or SSH with their credentials 
 their session is passed into their docker container. From the students perspective
 they are on a seperate machine running as root.
+
+## RESTlike usage
+
+Users can be created by treating the classroom manager like a RESTful API:
+  curl --data 'username=fooh&password=bar' admin:admin@localhost/new
+
+## Troubleshooting and recovery
+
+Because we're using docker containers for the student environements there are a
+few things you can do to troubleshoot.
+
+If you need to access a student enviroment:
+`docker exec -i -t #{username} bash`
+
+To trigger a puppet run on a student node:
+`docker exec #{username} puppet agent -t`
+
+To start a container that has been stopped (e.g. after a reboot):
+`docker start #{username}`
