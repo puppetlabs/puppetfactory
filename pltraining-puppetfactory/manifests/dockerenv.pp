@@ -3,16 +3,13 @@ class puppetfactory::dockerenv {
 
   file { '/etc/docker/centosagent/':
     ensure  => directory,
+    source  => 'puppet:///modules/puppetfactory/centos/',
     require => Class['docker'],
-  }
-  file { '/etc/docker/centosagent/Dockerfile':
-    source  => 'puppet:///modules/puppetfactory/centos/Dockerfile',
-    require => File['/etc/docker/centosagent/'],
   }
 
   docker::image { 'centosagent':
-    docker_file => '/etc/docker/centosagent/Dockerfile',
-    require     => File['/etc/docker/centosagent/Dockerfile'],
+    docker_dir => '/etc/docker/centosagent/',
+    require     => File['/etc/docker/centosagent/'],
   }
   yumrepo { 'base':
     enabled => 1,
