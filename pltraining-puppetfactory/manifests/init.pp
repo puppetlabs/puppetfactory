@@ -1,19 +1,8 @@
 class puppetfactory {
   include puppetfactory::service
-  include puppetfactory::doppelganger
   include puppetfactory::shellinabox
-  include puppetfactory::mcollective
-  include puppetfactory::evil          # default providers should only be used by root
+  include puppetfactory::dockerenv
   include epel
-
-  Ini_setting {
-    path    => '/etc/puppetlabs/puppet/puppet.conf',
-    section => 'main',
-    notify  => Service['pe-puppetserver'],
-  }
-  File {
-    notify  => Service['pe-httpd'],
-  }
 
   file { '/etc/puppetlabs/puppet/environments/production/environment.conf':
     ensure  => file,
@@ -37,7 +26,7 @@ class puppetfactory {
   # installation labs appear to work properly.
   package { ['zsh', 'emacs', 'nano', 'vim-enhanced', 'rubygems', 'tree', 'git' ]:
     ensure  => present,
-    require => Class'epel'],
+    require => Class['epel'],
     before  => Class['puppetfactory::service'],
   }
 }

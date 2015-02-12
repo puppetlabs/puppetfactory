@@ -15,8 +15,8 @@
   <table id="users">
     <tr class="header">
       <th>Status</th>
-      <th>SSH Username</th>
-      <th>Console Login</th>
+      <th>Username</th>
+      <th>Sandbox URL</th>
       <th>Certname</th>
       <th>Last Puppet Run</th>
     </tr>
@@ -24,11 +24,11 @@
       <% even = true %>
       <% @users.each do |key, user| %>
         <tr class="<%= even ? "even":"odd" %>">
-          <td class="status"><%= user[:status] %></td>
-          <td class="username"><%= key %></td>
-          <td class="console"><%= user[:console] %></td>
-          <td class="certname"><%= user[:certname] %></td>
-          <td class="lastrun"><%= user[:lastrun] %></td>
+          <td class="status" align="center"><%= user[:status] %></td>
+          <td class="username" align="center"><%= key %></td>
+          <td class="url" align="center"><a href="http://<%= request.host %>:<%= user[:port] %>"><%= user[:certname] %></a></td>
+          <td class="certname" align="center"><%= user[:certname] %></td>
+          <td class="lastrun" align="center"><%= user[:lastrun] %></td>
         </tr>
         <% even = !even %>
       <% end %>

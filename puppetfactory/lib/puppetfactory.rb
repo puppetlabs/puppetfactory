@@ -10,6 +10,15 @@ require 'json'
 require 'fileutils'
 require 'erb'
 require 'yaml'
+require 'puppetclassify'
+
+AUTH_INFO = {
+  "ca_certificate_path" => "/opt/puppet/share/puppet-dashboard/certs/ca_cert.pem",
+  "certificate_path"    => "/opt/puppet/share/puppet-dashboard/certs/pe-internal-dashboard.cert.pem",
+  "private_key_path"    => "/opt/puppet/share/puppet-dashboard/certs/pe-internal-dashboard.private_key.pem"
+}
+
+CLASSIFIER_URL = 'http://master.puppetlabs.vm:4433/classifier-api'
 
 PUPPET    = '/opt/puppet/bin/puppet'
 RAKE      = '/opt/puppet/bin/rake'
@@ -21,6 +30,7 @@ LOGFILE   = '/var/log/puppetfactory'
 CERT_PATH = 'certs'
 USER      = 'admin'
 PASSWORD  = 'admin'
+CONTAINER_NAME = 'centosagent'
 
 CONFDIR      = '/etc/puppetlabs/puppet'
 ENVIRONMENTS = "#{CONFDIR}/environments"
@@ -58,10 +68,6 @@ class Puppetfactory  < Sinatra::Base
       erb :login
     end
 
-    get '/reference' do
-      erb :reference
-    end
-
     get '/new/:username' do |username|
       protected!
       create(username)
@@ -81,19 +87,22 @@ class Puppetfactory  < Sinatra::Base
       def load_users()
         status = {}
         users  = {}
-
+        
         # build a quick list of all certificate statuses
-        `/opt/puppet/bin/puppet cert list --all`.split.each do |line|
-          status[$2] = $1 if line =~ /^([+-])?.*"([\w\.]*)"/
-        end
+        `/opt/puppet/bin/puppet cert list --all`.each_line do |line|
+            certlist_name = line.split('"')[1]
+            certlist_status = line =~ /\+/ ? "Certificate Signed" : "No Certificate Found"
+            status[certlist_name] = certlist_status
+        end        
 
         Dir.glob('/home/*').each do |path|
           username = File.basename path
           certname = "#{username}.#{USERSUFFIX}"
           console  = "#{username}@#{USERSUFFIX}"
+          port     = "3" + `id -u #{username}`.chomp
 
           begin
-            data    = YAML.load_file("/home/#{username}/.puppet/var/state/last_run_summary.yaml")
+            data    = YAML.load(`docker exec #{username} cat /var/opt/lib/pe-puppet/state/last_run_summary.yaml`)
             lastrun = Time.at(data['time']['last_run'])
           rescue Exception
             lastrun = :never
@@ -102,8 +111,9 @@ class Puppetfactory  < Sinatra::Base
           users[username] = {
             :status   => status[certname],
             :console  => console,
+            :port     => port,
             :certname => certname,
-            :lastrun  => lastrun
+            :lastrun  => lastrun,
           }
         end
 
@@ -116,7 +126,6 @@ class Puppetfactory  < Sinatra::Base
           skeleton(username)
           classify(username)
           sign(username)
-          restartmco()
 
           {:status => :success, :message => "Created user #{username}."}.to_json
         rescue Exception => e
@@ -128,19 +137,18 @@ class Puppetfactory  < Sinatra::Base
         crypted = password.crypt("$5$a1")
 
         # ssh login user
-        output = `adduser #{username} -p '#{crypted}' -g pe-puppet -m 2>&1`
+        output = `adduser #{username} -p '#{crypted}' -G pe-puppet,docker -m 2>&1`
         raise "Could not create login user #{username}: #{output}" unless $? == 0
 
         # pe console user
         attributes = "display_name=#{username} roles=Operators email=#{username}@puppetlabs.vm password=#{password}"
         output     = `#{PUPPET} resource rbac_user #{username} ensure=present #{attributes} 2>&1`
 
-        raise "Could not create PE Console user #{console}: #{output}" unless $? == 0
+        raise "Could not create PE Console user #{username}: #{output}" unless $? == 0
       end
 
       def skeleton(username)
         @username   = username
-        @amqpasswd  = key = File.read('/etc/puppetlabs/mcollective/credentials')
         @servername = `/bin/hostname`.chomp
 
         templates = "#{File.dirname(__FILE__)}/../templates"
@@ -148,55 +156,65 @@ class Puppetfactory  < Sinatra::Base
         # configure environment
         FileUtils.mkdir_p "#{ENVIRONMENTS}/#{username}/manifests"
         FileUtils.mkdir_p "#{ENVIRONMENTS}/#{username}/modules"
+        FileUtils.mkdir_p "/home/#{username}/share"
 
         File.open("#{ENVIRONMENTS}/#{username}/manifests/site.pp", 'w') do |f|
           f.write ERB.new(File.read("#{templates}/site.pp.erb")).result(binding)
         end
-
-        FileUtils.mkdir_p "/home/#{username}/.puppet/"
-
-        FileUtils.ln_s "#{ENVIRONMENTS}/#{username}/manifests", "/home/#{username}/.puppet/manifests"
-        FileUtils.ln_s "#{ENVIRONMENTS}/#{username}/modules", "/home/#{username}/.puppet/modules"
-        FileUtils.ln_s "/home/#{username}/.puppet", "/home/#{username}/puppet"
-
-        # configure puppet agent
-        File.open("/home/#{username}/.puppet/puppet.conf", 'w') do |f|
+        
+        File.open("/home/#{username}/share/puppet.conf","w") do |f|
           f.write ERB.new(File.read("#{templates}/puppet.conf.erb")).result(binding)
-        end
-
-        # configure mcollective server
-        FileUtils.mkdir_p "/home/#{username}/etc"
-        FileUtils.mkdir_p "/home/#{username}/var/log/pe-mcollective"
-        FileUtils.cp_r('/etc/puppetlabs/mcollective', "/home/#{username}/etc/mcollective")
-        File.open("/home/#{username}/etc/mcollective/server.cfg", 'w') do |f|
-          f.write ERB.new(File.read("#{templates}/server.cfg.erb")).result(binding)
         end
 
         # make sure the user and pe-puppet can access all the needful
         FileUtils.chown_R username, 'pe-puppet', "#{ENVIRONMENTS}/#{username}"
-        FileUtils.chown_R username, 'pe-puppet', "/home/#{username}"
         FileUtils.chmod 0750, "#{ENVIRONMENTS}/#{username}"
-        FileUtils.chmod 0750, "/home/#{username}"
+
+        # Set default login to attach to container
+        File.open("/home/#{username}/.bashrc", 'w') do |bashrc|
+          bashrc.puts "docker exec -it #{username} su -"
+          bashrc.puts "exit 0"
+        end
+
+        # Get the uid of the new user and set up URL
+        port = "3" + `id -u #{username}`.chomp
+
+        # Create container with hostname set for username with port 80 mapped to 3000 + uid
+        `docker run --add-host "master.puppetlabs.vm puppet:172.17.42.1" --name="#{username}" -p #{port}:80 -h #{username}.#{USERSUFFIX} -e RUNLEVEL=3 -d -v #{ENVIRONMENTS}/#{username}:/root/puppetcode -v /home/#{username}/share:/share -v /var/yum:/var/yum #{CONTAINER_NAME} /sbin/init`
+
+        # Copy userprefs module into user environment
+        `cp -r #{ENVIRONMENTS}/production/modules/userprefs #{ENVIRONMENTS}/#{username}/modules`
+        `chown -R #{username}:pe-puppet #{ENVIRONMENTS}/#{username}`
+
+        # Boot container to runlevel 3
+        `docker exec #{username} /etc/rc`
+
+        # Copy puppet.conf in place
+        `docker exec #{username} cp -f /share/puppet.conf /etc/puppetlabs/puppet/puppet.conf`
+
       end
 
       def classify(username, groups=['no mcollective'])
+        puppetclassify = PuppetClassify.new(CLASSIFIER_URL, AUTH_INFO)
         certname = "#{username}.#{USERSUFFIX}"
         groupstr = groups.join('\,')
 
-        output = `#{RAKE_API} node:add['#{certname}','#{groupstr}'] 2>&1`
-        raise "Error classifying #{certname}: #{output}" unless $? == 0
+        puppetclassify.groups.create_group({
+          'name'               => certname,
+          'environment'        => username,
+          'environment_trumps' => true,
+          'parent'             => '00000000-0000-4000-8000-000000000000',
+          'classes'            => {},
+          'rule'               => ['or', ['=', 'name', certname]]
+        })
       end
 
       def sign(username)
-        output = `sudo -iu #{username} #{PUPPET} agent -t 2>&1`
+        output = `docker exec #{username} puppet agent -t 2>&1`
         raise "Error creating certificates: #{output}, exit code #{$?}" unless $? == 256
 
         output = `#{PUPPET} cert sign #{username}.puppetlabs.vm 2>&1`
         raise "Error signing #{username}: #{output}" unless $? == 0
-      end
-
-      def restartmco()
-        system('service user-mcollective restart')
       end
 
       # Basic auth boilerplate
