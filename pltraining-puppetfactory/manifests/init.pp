@@ -29,4 +29,11 @@ class puppetfactory {
     require => Class['epel'],
     before  => Class['puppetfactory::service'],
   }
+  augeas{'sshd-clientalive':
+    context => '/files/etc/ssh/sshd_config',
+    changes => [
+      'set ClientAliveInterval 300',
+      'set ClientAliveCountMax 2'
+    ],
+  }
 }
