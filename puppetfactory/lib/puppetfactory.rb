@@ -125,7 +125,6 @@ class Puppetfactory  < Sinatra::Base
           adduser(username, password)
           skeleton(username)
           classify(username)
-          sign(username)
 
           {:status => :success, :message => "Created user #{username}."}.to_json
         rescue Exception => e
@@ -194,7 +193,7 @@ class Puppetfactory  < Sinatra::Base
 
       end
 
-      def classify(username, groups=['no mcollective'])
+      def classify(username, groups=[''])
         puppetclassify = PuppetClassify.new(CLASSIFIER_URL, AUTH_INFO)
         certname = "#{username}.#{USERSUFFIX}"
         groupstr = groups.join('\,')
@@ -207,14 +206,6 @@ class Puppetfactory  < Sinatra::Base
           'classes'            => {},
           'rule'               => ['or', ['=', 'name', certname]]
         })
-      end
-
-      def sign(username)
-        output = `docker exec #{username} puppet agent -t 2>&1`
-        raise "Error creating certificates: #{output}, exit code #{$?}" unless $? == 256
-
-        output = `#{PUPPET} cert sign #{username}.puppetlabs.vm 2>&1`
-        raise "Error signing #{username}: #{output}" unless $? == 0
       end
 
       # Basic auth boilerplate
