@@ -5,12 +5,8 @@ MAINTAINER Josh Samuelson <js@puppetlabs.com>
 ENV HOME /root/
 ENV TERM xterm
 RUN yum -y install sudo tar dmidecode which logrotate cyrus-sasl libxslt cronie pciutils
-ADD https://s3.amazonaws.com/pe-builds/released/3.7.1/puppet-enterprise-3.7.1-el-6-x86_64-agent.tar.gz /tmp/pe-agent.tar.gz
-RUN tar xzvf /tmp/pe-agent.tar.gz
-RUN rpm -ivh --nodeps `ls /puppet-enterprise-3.7.1-el-6-x86_64-agent/agent_packages/el-6-x86_64/*rpm`
-RUN rm -rf /puppet-enterprise-3.7.1-el-6-x86_64-agent/
-RUN rm -f /tmp/pe-agent.tar.gz
 RUN rm /etc/yum.repos.d/CentOS*
 ADD base_local.repo /etc/yum.repos.d/base_local.repo
 ADD epel_local.repo /etc/yum.repos.d/epel_local.repo
 ADD updates_local.repo /etc/yum.repos.d/updates_local.repo
+RUN echo 'if ! hash puppet; then curl -k https://master.puppetlabs.vm:8140/packages/current/install.bash | sudo bash; fi' >> /root/.bashrc
