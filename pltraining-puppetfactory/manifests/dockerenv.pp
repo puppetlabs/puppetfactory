@@ -1,7 +1,5 @@
 class puppetfactory::dockerenv {
-  class { 'docker':
-    require => Yumrepo['base'],
-  }
+  include docker
 
   file { '/etc/docker/centosagent/':
     ensure  => directory,
