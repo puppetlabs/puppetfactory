@@ -21,12 +21,4 @@ class puppetfactory {
     ensure     => absent,
     managehome => true,
   }
-
-  # ensure the packages used by userprefs are available so that the simulated
-  # installation labs appear to work properly.
-  package { ['zsh', 'emacs', 'nano', 'vim-enhanced', 'rubygems', 'tree', 'git' ]:
-    ensure  => present,
-    require => Class['epel'],
-    before  => Class['puppetfactory::service'],
-  }
 }

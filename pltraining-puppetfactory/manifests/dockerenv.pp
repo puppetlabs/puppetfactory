@@ -12,8 +12,4 @@ class puppetfactory::dockerenv {
     docker_dir => '/etc/docker/centosagent/',
     require     => File['/etc/docker/centosagent/'],
   }
-  yumrepo { 'base':
-    enabled => 1,
-    before  => Class['docker'],
-  }
 }
