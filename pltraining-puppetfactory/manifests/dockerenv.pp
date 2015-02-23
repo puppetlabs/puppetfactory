@@ -5,6 +5,7 @@ class puppetfactory::dockerenv {
     ensure  => directory,
     recurse => true,
     source  => 'puppet:///modules/puppetfactory/centos/',
+    notify => Docker::Image['centosagent'],
     require => Class['docker'],
   }
 

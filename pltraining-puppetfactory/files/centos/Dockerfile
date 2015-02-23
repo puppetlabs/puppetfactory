@@ -4,7 +4,7 @@ FROM centos:6
 MAINTAINER Josh Samuelson <js@puppetlabs.com>
 ENV HOME /root/
 ENV TERM xterm
-RUN yum -y install sudo tar dmidecode which logrotate cyrus-sasl libxslt cronie pciutils
+RUN yum -y install sudo tar dmidecode which logrotate cyrus-sasl libxslt cronie pciutils git
 RUN rm /etc/yum.repos.d/CentOS*
 ADD base_local.repo /etc/yum.repos.d/base_local.repo
 ADD epel_local.repo /etc/yum.repos.d/epel_local.repo
