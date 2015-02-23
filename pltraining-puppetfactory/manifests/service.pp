@@ -26,12 +26,12 @@ class puppetfactory::service {
   }
 
   file { '/etc/init.d/puppetfactory':
-    ensure   => file,
-    owner    => 'root',
-    group    => 'root',
-    mode     => 755,
-    contents => template('puppetfactory/puppetfactory.init.erb'),
-    before   => Service['puppetfactory'],
+    ensure  => file,
+    owner   => 'root',
+    group   => 'root',
+    mode    => 755,
+    content => template('puppetfactory/puppetfactory.init.erb'),
+    before  => Service['puppetfactory'],
   }
 
   service { 'puppetfactory':
