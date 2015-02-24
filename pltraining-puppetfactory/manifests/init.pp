@@ -1,4 +1,7 @@
-class puppetfactory {
+class puppetfactory (
+  $puppetcode = $puppetfactory::params::puppetcode
+) inherits puppetfactory::params {
+
   include puppetfactory::service
   include puppetfactory::shellinabox
   include puppetfactory::dockerenv
@@ -14,6 +17,14 @@ class puppetfactory {
     path  => '/etc/sudoers',
     line  => '#Defaults    requiretty',
     match => '^\s*Defaults    requiretty',
+  }
+
+  file_line { 'specifiy PUPPETCODE environment var':
+    # NOTE: this will only take effect after a reboot
+    path   => '/etc/environment',
+    line   => "PUPPETCODE=${puppetcode}",
+    match  => '^\s*PUPPETCODE.*',
+    before => Package['puppetfactory'],
   }
 
   # sloppy, get this gone

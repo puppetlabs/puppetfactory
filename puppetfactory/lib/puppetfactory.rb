@@ -35,6 +35,7 @@ CONTAINER_NAME = 'centosagent'
 CONFDIR      = '/etc/puppetlabs/puppet'
 ENVIRONMENTS = "#{CONFDIR}/environments"
 USERSUFFIX   = 'puppetlabs.vm'
+PUPPETCODE   = '/var/opt/puppetcode'
 
 class Puppetfactory  < Sinatra::Base
     set :views, File.dirname(__FILE__) + '/../views'
@@ -122,11 +123,11 @@ class Puppetfactory  < Sinatra::Base
 
       def create(username, password = 'puppet')
         begin
-          adduser(username, password)
-          skeleton(username)
-          classify(username)
+          adduser(username.downcase, password)
+          skeleton(username.downcase)
+          classify(username.downcase)
 
-          {:status => :success, :message => "Created user #{username}."}.to_json
+          {:status => :success, :message => "Created user #{username.downcase}."}.to_json
         rescue Exception => e
           {:status => :failure, :message => e.message}.to_json
         end
@@ -179,7 +180,7 @@ class Puppetfactory  < Sinatra::Base
         port = "3" + `id -u #{username}`.chomp
 
         # Create container with hostname set for username with port 80 mapped to 3000 + uid
-        `docker run --add-host "master.puppetlabs.vm puppet:172.17.42.1" --name="#{username}" -p #{port}:80 -h #{username}.#{USERSUFFIX} -e RUNLEVEL=3 -d -v #{ENVIRONMENTS}/#{username}:/root/puppetcode -v /home/#{username}/share:/share -v /var/yum:/var/yum #{CONTAINER_NAME} /sbin/init`
+        `docker run --add-host "master.puppetlabs.vm puppet:172.17.42.1" --name="#{username}" -p #{port}:80 -h #{username}.#{USERSUFFIX} -e RUNLEVEL=3 -d -v #{ENVIRONMENTS}/#{username}:#{PUPPETCODE} -v /home/#{username}/share:/share -v /var/yum:/var/yum #{CONTAINER_NAME} /sbin/init`
 
         # Copy userprefs module into user environment
         `cp -r #{ENVIRONMENTS}/production/modules/userprefs #{ENVIRONMENTS}/#{username}/modules`
