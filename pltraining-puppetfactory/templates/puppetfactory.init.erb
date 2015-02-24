@@ -26,7 +26,6 @@ printstat()
 start()
 {
 	echo -n $"Starting PuppetFactory: "
-  PUPPETCODE=<%= @puppetcode %>
 	puppetfactory
 	RETVAL=$?
 	printstat
