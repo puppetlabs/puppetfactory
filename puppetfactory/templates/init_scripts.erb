@@ -1,0 +1,21 @@
+#! /bin/sh
+# /etc/init.d/<%= @username %>
+#
+
+# Start and stop docker containers for user
+case "$1" in
+  start)
+    echo "Starting docker container <%= @username %>"
+    docker start <%= @username %>
+    ;;
+  stop)
+    echo "Starting docker container <%= @username %>"
+    docker start <%= @username %>
+    ;;
+  *)
+  echo "Usage: /etc/init.d/<%= @username %> {start|stop}"
+    exit 1
+    ;;
+esac
+
+exit 0
