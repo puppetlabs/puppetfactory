@@ -26,7 +26,7 @@
         <tr class="<%= even ? "even":"odd" %>">
           <td class="status" align="center"><%= user[:status] %></td>
           <td class="username" align="center"><%= key %></td>
-          <td class="url" align="center"><a href="http://<%= request.host %>/port/<%= user[:port] %>"><%= user[:certname] %></a></td>
+          <td class="url" align="center"><a href="port/<%= user[:port] %>/"><%= user[:certname] %></a></td>
           <td class="certname" align="center"><%= user[:certname] %></td>
           <td class="lastrun" align="center"><%= user[:lastrun] %></td>
         </tr>
