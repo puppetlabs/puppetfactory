@@ -5,6 +5,7 @@ class puppetfactory (
   include puppetfactory::service
   include puppetfactory::shellinabox
   include puppetfactory::dockerenv
+  include puppetfactory::proxy
   include epel
 
   file { '/etc/puppetlabs/puppet/environments/production/environment.conf':
