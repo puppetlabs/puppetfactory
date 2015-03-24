@@ -3,13 +3,13 @@ class puppetfactory::proxy {
   package {'nginx':
     ensure => present,
   }
-  file {'/etc/nginx/default.conf':
+  file {'/etc/nginx/conf.d/default.conf':
     ensure  => file,
     source  => 'puppet:///modules/puppetfactory/default.conf',
     require => Package['nginx'],
   }
   service {'nginx':
     ensure  => running,
-    require => File['/etc/nginx/default.conf'],
+    require => File['/etc/nginx/conf.d/default.conf'],
   }
 }
