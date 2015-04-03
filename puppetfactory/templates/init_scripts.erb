@@ -9,8 +9,8 @@ case "$1" in
     docker start <%= @username %>
     ;;
   stop)
-    echo "Starting docker container <%= @username %>"
-    docker start <%= @username %>
+    echo "Stopping docker container <%= @username %>"
+    docker stop <%= @username %>
     ;;
   *)
   echo "Usage: /etc/init.d/<%= @username %> {start|stop}"
