@@ -106,11 +106,12 @@ class Puppetfactory  < Sinatra::Base
 
       def create(username, password = 'puppet')
         begin
-          adduser(username.downcase, password)
-          skeleton(username.downcase)
-          init_scripts(username.downcase)
-          classify(username.downcase)
-
+          Thread.new {
+            adduser(username.downcase, password)
+            skeleton(username.downcase)
+            init_scripts(username.downcase)
+            classify(username.downcase)
+          }
           {:status => :success, :message => "Created user #{username.downcase}."}.to_json
         rescue Exception => e
           {:status => :failure, :message => e.message}.to_json
