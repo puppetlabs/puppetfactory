@@ -94,13 +94,6 @@ class Puppetfactory  < Sinatra::Base
           console  = "#{username}@#{USERSUFFIX}"
           port     = "3" + `id -u #{username}`.chomp
 
-          begin
-            data    = YAML.load(`docker exec #{username} cat /var/opt/lib/pe-puppet/state/last_run_summary.yaml`)
-            lastrun = Time.at(data['time']['last_run'])
-          rescue Exception
-            lastrun = :never
-          end
-
           users[username] = {
             :console  => console,
             :port     => port,
