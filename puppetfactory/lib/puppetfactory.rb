@@ -86,7 +86,6 @@ class Puppetfactory  < Sinatra::Base
     helpers do
 
       def load_users()
-        status = {}
         users  = {}
         
         Dir.glob('/home/*').each do |path|
@@ -103,11 +102,9 @@ class Puppetfactory  < Sinatra::Base
           end
 
           users[username] = {
-            :status   => status[certname],
             :console  => console,
             :port     => port,
             :certname => certname,
-            :lastrun  => lastrun,
           }
         end
 
