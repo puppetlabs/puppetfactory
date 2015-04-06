@@ -89,13 +89,6 @@ class Puppetfactory  < Sinatra::Base
         status = {}
         users  = {}
         
-        # build a quick list of all certificate statuses
-        `/opt/puppet/bin/puppet cert list --all`.each_line do |line|
-            certlist_name = line.split('"')[1]
-            certlist_status = line =~ /\+/ ? "Certificate Signed" : "No Certificate Found"
-            status[certlist_name] = certlist_status
-        end        
-
         Dir.glob('/home/*').each do |path|
           username = File.basename path
           certname = "#{username}.#{USERSUFFIX}"
