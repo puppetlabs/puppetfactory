@@ -125,6 +125,7 @@ class Puppetfactory  < Sinatra::Base
         begin
           adduser(username.downcase, password)
           skeleton(username.downcase)
+          init_scripts(username.downcase)
           classify(username.downcase)
 
           {:status => :success, :message => "Created user #{username.downcase}."}.to_json
@@ -192,6 +193,15 @@ class Puppetfactory  < Sinatra::Base
         # Copy puppet.conf in place
         `docker exec #{username} cp -f /share/puppet.conf /etc/puppetlabs/puppet/puppet.conf`
 
+      end
+
+      def init_scripts(username)
+        templates = "#{File.dirname(__FILE__)}/../templates"
+        File.open("/etc/init.d/docker-#{username}","w") do |f|
+          f.write ERB.new(File.read("#{templates}/init_scripts.erb")).result(binding)
+        end
+        File.chmod(0755, "/etc/init.d/docker-#{username}")
+        `chkconfig docker-#{username} on`
       end
 
       def classify(username, groups=[''])
