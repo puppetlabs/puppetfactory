@@ -196,10 +196,12 @@ class Puppetfactory  < Sinatra::Base
       end
 
       def init_scripts(username)
-        File.open("/etc/init.d/#{username}","w") do |f|
-          f.write ERB.new(File.read("#{templates}/init_script.erb")).result(binding)
+        templates = "#{File.dirname(__FILE__)}/../templates"
+        File.open("/etc/init.d/docker-#{username}","w") do |f|
+          f.write ERB.new(File.read("#{templates}/init_scripts.erb")).result(binding)
         end
-        `chkconfig #{username} on`
+        File.chmod(0755, "/etc/init.d/docker-#{username}")
+        `chkconfig docker-#{username} on`
       end
 
       def classify(username, groups=[''])
