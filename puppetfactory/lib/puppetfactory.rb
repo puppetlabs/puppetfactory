@@ -86,35 +86,18 @@ class Puppetfactory  < Sinatra::Base
     helpers do
 
       def load_users()
-        status = {}
         users  = {}
         
-        # build a quick list of all certificate statuses
-        `/opt/puppet/bin/puppet cert list --all`.each_line do |line|
-            certlist_name = line.split('"')[1]
-            certlist_status = line =~ /\+/ ? "Certificate Signed" : "No Certificate Found"
-            status[certlist_name] = certlist_status
-        end        
-
         Dir.glob('/home/*').each do |path|
           username = File.basename path
           certname = "#{username}.#{USERSUFFIX}"
           console  = "#{username}@#{USERSUFFIX}"
           port     = "3" + `id -u #{username}`.chomp
 
-          begin
-            data    = YAML.load(`docker exec #{username} cat /var/opt/lib/pe-puppet/state/last_run_summary.yaml`)
-            lastrun = Time.at(data['time']['last_run'])
-          rescue Exception
-            lastrun = :never
-          end
-
           users[username] = {
-            :status   => status[certname],
             :console  => console,
             :port     => port,
             :certname => certname,
-            :lastrun  => lastrun,
           }
         end
 
