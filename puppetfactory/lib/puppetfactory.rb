@@ -11,6 +11,7 @@ require 'fileutils'
 require 'erb'
 require 'yaml'
 require 'puppetclassify'
+require 'logger'
 
 AUTH_INFO = {
   "ca_certificate_path" => "/opt/puppet/share/puppet-dashboard/certs/ca_cert.pem",
@@ -38,6 +39,8 @@ USERSUFFIX   = 'puppetlabs.vm'
 PUPPETCODE   = '/var/opt/puppetcode'
 
 class Puppetfactory  < Sinatra::Base
+    $logger = Logger.new('/var/log/puppetfactory-errors.log')
+
     set :views, File.dirname(__FILE__) + '/../views'
     set :public_folder, File.dirname(__FILE__) + '/../public'
 
@@ -105,16 +108,18 @@ class Puppetfactory  < Sinatra::Base
       end
 
       def create(username, password = 'puppet')
-        begin
-          adduser(username.downcase, password)
-          skeleton(username.downcase)
-          init_scripts(username.downcase)
-          classify(username.downcase)
-
-          {:status => :success, :message => "Created user #{username.downcase}."}.to_json
-        rescue Exception => e
-          {:status => :failure, :message => e.message}.to_json
-        end
+        Thread.new {
+          begin
+            adduser(username.downcase, password)
+            skeleton(username.downcase)
+            init_scripts(username.downcase)
+            classify(username.downcase)
+            $logger.info("Created user #{username.downcase}.")
+          rescue Exception => e
+            $logger.error(e.message)
+          end
+        }
+        {:status => :success, :message => "User #{username.downcase} setup started."}.to_json
       end
 
       def adduser(username, password)
