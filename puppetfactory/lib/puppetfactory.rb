@@ -38,6 +38,8 @@ USERSUFFIX   = 'puppetlabs.vm'
 PUPPETCODE   = '/var/opt/puppetcode'
 
 class Puppetfactory  < Sinatra::Base
+    $logger = Logger.new('/var/log/puppetfactory.log')
+
     set :views, File.dirname(__FILE__) + '/../views'
     set :public_folder, File.dirname(__FILE__) + '/../public'
 
@@ -105,17 +107,17 @@ class Puppetfactory  < Sinatra::Base
       end
 
       def create(username, password = 'puppet')
-        begin
-          Thread.new {
+        Thread.new {
+          begin
             adduser(username.downcase, password)
             skeleton(username.downcase)
             init_scripts(username.downcase)
             classify(username.downcase)
-          }
-          {:status => :success, :message => "Created user #{username.downcase}."}.to_json
-        rescue Exception => e
-          {:status => :failure, :message => e.message}.to_json
-        end
+            $logger.info("Created user #{username.downcase}.")
+          rescue Exception => e
+            $logger.error(e.message)
+          end
+        }
       end
 
       def adduser(username, password)
