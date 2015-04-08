@@ -11,6 +11,7 @@ require 'fileutils'
 require 'erb'
 require 'yaml'
 require 'puppetclassify'
+require 'logger'
 
 AUTH_INFO = {
   "ca_certificate_path" => "/opt/puppet/share/puppet-dashboard/certs/ca_cert.pem",
@@ -38,7 +39,7 @@ USERSUFFIX   = 'puppetlabs.vm'
 PUPPETCODE   = '/var/opt/puppetcode'
 
 class Puppetfactory  < Sinatra::Base
-    $logger = Logger.new('/var/log/puppetfactory.log')
+    $logger = Logger.new('/var/log/puppetfactory-errors.log')
 
     set :views, File.dirname(__FILE__) + '/../views'
     set :public_folder, File.dirname(__FILE__) + '/../public'
@@ -118,6 +119,7 @@ class Puppetfactory  < Sinatra::Base
             $logger.error(e.message)
           end
         }
+        {:status => :success, :message => "User #{username.downcase} setup started."}.to_json
       end
 
       def adduser(username, password)
