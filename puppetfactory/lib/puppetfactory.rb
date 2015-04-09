@@ -95,7 +95,8 @@ class Puppetfactory  < Sinatra::Base
     username = params[:username]
     load_user(username).to_json
   end
-
+  
+  # Return the mapped port for a user
   get '/api/user/:username/port' do
     username = params[:username]
     user_port(username)
@@ -135,6 +136,7 @@ class Puppetfactory  < Sinatra::Base
         :certname => certname,
         :container_status   => container_status(username),
         :node_group_exists => node_group_status(username),
+        :certificate_status => cert_status(username),
       }
       user
     end
@@ -261,6 +263,19 @@ class Puppetfactory  < Sinatra::Base
       certname = "#{username}.#{USERSUFFIX}"
       output = puppetclassify.groups.get_group_id(certname)
       $? == 0 ? true : false
+    end
+
+    def cert_status(username)
+      output = `puppet cert list #{username}.#{USERSUFFIX}`
+      if $? == 0 then
+        if output =~ /\+/ then
+          "Signed Certificate Found"
+        else
+          "Waiting for Certificate Signing"
+        end
+      else
+        "No certificate request found"
+      end
     end
 
     # Basic auth boilerplate
