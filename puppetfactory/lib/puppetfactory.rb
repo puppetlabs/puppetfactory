@@ -96,28 +96,24 @@ class Puppetfactory  < Sinatra::Base
     load_user(username).to_json
   end
   
-  # Return the mapped port for a user
   get '/api/user/:username/port' do
     user_port(params[:username])
   end
 
   get '/api/user/:username/container_status' do
-    case container_status(params[:username])
-    when true
-      "Running"
-    when false
-      "Stopped"
-    else
-      "Container Not Found"
-    end
+    container_status(params[:username]).to_json
   end
 
   get '/api/user/:username/node_group_status' do
-    node_group_status(params[:username])
+    node_group_status(params[:username]).to_json
   end
 
   get '/api/user/:username/certificate_status' do
-    cert_status(params[:username])
+    cert_status(params[:username]).to_json
+  end
+
+  get '/api/user/:username/console_user_status' do
+    console_user_status(params[:username]).to_json
   end
 
   post '/api/user' do
@@ -160,7 +156,8 @@ class Puppetfactory  < Sinatra::Base
     end
 
     def user_port(username)
-      "3" + `id -u #{username}`.chomp
+      output = "3" + `id -u #{username}`.chomp
+      $? == 0 ? output : nil
     end
 
     def create(username, password = 'puppet')
@@ -188,6 +185,15 @@ class Puppetfactory  < Sinatra::Base
       attributes = "display_name=#{username} roles=Operators email=#{username}@puppetlabs.vm password=#{password}"
       output     = `#{PUPPET} resource rbac_user #{username} ensure=present #{attributes} 2>&1`
       $? == 0 ? "Console user #{username} created successfully" :  "Could not create PE Console user #{username}: #{output}"
+    end
+
+    def console_user_status(username)
+      output     = `#{PUPPET} resource rbac_user #{username} 2>&1`
+      if $? == 0 then
+        output =~ /present/ ? true : false
+      else
+        nil
+      end
     end
 
     def create_container(username)
@@ -287,12 +293,12 @@ class Puppetfactory  < Sinatra::Base
       output = `puppet cert list #{username}.#{USERSUFFIX}`
       if $? == 0 then
         if output =~ /\+/ then
-          "Signed Certificate Found"
+          true
         else
-          "Waiting for Certificate Signing"
+          false
         end
       else
-        "No certificate request found"
+        nil
       end
     end
 
