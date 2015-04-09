@@ -270,6 +270,7 @@ class Puppetfactory  < Sinatra::Base
 
     def remove_container(username)
       remove_init_scripts(username)
+      `rm -rf #{ENVIRONMENTS}/#{username}`
       output = `docker kill #{username} && docker rm #{username}`
       $? == 0 ? "Container #{username} removed" : "Error removing container #{username}" 
     end
