@@ -129,6 +129,10 @@ class Puppetfactory  < Sinatra::Base
     user_status.to_json
   end
 
+  delete '/api/users/:username' do
+    delete(params[:username])
+  end
+
   helpers do
     def load_users()
       users  = {}
@@ -173,11 +177,23 @@ class Puppetfactory  < Sinatra::Base
       end
     end
 
+    def delete(username)
+      remove_system_user(username)
+      #remove_console_user(username)
+      #remove_container(username)
+      #remove_node_group(username)
+    end
+
     def add_system_user(username, password)
       # ssh login user
       crypted = password.crypt("$5$a1")
       output = `adduser #{username} -p '#{crypted}' -G pe-puppet,docker -m 2>&1`
       $? == 0 ? "User #{username} created successfully" : "Could not create login user #{username}: #{output}"
+    end
+
+    def remove_system_user(username)
+      output = `userdel #{username} && rm -rf /home/#{username}`
+      $? == 0 ? "User #{username} removed successfully" : "Could not remove login user #{username}: #{output}"
     end
 
     def add_console_user(username,password)
