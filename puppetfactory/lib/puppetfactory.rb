@@ -133,7 +133,8 @@ class Puppetfactory  < Sinatra::Base
         :console  => console,
         :port     => user_port(username),
         :certname => certname,
-        :status   => container_status(username),
+        :container_status   => container_status(username),
+        :node_group_exists => node_group_status(username),
       }
       user
     end
@@ -159,14 +160,14 @@ class Puppetfactory  < Sinatra::Base
       # ssh login user
       crypted = password.crypt("$5$a1")
       output = `adduser #{username} -p '#{crypted}' -G pe-puppet,docker -m 2>&1`
-      output == 0 ? "User #{username} created successfully" : "Could not create login user #{username}: #{output}"
+      $? == 0 ? "User #{username} created successfully" : "Could not create login user #{username}: #{output}"
     end
 
     def add_console_user(username,password)
       # pe console user
       attributes = "display_name=#{username} roles=Operators email=#{username}@puppetlabs.vm password=#{password}"
       output     = `#{PUPPET} resource rbac_user #{username} ensure=present #{attributes} 2>&1`
-      output == 0 ? "Console user #{username} created successfully" :  "Could not create PE Console user #{username}: #{output}"
+      $? == 0 ? "Console user #{username} created successfully" :  "Could not create PE Console user #{username}: #{output}"
     end
 
     def create_container(username)
@@ -217,17 +218,17 @@ class Puppetfactory  < Sinatra::Base
       # Create init scripts for container
       init_scripts(username.downcase)
 
-      container_status(username) == "Running" ? "Container #{username} created" : "Error creating container #{username}" 
+      container_status(username) ? "Container #{username} created" : "Error creating container #{username}" 
     end
 
     def container_status(username)
       case `docker inspect -f {{.State.Running}} #{username}`.chomp
       when "true"
-        "Running"
+        true
       when "false"
-        "Stopped"
+        false
       else
-        "Container Not Found"
+        nil
       end
     end
 
@@ -253,8 +254,13 @@ class Puppetfactory  < Sinatra::Base
         'classes'            => {},
         'rule'               => ['or', ['=', 'name', certname]]
       })
+    end
 
-      puppetclassify.groups.get_group_id(certname)
+    def node_group_status(username)
+      puppetclassify = PuppetClassify.new(CLASSIFIER_URL, AUTH_INFO)
+      certname = "#{username}.#{USERSUFFIX}"
+      output = puppetclassify.groups.get_group_id(certname)
+      $? == 0 ? true : false
     end
 
     # Basic auth boilerplate
