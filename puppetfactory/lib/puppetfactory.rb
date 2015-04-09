@@ -38,206 +38,227 @@ USERSUFFIX   = 'puppetlabs.vm'
 PUPPETCODE   = '/var/opt/puppetcode'
 
 class Puppetfactory  < Sinatra::Base
-    set :views, File.dirname(__FILE__) + '/../views'
-    set :public_folder, File.dirname(__FILE__) + '/../public'
+  set :views, File.dirname(__FILE__) + '/../views'
+  set :public_folder, File.dirname(__FILE__) + '/../public'
 
-    configure :production, :development do
-      enable :logging
+  configure :production, :development do
+    enable :logging
 
-      # why do I have to do this? This page implies I shouldn't.
-      # https://github.com/sinatra/sinatra#logging
-      set :logger,    WEBrick::Log::new(LOGFILE, WEBrick::Log::DEBUG)
-      set :semaphore, Mutex.new
-    end
+    # why do I have to do this? This page implies I shouldn't.
+    # https://github.com/sinatra/sinatra#logging
+    set :logger,    WEBrick::Log::new(LOGFILE, WEBrick::Log::DEBUG)
+    set :semaphore, Mutex.new
+  end
 
-    get '/' do
-      erb :index
-    end
+  get '/' do
+    erb :index
+  end
 
-    get '/home' do
-      erb :home
-    end
+  get '/home' do
+    erb :home
+  end
 
-    get '/users' do
-      protected!
-      @users = load_users()
-      erb :users
-    end
+  get '/users' do
+    protected!
+    @users = load_users()
+    erb :users
+  end
 
-    get '/login' do
-      protected!
-      erb :login
-    end
+  get '/login' do
+    protected!
+    erb :login
+  end
 
-    get '/new/:username' do |username|
-      protected!
-      create(username)
-    end
+  get '/new/:username' do |username|
+    protected!
+    create(username)
+  end
 
-    post '/new' do
-      protected!
-      create(params[:username], params[:password])
-    end
+  post '/new' do
+    # protected!
+    create(params[:username], params[:password])
+  end
 
-    not_found do
-      halt 404, 'page not found'
-    end
+  not_found do
+    halt 404, 'page not found'
+  end
 
-    # RESTful API endpoints
+  # RESTful API endpoints
 
-    # Return users list as JSON
-    get '/api/users' do
-      load_users().to_json
-    end
+  # Return details for all users as JSON
+  get '/api/users' do
+    load_users().to_json
+  end
 
-    get '/api/user/:username' do
-      load_user(:username).to_json
-    end
+  # Return details for single user
+  get '/api/user/:username' do
+    username = params[:username]
+    load_user(username).to_json
+  end
 
+  get '/api/user/:username/port' do
+    username = params[:username]
+    user_port(username)
+  end
 
-    helpers do
-      def load_users()
-        users  = {}
-        Dir.glob('/home/*').each do |path|
-          username = File.basename path
-          users[username] = load_user(username)
-        end
-        users
+  post '/api/user' do
+    username = params[:username]
+    password = params[:password]
+    create(username,password)
+    load_user(username).to_json
+  end
+
+  helpers do
+    def load_users()
+      users  = {}
+      Dir.glob('/home/*').each do |path|
+        username = File.basename path
+        users[username] = load_user(username)
       end
+      users
+    end
 
-      def load_user(username)
-          user = {}
-          certname = "#{username}.#{USERSUFFIX}"
-          console  = "#{username}@#{USERSUFFIX}"
-          port     = "3" + `id -u #{username}`.chomp
-          conatiner_status = `docker inspect -f {{.State.Running}} #{username}` == "true" ? "Running" : "Stopped"
+    def load_user(username)
+      user = {}
+      certname = "#{username}.#{USERSUFFIX}"
+      console  = "#{username}@#{USERSUFFIX}"
 
-          user = {
-            :console  => console,
-            :port     => port,
-            :certname => certname,
-            :status   => container_status,
-          }
-          user
-      end
+      user = {
+        :console  => console,
+        :port     => user_port(username),
+        :certname => certname,
+        :status   => container_status(username),
+      }
+      user
+    end
 
-      def create(username, password = 'puppet')
-        begin
-          add_user(username.downcase, password)
-          create_container(username.downcase)
-          init_scripts(username.downcase)
-          classify(username.downcase)
+    def user_port(username)
+      "3" + `id -u #{username}`.chomp
+    end
 
-          {:status => :success, :message => "Created user #{username.downcase}."}.to_json
-        rescue Exception => e
-          {:status => :failure, :message => e.message}.to_json
-        end
-      end
-
-      def adduser(username, password)
+    def create(username, password = 'puppet')
+      begin
         crypted = password.crypt("$5$a1")
-        
         add_system_user(username,crypted)
         add_console_user(username,crypted)
+        create_container(username.downcase)
+        init_scripts(username.downcase)
+        classify(username.downcase)
+
+        {:status => :success, :message => "Created user #{username.downcase}."}.to_json
+      rescue Exception => e
+        {:status => :failure, :message => e.message}.to_json
       end
-      
-      def add_system_user(username, crypted)
-        # ssh login user
-        output = `adduser #{username} -p '#{crypted}' -G pe-puppet,docker -m 2>&1`
-        "Could not create login user #{username}: #{output}" unless $? == 0
-      end
+    end
 
-      def add_console_user(username,crypted)
-        # pe console user
-        attributes = "display_name=#{username} roles=Operators email=#{username}@puppetlabs.vm password=#{password}"
-        output     = `#{PUPPET} resource rbac_user #{username} ensure=present #{attributes} 2>&1`
+    def add_system_user(username, crypted)
+      # ssh login user
+      output = `adduser #{username} -p '#{crypted}' -G pe-puppet,docker -m 2>&1`
+      "Could not create login user #{username}: #{output}" unless $? == 0
+    end
 
-        raise "Could not create PE Console user #{username}: #{output}" unless $? == 0
-      end
+    def add_console_user(username,crypted)
+      # pe console user
+      attributes = "display_name=#{username} roles=Operators email=#{username}@puppetlabs.vm password=#{password}"
+      output     = `#{PUPPET} resource rbac_user #{username} ensure=present #{attributes} 2>&1`
 
-      def create_container(username)
-        @username   = username
-        @servername = `/bin/hostname`.chomp
+      raise "Could not create PE Console user #{username}: #{output}" unless $? == 0
+    end
 
-        templates = "#{File.dirname(__FILE__)}/../templates"
+    def create_container(username)
+      @username   = username
+      @servername = `/bin/hostname`.chomp
 
-        # configure environment
-        FileUtils.mkdir_p "#{ENVIRONMENTS}/#{username}/manifests"
-        FileUtils.mkdir_p "#{ENVIRONMENTS}/#{username}/modules"
-        FileUtils.mkdir_p "/home/#{username}/share"
+      templates = "#{File.dirname(__FILE__)}/../templates"
 
-        File.open("#{ENVIRONMENTS}/#{username}/manifests/site.pp", 'w') do |f|
-          f.write ERB.new(File.read("#{templates}/site.pp.erb")).result(binding)
-        end
-        
-        File.open("/home/#{username}/share/puppet.conf","w") do |f|
-          f.write ERB.new(File.read("#{templates}/puppet.conf.erb")).result(binding)
-        end
+      # configure environment
+      FileUtils.mkdir_p "#{ENVIRONMENTS}/#{username}/manifests"
+      FileUtils.mkdir_p "#{ENVIRONMENTS}/#{username}/modules"
+      FileUtils.mkdir_p "/home/#{username}/share"
 
-        # make sure the user and pe-puppet can access all the needful
-        FileUtils.chown_R username, 'pe-puppet', "#{ENVIRONMENTS}/#{username}"
-        FileUtils.chmod 0750, "#{ENVIRONMENTS}/#{username}"
-
-        # Set default login to attach to container
-        File.open("/home/#{username}/.bashrc", 'w') do |bashrc|
-          bashrc.puts "docker exec -it #{username} su -"
-          bashrc.puts "exit 0"
-        end
-
-        # Get the uid of the new user and set up URL
-        port = "3" + `id -u #{username}`.chomp
-
-        # Create container with hostname set for username with port 80 mapped to 3000 + uid
-        `docker run --add-host "master.puppetlabs.vm puppet:172.17.42.1" --name="#{username}" -p #{port}:80 -h #{username}.#{USERSUFFIX} -e RUNLEVEL=3 -d -v #{ENVIRONMENTS}/#{username}:#{PUPPETCODE} -v /home/#{username}/share:/share -v /var/yum:/var/yum #{CONTAINER_NAME} /sbin/init`
-
-        # Copy userprefs module into user environment
-        `cp -r #{ENVIRONMENTS}/production/modules/userprefs #{ENVIRONMENTS}/#{username}/modules`
-        `chown -R #{username}:pe-puppet #{ENVIRONMENTS}/#{username}`
-
-        # Boot container to runlevel 3
-        `docker exec #{username} /etc/rc`
-
-        # Copy puppet.conf in place
-        `docker exec #{username} cp -f /share/puppet.conf /etc/puppetlabs/puppet/puppet.conf`
-
+      File.open("#{ENVIRONMENTS}/#{username}/manifests/site.pp", 'w') do |f|
+        f.write ERB.new(File.read("#{templates}/site.pp.erb")).result(binding)
       end
 
-      def init_scripts(username)
-        templates = "#{File.dirname(__FILE__)}/../templates"
-        File.open("/etc/init.d/docker-#{username}","w") do |f|
-          f.write ERB.new(File.read("#{templates}/init_scripts.erb")).result(binding)
-        end
-        File.chmod(0755, "/etc/init.d/docker-#{username}")
-        `chkconfig docker-#{username} on`
+      File.open("/home/#{username}/share/puppet.conf","w") do |f|
+        f.write ERB.new(File.read("#{templates}/puppet.conf.erb")).result(binding)
       end
 
-      def classify(username, groups=[''])
-        puppetclassify = PuppetClassify.new(CLASSIFIER_URL, AUTH_INFO)
-        certname = "#{username}.#{USERSUFFIX}"
-        groupstr = groups.join('\,')
+      # make sure the user and pe-puppet can access all the needful
+      FileUtils.chown_R username, 'pe-puppet', "#{ENVIRONMENTS}/#{username}"
+      FileUtils.chmod 0750, "#{ENVIRONMENTS}/#{username}"
 
-        puppetclassify.groups.create_group({
-          'name'               => certname,
-          'environment'        => username,
-          'environment_trumps' => true,
-          'parent'             => '00000000-0000-4000-8000-000000000000',
-          'classes'            => {},
-          'rule'               => ['or', ['=', 'name', certname]]
-        })
+      # Set default login to attach to container
+      File.open("/home/#{username}/.bashrc", 'w') do |bashrc|
+        bashrc.puts "docker exec -it #{username} su -"
+        bashrc.puts "exit 0"
       end
 
-      # Basic auth boilerplate
-      def protected!
-        unless authorized?
-          response['WWW-Authenticate'] = %(Basic realm="Restricted Area")
-          throw(:halt, [401, "Not authorized\n"])
-        end
-      end
+      # Get the uid of the new user and set up URL
+      port = "3" + `id -u #{username}`.chomp
 
-      def authorized?
-        @auth ||=  Rack::Auth::Basic::Request.new(request.env)
-        @auth.provided? && @auth.basic? && @auth.credentials && @auth.credentials == [USER, PASSWORD]
-      end
+      # Create container with hostname set for username with port 80 mapped to 3000 + uid
+      `docker run --add-host "master.puppetlabs.vm puppet:172.17.42.1" --name="#{username}" -p #{port}:80 -h #{username}.#{USERSUFFIX} -e RUNLEVEL=3 -d -v #{ENVIRONMENTS}/#{username}:#{PUPPETCODE} -v /home/#{username}/share:/share -v /var/yum:/var/yum #{CONTAINER_NAME} /sbin/init`
+
+      # Copy userprefs module into user environment
+      `cp -r #{ENVIRONMENTS}/production/modules/userprefs #{ENVIRONMENTS}/#{username}/modules`
+      `chown -R #{username}:pe-puppet #{ENVIRONMENTS}/#{username}`
+
+      # Boot container to runlevel 3
+      `docker exec #{username} /etc/rc`
+
+      # Copy puppet.conf in place
+      `docker exec #{username} cp -f /share/puppet.conf /etc/puppetlabs/puppet/puppet.conf`
 
     end
+
+    def container_status(username)
+      case `docker inspect -f {{.State.Running}} #{username}`.chomp
+      when "true"
+        "Running"
+      when "false"
+        "Stopped"
+      else
+        "Container Not Found"
+      end
+    end
+
+    def init_scripts(username)
+      templates = "#{File.dirname(__FILE__)}/../templates"
+      File.open("/etc/init.d/docker-#{username}","w") do |f|
+        f.write ERB.new(File.read("#{templates}/init_scripts.erb")).result(binding)
+      end
+      File.chmod(0755, "/etc/init.d/docker-#{username}")
+      `chkconfig docker-#{username} on`
+    end
+
+    def classify(username, groups=[''])
+      puppetclassify = PuppetClassify.new(CLASSIFIER_URL, AUTH_INFO)
+      certname = "#{username}.#{USERSUFFIX}"
+      groupstr = groups.join('\,')
+
+      puppetclassify.groups.create_group({
+        'name'               => certname,
+        'environment'        => username,
+        'environment_trumps' => true,
+        'parent'             => '00000000-0000-4000-8000-000000000000',
+        'classes'            => {},
+        'rule'               => ['or', ['=', 'name', certname]]
+      })
+    end
+
+    # Basic auth boilerplate
+    def protected!
+      unless authorized?
+        response['WWW-Authenticate'] = %(Basic realm="Restricted Area")
+        throw(:halt, [401, "Not authorized\n"])
+      end
+    end
+
+    def authorized?
+      @auth ||=  Rack::Auth::Basic::Request.new(request.env)
+      @auth.provided? && @auth.basic? && @auth.credentials && @auth.credentials == [USER, PASSWORD]
+    end
+
+  end
 end
