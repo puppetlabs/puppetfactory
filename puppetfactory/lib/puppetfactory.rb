@@ -91,32 +91,32 @@ class Puppetfactory  < Sinatra::Base
   end
 
   # Return details for single user
-  get '/api/user/:username' do
+  get '/api/users/:username' do
     username = params[:username]
     load_user(username).to_json
   end
 
-  get '/api/user/:username/port' do
+  get '/api/users/:username/port' do
     user_port(params[:username])
   end
 
-  get '/api/user/:username/container_status' do
+  get '/api/users/:username/container_status' do
     container_status(params[:username]).to_json
   end
 
-  get '/api/user/:username/node_group_status' do
+  get '/api/users/:username/node_group_status' do
     node_group_status(params[:username]).to_json
   end
 
-  get '/api/user/:username/certificate_status' do
+  get '/api/users/:username/certificate_status' do
     cert_status(params[:username]).to_json
   end
 
-  get '/api/user/:username/console_user_status' do
+  get '/api/users/:username/console_user_status' do
     console_user_status(params[:username]).to_json
   end
 
-  post '/api/user' do
+  post '/api/users' do
     user_status = {}
     username = params[:username]
     password = params[:password]
