@@ -180,7 +180,7 @@ class Puppetfactory  < Sinatra::Base
     def delete(username)
       remove_system_user(username)
       remove_console_user(username)
-      #remove_container(username)
+      remove_container(username)
       #remove_node_group(username)
     end
 
@@ -268,6 +268,12 @@ class Puppetfactory  < Sinatra::Base
       container_status(username) ? "Container #{username} created" : "Error creating container #{username}" 
     end
 
+    def remove_container(username)
+      remove_init_scripts(username)
+      output = `docker kill #{username} && docker rm #{username}`
+      $? == 0 ? "Container #{username} removed" : "Error removing container #{username}" 
+    end
+
     def container_status(username)
       case `docker inspect -f {{.State.Running}} #{username}`.chomp
       when "true"
@@ -286,6 +292,11 @@ class Puppetfactory  < Sinatra::Base
       end
       File.chmod(0755, "/etc/init.d/docker-#{username}")
       `chkconfig docker-#{username} on`
+    end
+
+    def remove_init_scripts(username)
+      `chkconfig docker-#{username} off`
+      `rm /etc/init.d/docker-#{username}`
     end
 
     def classify(username, groups=[''])
