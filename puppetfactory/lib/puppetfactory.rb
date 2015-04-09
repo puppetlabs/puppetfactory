@@ -179,7 +179,7 @@ class Puppetfactory  < Sinatra::Base
 
     def delete(username)
       remove_system_user(username)
-      #remove_console_user(username)
+      remove_console_user(username)
       #remove_container(username)
       #remove_node_group(username)
     end
@@ -201,6 +201,11 @@ class Puppetfactory  < Sinatra::Base
       attributes = "display_name=#{username} roles=Operators email=#{username}@puppetlabs.vm password=#{password}"
       output     = `#{PUPPET} resource rbac_user #{username} ensure=present #{attributes} 2>&1`
       $? == 0 ? "Console user #{username} created successfully" :  "Could not create PE Console user #{username}: #{output}"
+    end
+
+    def remove_console_user(username)
+      output     = `#{PUPPET} resource rbac_user #{username} ensure=absent 2>&1`
+      $? == 0 ? "Console user #{username} removed successfully" :  "Could not remove PE Console user #{username}: #{output}"
     end
 
     def console_user_status(username)
