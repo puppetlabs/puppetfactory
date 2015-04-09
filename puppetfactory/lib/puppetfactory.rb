@@ -95,7 +95,7 @@ class Puppetfactory  < Sinatra::Base
     username = params[:username]
     load_user(username).to_json
   end
-  
+
   get '/api/user/:username/port' do
     user_port(params[:username])
   end
@@ -149,7 +149,7 @@ class Puppetfactory  < Sinatra::Base
         :port     => user_port(username),
         :certname => certname,
         :container_status   => container_status(username),
-        :node_group_exists => node_group_status(username),
+        :node_group_status => node_group_status(username),
         :certificate_status => cert_status(username),
       }
       user
@@ -286,7 +286,7 @@ class Puppetfactory  < Sinatra::Base
       puppetclassify = PuppetClassify.new(CLASSIFIER_URL, AUTH_INFO)
       certname = "#{username}.#{USERSUFFIX}"
       output = puppetclassify.groups.get_group_id(certname)
-      $? == 0 ? true : false
+      output != nil ? true : false
     end
 
     def cert_status(username)
