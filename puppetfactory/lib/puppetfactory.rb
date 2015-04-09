@@ -83,31 +83,48 @@ class Puppetfactory  < Sinatra::Base
       halt 404, 'page not found'
     end
 
-    helpers do
+    # RESTful API endpoints
 
+    # Return users list as JSON
+    get '/api/users' do
+      load_users().to_json
+    end
+
+    get '/api/user/:username' do
+      load_user(:username).to_json
+    end
+
+
+    helpers do
       def load_users()
         users  = {}
-        
         Dir.glob('/home/*').each do |path|
           username = File.basename path
+          users[username] = load_user(username)
+        end
+        users
+      end
+
+      def load_user(username)
+          user = {}
           certname = "#{username}.#{USERSUFFIX}"
           console  = "#{username}@#{USERSUFFIX}"
           port     = "3" + `id -u #{username}`.chomp
+          conatiner_status = `docker inspect -f {{.State.Running}} #{username}` == "true" ? "Running" : "Stopped"
 
-          users[username] = {
+          user = {
             :console  => console,
             :port     => port,
             :certname => certname,
+            :status   => container_status,
           }
-        end
-
-        users
+          user
       end
 
       def create(username, password = 'puppet')
         begin
-          adduser(username.downcase, password)
-          skeleton(username.downcase)
+          add_user(username.downcase, password)
+          create_container(username.downcase)
           init_scripts(username.downcase)
           classify(username.downcase)
 
@@ -119,11 +136,18 @@ class Puppetfactory  < Sinatra::Base
 
       def adduser(username, password)
         crypted = password.crypt("$5$a1")
-
+        
+        add_system_user(username,crypted)
+        add_console_user(username,crypted)
+      end
+      
+      def add_system_user(username, crypted)
         # ssh login user
         output = `adduser #{username} -p '#{crypted}' -G pe-puppet,docker -m 2>&1`
-        raise "Could not create login user #{username}: #{output}" unless $? == 0
+        "Could not create login user #{username}: #{output}" unless $? == 0
+      end
 
+      def add_console_user(username,crypted)
         # pe console user
         attributes = "display_name=#{username} roles=Operators email=#{username}@puppetlabs.vm password=#{password}"
         output     = `#{PUPPET} resource rbac_user #{username} ensure=present #{attributes} 2>&1`
@@ -131,7 +155,7 @@ class Puppetfactory  < Sinatra::Base
         raise "Could not create PE Console user #{username}: #{output}" unless $? == 0
       end
 
-      def skeleton(username)
+      def create_container(username)
         @username   = username
         @servername = `/bin/hostname`.chomp
 
