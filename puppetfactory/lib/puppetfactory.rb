@@ -181,7 +181,7 @@ class Puppetfactory  < Sinatra::Base
       remove_system_user(username)
       remove_console_user(username)
       remove_container(username)
-      #remove_node_group(username)
+      remove_node_group(username)
     end
 
     def add_system_user(username, password)
@@ -312,6 +312,14 @@ class Puppetfactory  < Sinatra::Base
         'classes'            => {},
         'rule'               => ['or', ['=', 'name', certname]]
       })
+    end
+
+    def remove_node_group(username)
+      puppetclassify = PuppetClassify.new(CLASSIFIER_URL, AUTH_INFO)
+      certname = "#{username}.#{USERSUFFIX}"
+      group_id = puppetclassify.groups.get_group_id(certname)
+      output = puppetclassify.groups.delete_group(group_id)
+      $? == 0 ? "Node group #{certname} removed" : "Error removing node group #{certname} : #{output}" 
     end
 
     def node_group_status(username)
