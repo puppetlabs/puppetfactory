@@ -98,8 +98,26 @@ class Puppetfactory  < Sinatra::Base
   
   # Return the mapped port for a user
   get '/api/user/:username/port' do
-    username = params[:username]
-    user_port(username)
+    user_port(params[:username])
+  end
+
+  get '/api/user/:username/container_status' do
+    case container_status(params[:username])
+    when true
+      "Running"
+    when false
+      "Stopped"
+    else
+      "Container Not Found"
+    end
+  end
+
+  get '/api/user/:username/node_group_status' do
+    node_group_status(params[:username])
+  end
+
+  get '/api/user/:username/certificate_status' do
+    cert_status(params[:username])
   end
 
   post '/api/user' do
