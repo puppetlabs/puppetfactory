@@ -33,4 +33,13 @@ class puppetfactory (
     ensure     => absent,
     managehome => true,
   }
+  
+  # Keep ssh sessions alive
+  augeas{'sshd-clientalive':
+    context => '/files/etc/ssh/sshd_config',
+    changes => [
+      'set ClientAliveInterval 300',
+      'set ClientAliveCountMax 2'
+    ],
+  }
 }
