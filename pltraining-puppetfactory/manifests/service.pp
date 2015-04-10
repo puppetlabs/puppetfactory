@@ -1,8 +1,8 @@
 class puppetfactory::service {
   include pe_staging
 
-  pe_staging::file { 'puppetfactory-0.1.0.gem':
-    source  => 'puppet:///modules/puppetfactory/puppetfactory-0.1.0.gem'
+  pe_staging::file { 'puppetfactory-0.1.3.gem':
+    source  => 'puppet:///modules/puppetfactory/puppetfactory-0.1.3.gem'
   }
 
   # Temporary pached version of puppetclassify remove when gem is published
@@ -20,18 +20,18 @@ class puppetfactory::service {
   package { 'puppetfactory':
     ensure   => present,
     provider => gem,
-    source   => "${pe_staging::path}/puppetfactory/puppetfactory-0.1.0.gem",
-    require  => Pe_staging::File['puppetfactory-0.1.0.gem'],
+    source   => "${pe_staging::path}/puppetfactory/puppetfactory-0.1.3.gem",
+    require  => Pe_staging::File['puppetfactory-0.1.3.gem'],
     before   => Service['puppetfactory'],
   }
 
   file { '/etc/init.d/puppetfactory':
-    ensure => file,
-    owner  => 'root',
-    group  => 'root',
-    mode   => 755,
-    source => 'puppet:///modules/puppetfactory/puppetfactory.init',
-    before => Service['puppetfactory'],
+    ensure  => file,
+    owner   => 'root',
+    group   => 'root',
+    mode    => 755,
+    content => template('puppetfactory/puppetfactory.init.erb'),
+    before  => Service['puppetfactory'],
   }
 
   service { 'puppetfactory':

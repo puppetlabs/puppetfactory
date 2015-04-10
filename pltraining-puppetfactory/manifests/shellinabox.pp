@@ -1,6 +1,7 @@
 class puppetfactory::shellinabox {
   package { 'shellinabox':
-    ensure => present,
+    ensure  => present,
+    require => Class['epel'],
   }
 
   file { '/etc/sysconfig/shellinaboxd':

@@ -1,7 +1,11 @@
-class puppetfactory {
+class puppetfactory (
+  $puppetcode = $puppetfactory::params::puppetcode
+) inherits puppetfactory::params {
+
   include puppetfactory::service
   include puppetfactory::shellinabox
   include puppetfactory::dockerenv
+  include puppetfactory::proxy
   include epel
 
   file { '/etc/puppetlabs/puppet/environments/production/environment.conf':
@@ -16,19 +20,21 @@ class puppetfactory {
     match => '^\s*Defaults    requiretty',
   }
 
+  file_line { 'specifiy PUPPETCODE environment var':
+    # NOTE: this will only take effect after a reboot
+    path   => '/etc/environment',
+    line   => "PUPPETCODE=${puppetcode}",
+    match  => '^\s*PUPPETCODE.*',
+    before => Package['puppetfactory'],
+  }
+
   # sloppy, get this gone
   user { 'vagrant':
     ensure     => absent,
     managehome => true,
   }
-
-  # ensure the packages used by userprefs are available so that the simulated
-  # installation labs appear to work properly.
-  package { ['zsh', 'emacs', 'nano', 'vim-enhanced', 'rubygems', 'tree', 'git' ]:
-    ensure  => present,
-    require => Class['epel'],
-    before  => Class['puppetfactory::service'],
-  }
+  
+  # Keep ssh sessions alive
   augeas{'sshd-clientalive':
     context => '/files/etc/ssh/sshd_config',
     changes => [

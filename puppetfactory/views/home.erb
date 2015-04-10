@@ -10,15 +10,17 @@
 
 <p>
   The sandbox provided for each student is a container based node.  This means 
-  that most actions will work the same as in a full node. Because the conatiner
+  that most actions will work the same as in a full node. Because the container
   does not have a full init system, service actions may not work as expected.
   Each student's shell account on the master is redirected to the root account of
-  their personalized conatiner. Students can interact with system resources such 
+  their personalized container. Students can interact with system resources such 
   as hosts, users, and packages. During the course, the instructor will describe 
   Puppet's Resource Abstraction Layer that makes this possible.  Each container
   also has a port 80 redirected to a port on the master, so that students can
   start a web server inside their sandbox environment.
 </p>
+<h3>Git Visualization Tool:</h3>
+  To visualize how git works click here to access the <a href="./gitviz/index.html" target="_blank">git visualization tool</a>
 
 <h3>Accessing your environment:</h3>
 
@@ -27,4 +29,5 @@
   <li>Log in to your sandbox following the directions on the SSH Login tab.</li>
   <li>Log in to the <a href="https://<%= request.host %>" target="_console">Puppet Enterprise Console</a></li>
 <ol>
+
 

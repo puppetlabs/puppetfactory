@@ -72,3 +72,8 @@ To trigger a puppet run on a student node:
 
 To start a container that has been stopped (e.g. after a reboot):
 `docker start #{username}`
+
+## Acknowledgements
+
+Special thanks to Britt Gresham for the inspiration for this project:
+https://github.com/demophoon/webvim
