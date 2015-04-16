@@ -14,6 +14,12 @@ class puppetfactory (
     replace => false,
   }
 
+  file { '/etc/puppetfactory.yaml':
+    ensure  => present,
+    content => template('puppetfactory/puppetfactory.yaml.erb'),
+    before  => Service['puppetfactory'],
+  }
+
   file_line { 'remove tty requirement':
     path  => '/etc/sudoers',
     line  => '#Defaults    requiretty',

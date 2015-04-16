@@ -1,0 +1,24 @@
+---
+AUTH_INFO:
+   ca_certificate_path: "/opt/puppet/share/puppet-dashboard/certs/ca_cert.pem"
+   certificate_path: "/opt/puppet/share/puppet-dashboard/certs/pe-internal-dashboard.cert.pem"
+   private_key_path: "/opt/puppet/share/puppet-dashboard/certs/pe-internal-dashboard.private_key.pem"
+
+CLASSIFIER_URL: 'http://master.puppetlabs.vm:4433/classifier-api'
+
+PUPPET: '/opt/puppet/bin/puppet'
+RAKE: '/opt/puppet/bin/rake'
+DASH_PATH: '/opt/puppet/share/puppet-dashboard'
+
+DOCROOT: '/opt/puppetfactory'            # where templates and public files go
+LOGFILE: '/var/log/puppetfactory'
+CERT_PATH: 'certs'
+USER: 'admin'
+PASSWORD: 'admin'
+CONTAINER_NAME: 'centosagent'
+
+CONFDIR: '/etc/puppetlabs/puppet'
+USERSUFFIX: 'puppetlabs.vm'
+PUPPETCODE: '/var/opt/puppetcode'
+
+PE: false
