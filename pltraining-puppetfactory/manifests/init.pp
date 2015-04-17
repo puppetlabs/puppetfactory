@@ -1,7 +1,7 @@
 class puppetfactory (
   $puppetcode = $puppetfactory::params::puppetcode,
 
-  $ca_certificeate_path = $puppetfactory::params::ca_certificate_path,
+  $ca_certificate_path = $puppetfactory::params::ca_certificate_path,
   $certificate_path = $puppetfactory::params::certificate_path,
   $private_key_path = $puppetfactory::params::private_key_path,
 
