@@ -32,7 +32,7 @@ class puppetfactory (
   include puppetfactory::proxy
   include epel
 
-  file { '/etc/puppetlabs/puppet/environments/production/environment.conf':
+  file { "${confdir}/environments/production/environment.conf":
     ensure  => file,
     content => "environment_timeout = 0\n",
     replace => false,
