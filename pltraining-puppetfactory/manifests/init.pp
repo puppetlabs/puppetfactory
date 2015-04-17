@@ -1,5 +1,24 @@
 class puppetfactory (
   $puppetcode = $puppetfactory::params::puppetcode
+  $classifier_url = $puppetfactory::params::classifier_url
+
+  $puppet = $puppetfactory::params::puppet
+  $rake = $puppetfactory::params::rake 
+
+  $dash_path = $puppetfactory::params::dash_path
+
+  $docroot = $puppetfactory::params::docroot
+  $logfile = $puppetfactory::params::logfile
+  $cert_path = $puppetfactory::params::cert_path
+  $user = $puppetfactory::params::user
+  $password = $puppetfactory::params::password 
+  $container_name = $puppetfactory::params::container_name
+
+  $confdir = $puppetfactory::params::confdir
+  $usersuffix = $puppetfactory::params::usersuffix
+  $puppetcode = $puppetfactory::params::puppetcode
+
+  $pe = $puppetfactory::params::pe
 ) inherits puppetfactory::params {
 
   include puppetfactory::service
