@@ -1,24 +1,29 @@
 class puppetfactory (
-  $puppetcode = $puppetfactory::params::puppetcode
-  $classifier_url = $puppetfactory::params::classifier_url
+  $puppetcode = $puppetfactory::params::puppetcode,
 
-  $puppet = $puppetfactory::params::puppet
-  $rake = $puppetfactory::params::rake 
+  $ca_certificeate_path = $puppetfactory::params::ca_certificate_path,
+  $certificate_path = $puppetfactory::params::certificate_path,
+  $private_key_path = $puppetfactory::params::private_key_path,
 
-  $dash_path = $puppetfactory::params::dash_path
+  $classifier_url = $puppetfactory::params::classifier_url,
 
-  $docroot = $puppetfactory::params::docroot
-  $logfile = $puppetfactory::params::logfile
-  $cert_path = $puppetfactory::params::cert_path
-  $user = $puppetfactory::params::user
-  $password = $puppetfactory::params::password 
-  $container_name = $puppetfactory::params::container_name
+  $puppet = $puppetfactory::params::puppet,
+  $rake = $puppetfactory::params::rake,
 
-  $confdir = $puppetfactory::params::confdir
-  $usersuffix = $puppetfactory::params::usersuffix
-  $puppetcode = $puppetfactory::params::puppetcode
+  $dash_path = $puppetfactory::params::dash_path,
 
-  $pe = $puppetfactory::params::pe
+  $docroot = $puppetfactory::params::docroot,
+  $logfile = $puppetfactory::params::logfile,
+  $cert_path = $puppetfactory::params::cert_path,
+  $user = $puppetfactory::params::user,
+  $password = $puppetfactory::params::password,
+  $container_name = $puppetfactory::params::container_name,
+
+  $confdir = $puppetfactory::params::confdir,
+  $usersuffix = $puppetfactory::params::usersuffix,
+  $puppetcode = $puppetfactory::params::puppetcode,
+
+  $pe = $puppetfactory::params::pe,
 ) inherits puppetfactory::params {
 
   include puppetfactory::service
