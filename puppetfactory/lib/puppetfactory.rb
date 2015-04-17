@@ -12,7 +12,7 @@ require 'erb'
 require 'yaml'
 require 'puppetclassify'
 
-OPTIONS = YAML.load_file('/etc/puppetfactory.yaml')
+OPTIONS = YAML.load_file('/etc/puppetfactory.yaml') rescue nil
 
 AUTH_INFO = OPTIONS['AUTH_INFO'] || {
   "ca_certificate_path" => "/opt/puppet/share/puppet-dashboard/certs/ca_cert.pem",
