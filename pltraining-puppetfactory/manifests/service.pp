@@ -1,5 +1,7 @@
 class puppetfactory::service {
-  include staging
+  class{ 'staging':
+    path => '/var/staging/'
+  }
 
   staging::file { 'puppetfactory-0.1.4.gem':
     source  => 'puppet:///modules/puppetfactory/puppetfactory-0.1.4.gem'
