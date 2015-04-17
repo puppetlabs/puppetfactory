@@ -39,7 +39,7 @@ ENVIRONMENTS = "#{CONFDIR}/environments"
 USERSUFFIX   =  OPTIONS['USERSUFFIX'] || 'puppetlabs.vm'
 PUPPETCODE   =  OPTIONS['PUPPETCODE'] || '/var/opt/puppetcode'
 
-PE  = OPTIONS['PE'] || false
+PE  = OPTIONS['PE'] || true
 
 class Puppetfactory  < Sinatra::Base
   set :views, File.dirname(__FILE__) + '/../views'
@@ -171,9 +171,11 @@ class Puppetfactory  < Sinatra::Base
     def create(username, password = 'puppet')
       begin
         add_system_user(username,password)
-        add_console_user(username,password)
         create_container(username.downcase)
-        classify(username.downcase)
+        if PE
+          add_console_user(username,password)
+          classify(username.downcase)
+        end
 
         {:status => :success, :message => "Created user #{username.downcase}."}.to_json
       rescue Exception => e
