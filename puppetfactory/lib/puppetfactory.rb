@@ -12,30 +12,34 @@ require 'erb'
 require 'yaml'
 require 'puppetclassify'
 
-AUTH_INFO = {
+OPTIONS = YAML.load_file('/etc/puppetfactory.yaml') rescue nil
+
+AUTH_INFO = OPTIONS['AUTH_INFO'] || {
   "ca_certificate_path" => "/opt/puppet/share/puppet-dashboard/certs/ca_cert.pem",
   "certificate_path"    => "/opt/puppet/share/puppet-dashboard/certs/pe-internal-dashboard.cert.pem",
   "private_key_path"    => "/opt/puppet/share/puppet-dashboard/certs/pe-internal-dashboard.private_key.pem"
 }
 
-CLASSIFIER_URL = 'http://master.puppetlabs.vm:4433/classifier-api'
+CLASSIFIER_URL = OPTIONS['CLASSIFIER_URL'] || 'http://master.puppetlabs.vm:4433/classifier-api'
 
-PUPPET    = '/opt/puppet/bin/puppet'
-RAKE      = '/opt/puppet/bin/rake'
-DASH_PATH = '/opt/puppet/share/puppet-dashboard'
+PUPPET    =  OPTIONS['PUPPET'] || '/opt/puppet/bin/puppet'
+RAKE      =  OPTIONS['RAKE'] || '/opt/puppet/bin/rake'
+DASH_PATH =  OPTIONS['DASH_PATH'] || '/opt/puppet/share/puppet-dashboard'
 RAKE_API  = "#{RAKE} -f #{DASH_PATH}/Rakefile RAILS_ENV=production"
 
-DOCROOT   = '/opt/puppetfactory'            # where templates and public files go
-LOGFILE   = '/var/log/puppetfactory'
-CERT_PATH = 'certs'
-USER      = 'admin'
-PASSWORD  = 'admin'
-CONTAINER_NAME = 'centosagent'
+DOCROOT   =  OPTIONS['DOCROOT'] || '/opt/puppetfactory'           # where templates and public files go
+LOGFILE   =  OPTIONS['LOGFILE'] || '/var/log/puppetfactory'
+CERT_PATH =  OPTIONS['CERT_PATH'] || 'certs'
+USER      =  OPTIONS['USER'] || 'admin'
+PASSWORD  =  OPTIONS['PASSWORD'] || 'admin'
+CONTAINER_NAME =  OPTIONS['CONTAINER_NAME'] || 'centosagent'
 
-CONFDIR      = '/etc/puppetlabs/puppet'
+CONFDIR      =  OPTIONS['CONFDIR'] || '/etc/puppetlabs/puppet'
 ENVIRONMENTS = "#{CONFDIR}/environments"
-USERSUFFIX   = 'puppetlabs.vm'
-PUPPETCODE   = '/var/opt/puppetcode'
+USERSUFFIX   =  OPTIONS['USERSUFFIX'] || 'puppetlabs.vm'
+PUPPETCODE   =  OPTIONS['PUPPETCODE'] || '/var/opt/puppetcode'
+
+PE  = OPTIONS['PE'] || true
 
 class Puppetfactory  < Sinatra::Base
   set :views, File.dirname(__FILE__) + '/../views'
@@ -167,9 +171,11 @@ class Puppetfactory  < Sinatra::Base
     def create(username, password = 'puppet')
       begin
         add_system_user(username,password)
-        add_console_user(username,password)
         create_container(username.downcase)
-        classify(username.downcase)
+        if PE
+          add_console_user(username,password)
+          classify(username.downcase)
+        end
 
         {:status => :success, :message => "Created user #{username.downcase}."}.to_json
       rescue Exception => e
