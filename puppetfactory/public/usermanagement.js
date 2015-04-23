@@ -64,8 +64,9 @@ $(document).ready(function(){
       $.post('/new', {username: username, password: password}, function(data) {
         console.log(data);
         var results = jQuery.parseJSON(data);
+
         if(results.status == 'success') {
-          location.reload();
+          alert(result.message);
         }
         else {
           alert('Could not create user: ' + results.message);
@@ -73,6 +74,7 @@ $(document).ready(function(){
           $('#newuser table').activity(false);
         }
       });
+      $("body").load("#home");
 
     }
 
