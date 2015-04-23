@@ -21,5 +21,5 @@ class puppetfactory::params {
   $usersuffix = 'puppetlabs.vm'
   $puppetcode = '/root/puppetcode'
 
-  $pe = false
+  $pe = true
 }

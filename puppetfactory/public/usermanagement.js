@@ -64,15 +64,9 @@ $(document).ready(function(){
       $.post('/new', {username: username, password: password}, function(data) {
         console.log(data);
         var results = jQuery.parseJSON(data);
-        if(results.status == 'success') {
-          location.reload();
-        }
-        else {
-          alert('Could not create user: ' + results.message);
-          $('#newuser').removeClass("processing");
-          $('#newuser table').activity(false);
-        }
+        $('#tabs').html("<h2>" + results.message + "<br><a href='/'>Click here to continue.</a></h2>" );
       });
+      $('#tabs').html("<h2>Provisioning node for user " + username + "</h2>" );
 
     }
 
