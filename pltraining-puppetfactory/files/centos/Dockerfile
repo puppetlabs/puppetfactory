@@ -1,6 +1,6 @@
-# Builds a basic Centos6 container with pe-agent installed.
+# Builds a basic Centos7 container with pe-agent installed at first login.
 # This image is for training purposes and is not intended for production environments.
-FROM centos:6
+FROM centos:7
 MAINTAINER Josh Samuelson <js@puppetlabs.com>
 ENV HOME /root/
 ENV TERM xterm
