@@ -39,6 +39,8 @@ ENVIRONMENTS = "#{CONFDIR}/environments"
 USERSUFFIX   =  OPTIONS['USERSUFFIX'] || 'puppetlabs.vm'
 PUPPETCODE   =  OPTIONS['PUPPETCODE'] || '/var/opt/puppetcode'
 
+MASTER_HOSTNAME = `hostname`.strip
+
 PE  = OPTIONS['PE'] || true
 
 class Puppetfactory  < Sinatra::Base
@@ -256,7 +258,7 @@ class Puppetfactory  < Sinatra::Base
       port = user_port(username)
 
       # Create container with hostname set for username with port 80 mapped to 3000 + uid
-      `docker run --add-host "master.puppetlabs.vm puppet:172.17.42.1" --name="#{username}" -p #{port}:80 -h #{username}.#{USERSUFFIX} -e RUNLEVEL=3 -d -v #{ENVIRONMENTS}/#{username}:#{PUPPETCODE} -v /home/#{username}/share:/share -v /var/yum:/var/yum #{CONTAINER_NAME} /sbin/init`
+      `docker run --add-host "#{MASTER_HOSTNAME} puppet:172.17.42.1" --name="#{username}" -p #{port}:80 -h #{username}.#{USERSUFFIX} -e RUNLEVEL=3 -d -v #{ENVIRONMENTS}/#{username}:#{PUPPETCODE} -v /home/#{username}/share:/share -v /var/yum:/var/yum #{CONTAINER_NAME} /sbin/init`
 
       # Copy userprefs module into user environment
       `cp -r #{ENVIRONMENTS}/production/modules/userprefs #{ENVIRONMENTS}/#{username}/modules`
