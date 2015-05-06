@@ -22,7 +22,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency      "sinatra", "~> 1.3"
   s.add_dependency      "json_pure"
-  s.add_dependency      "puppetclassify", ">= 0.1.1"
+  s.add_dependency      "puppetclassify", ">= 0.1.0"
 
   s.description       = <<-desc
   Puppetfactory creates a Puppet Enterprise infrastructure on the classroom server. 
