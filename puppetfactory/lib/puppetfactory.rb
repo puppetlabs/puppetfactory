@@ -40,6 +40,7 @@ USERSUFFIX   =  OPTIONS['USERSUFFIX'] || 'puppetlabs.vm'
 PUPPETCODE   =  OPTIONS['PUPPETCODE'] || '/var/opt/puppetcode'
 
 MASTER_HOSTNAME = `hostname`.strip
+DOCKER_GROUP = OPTIONS['DOCKER_GROUP'] || 'docker'
 
 PE  = OPTIONS['PE'] || true
 
@@ -195,7 +196,7 @@ class Puppetfactory  < Sinatra::Base
     def add_system_user(username, password)
       # ssh login user
       crypted = password.crypt("$5$a1")
-      output = `adduser #{username} -p '#{crypted}' -G pe-puppet,docker -m 2>&1`
+      output = `adduser #{username} -p '#{crypted}' -G pe-puppet,#{DOCKER_GROUP} -m 2>&1`
       $? == 0 ? "User #{username} created successfully" : "Could not create login user #{username}: #{output}"
     end
 

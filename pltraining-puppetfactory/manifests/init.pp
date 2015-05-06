@@ -23,6 +23,8 @@ class puppetfactory (
   $usersuffix = $puppetfactory::params::usersuffix,
   $puppetcode = $puppetfactory::params::puppetcode,
 
+  $docker_group = $puppetfactory::params::docker_group,
+
   $pe = $puppetfactory::params::pe,
 ) inherits puppetfactory::params {
 

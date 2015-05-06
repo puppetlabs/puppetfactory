@@ -21,5 +21,7 @@ class puppetfactory::params {
   $usersuffix = 'puppetlabs.vm'
   $puppetcode = '/root/puppetcode'
 
+  $docker_group = 'docker'
+
   $pe = true
 }
