@@ -116,9 +116,6 @@ class Puppetfactory  < Sinatra::Base
     node_group_status(params[:username]).to_json
   end
 
-  get '/api/users/:username/certificate_status' do
-    cert_status(params[:username]).to_json
-  end
 
   get '/api/users/:username/console_user_status' do
     console_user_status(params[:username]).to_json
@@ -176,7 +173,6 @@ class Puppetfactory  < Sinatra::Base
         :certname => certname,
         :container_status   => user_container['State'],
         :node_group_status => node_group_status(username),
-        :certificate_status => cert_status(username),
       }
       user
     end
@@ -381,19 +377,6 @@ class Puppetfactory  < Sinatra::Base
       certname = "#{username}.#{USERSUFFIX}"
       output = puppetclassify.groups.get_group_id(certname)
       output != nil ? true : false
-    end
-
-    def cert_status(username)
-      output = `puppet cert list #{username}.#{USERSUFFIX}`
-      if $? == 0 then
-        if output =~ /\+/ then
-          true
-        else
-          false
-        end
-      else
-        nil
-      end
     end
 
     # Basic auth boilerplate
