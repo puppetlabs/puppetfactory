@@ -13,4 +13,13 @@ class puppetfactory::dockerenv {
     docker_dir => '/etc/docker/centosagent/',
     require     => File['/etc/docker/centosagent/'],
   }
+
+  file { '/var/run/docker.sock':
+    group   => 'docker',
+    require => [Class['docker'],Group['docker']],
+  }
+
+  group { 'docker':
+    ensure => present,
+  }
 }
