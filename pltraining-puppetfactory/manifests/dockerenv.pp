@@ -9,9 +9,15 @@ class puppetfactory::dockerenv {
     require => Class['docker'],
   }
 
+  file { '/etc/docker/centosagent/Dockerfile':
+    ensure  => present,
+    content => template('puppetfactory/Dockerfile.erb'),
+    require => File['/etc/docker/centosagent/']
+  }
+
   docker::image { 'centosagent':
     docker_dir => '/etc/docker/centosagent/',
-    require     => File['/etc/docker/centosagent/'],
+    require     => File['/etc/docker/centosagent/Dockerfile'],
   }
 
   file { '/var/run/docker.sock':
