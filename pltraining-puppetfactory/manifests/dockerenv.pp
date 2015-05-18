@@ -5,14 +5,14 @@ class puppetfactory::dockerenv {
     ensure  => directory,
     recurse => true,
     source  => 'puppet:///modules/puppetfactory/centos/',
-    notify => Docker::Image['centosagent'],
     require => Class['docker'],
   }
 
   file { '/etc/docker/centosagent/Dockerfile':
     ensure  => present,
     content => template('puppetfactory/Dockerfile.erb'),
-    require => File['/etc/docker/centosagent/']
+    require => File['/etc/docker/centosagent/'],
+    notify => Docker::Image['centosagent'],
   }
 
   docker::image { 'centosagent':
