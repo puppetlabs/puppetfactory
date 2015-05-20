@@ -1,5 +1,24 @@
-class puppetfactory::dockerenv {
+class puppetfactory::dockerenv inherits puppetfactory::params{
   include docker
+  
+  file { '/etc/docker/ubuntuagent/':
+    ensure  => directory,
+    recurse => true,
+    source  => 'puppet:///modules/puppetfactory/ubuntu/',
+    require => Class['docker'],
+  }
+
+  file { '/etc/docker/ubuntuagent/Dockerfile':
+    ensure  => present,
+    content => template('puppetfactory/centos.dockerfile.erb'),
+    require => File['/etc/docker/ubuntuagent/'],
+    notify => Docker::Image['ubuntuagent'],
+  }
+
+  docker::image { 'ubuntuagent':
+    docker_dir => '/etc/docker/ubuntuagent/',
+    require     => File['/etc/docker/ubuntuagent/Dockerfile'],
+  }
 
   file { '/etc/docker/centosagent/':
     ensure  => directory,
@@ -10,7 +29,7 @@ class puppetfactory::dockerenv {
 
   file { '/etc/docker/centosagent/Dockerfile':
     ensure  => present,
-    content => template('puppetfactory/Dockerfile.erb'),
+    content => template('puppetfactory/centos.dockerfile.erb'),
     require => File['/etc/docker/centosagent/'],
     notify => Docker::Image['centosagent'],
   }
@@ -20,12 +39,13 @@ class puppetfactory::dockerenv {
     require     => File['/etc/docker/centosagent/Dockerfile'],
   }
 
+
   file { '/var/run/docker.sock':
-    group   => 'docker',
+    group   => $docker_group,
     require => [Class['docker'],Group['docker']],
   }
 
-  group { 'docker':
+  group { $docker_group:
     ensure => present,
   }
 }
