@@ -359,14 +359,19 @@ class Puppetfactory  < Sinatra::Base
       certname = "#{username}.#{USERSUFFIX}"
       groupstr = groups.join('\,')
 
-      puppetclassify.groups.create_group({
+      group_hash = {
         'name'               => certname,
         'environment'        => username,
         'environment_trumps' => true,
         'parent'             => '00000000-0000-4000-8000-000000000000',
-        'classes'            => {}#,
-        #'rule'               => ['or', ['=', 'name', certname]]
+        'classes'            => {}
       })
+      if MAP_ENVIRONMENTS then
+        group_hash['rule'] = ['or', ['=', 'name', certname]]
+      else
+      
+      puppetclassify.groups.create_group(group_hash)
+
     end
 
     def remove_node_group(username)
