@@ -11,6 +11,7 @@ require 'fileutils'
 require 'erb'
 require 'yaml'
 require 'puppetclassify'
+require 'docker'
 
 OPTIONS = YAML.load_file('/etc/puppetfactory.yaml') rescue nil
 
@@ -38,6 +39,9 @@ CONFDIR      =  OPTIONS['CONFDIR'] || '/etc/puppetlabs/puppet'
 ENVIRONMENTS = "#{CONFDIR}/environments"
 USERSUFFIX   =  OPTIONS['USERSUFFIX'] || 'puppetlabs.vm'
 PUPPETCODE   =  OPTIONS['PUPPETCODE'] || '/var/opt/puppetcode'
+
+MASTER_HOSTNAME = `hostname`.strip
+DOCKER_GROUP = OPTIONS['DOCKER_GROUP'] || 'docker'
 
 PE  = OPTIONS['PE'] || true
 
@@ -104,17 +108,14 @@ class Puppetfactory  < Sinatra::Base
     user_port(params[:username])
   end
 
-  get '/api/users/:username/container_status' do
-    container_status(params[:username]).to_json
-  end
+ # get '/api/users/:username/container_status' do
+ #   container_status(params[:username]).to_json
+ # end
 
   get '/api/users/:username/node_group_status' do
     node_group_status(params[:username]).to_json
   end
 
-  get '/api/users/:username/certificate_status' do
-    cert_status(params[:username]).to_json
-  end
 
   get '/api/users/:username/console_user_status' do
     console_user_status(params[:username]).to_json
@@ -139,15 +140,29 @@ class Puppetfactory  < Sinatra::Base
 
   helpers do
     def load_users()
+      # Loop through the containers to get the full data 
+      # rather than just the reference
+      containers = []
+      Docker::Container.all().each do |container|
+        containers.push(container.json)
+      end
+
       users  = {}
       Dir.glob('/home/*').each do |path|
         username = File.basename path
-        users[username] = load_user(username)
+        user_container = ""
+        containers.each do |container|
+          if container['Name'] = "/" + username
+            user_container = container
+          end
+        end
+        users[username] = load_user(username, user_container)
       end
       users
     end
 
-    def load_user(username)
+    def load_user(username, user_container)
+
       user = {}
       certname = "#{username}.#{USERSUFFIX}"
       console  = "#{username}@#{USERSUFFIX}"
@@ -156,9 +171,8 @@ class Puppetfactory  < Sinatra::Base
         :console  => console,
         :port     => user_port(username),
         :certname => certname,
-        :container_status   => container_status(username),
+        :container_status   => user_container['State'],
         :node_group_status => node_group_status(username),
-        :certificate_status => cert_status(username),
       }
       user
     end
@@ -193,7 +207,7 @@ class Puppetfactory  < Sinatra::Base
     def add_system_user(username, password)
       # ssh login user
       crypted = password.crypt("$5$a1")
-      output = `adduser #{username} -p '#{crypted}' -G pe-puppet,docker -m 2>&1`
+      output = `adduser #{username} -p '#{crypted}' -G pe-puppet,#{DOCKER_GROUP} -m 2>&1`
       $? == 0 ? "User #{username} created successfully" : "Could not create login user #{username}: #{output}"
     end
 
@@ -246,32 +260,72 @@ class Puppetfactory  < Sinatra::Base
       FileUtils.chown_R username, 'pe-puppet', "#{ENVIRONMENTS}/#{username}"
       FileUtils.chmod 0750, "#{ENVIRONMENTS}/#{username}"
 
-      # Set default login to attach to container
-      File.open("/home/#{username}/.bashrc", 'w') do |bashrc|
-        bashrc.puts "docker exec -it #{username} su -"
-        bashrc.puts "exit 0"
-      end
 
       # Get the uid of the new user and set up URL
       port = user_port(username)
 
       # Create container with hostname set for username with port 80 mapped to 3000 + uid
-      `docker run --add-host "master.puppetlabs.vm puppet:172.17.42.1" --name="#{username}" -p #{port}:80 -h #{username}.#{USERSUFFIX} -e RUNLEVEL=3 -d -v #{ENVIRONMENTS}/#{username}:#{PUPPETCODE} -v /home/#{username}/share:/share -v /var/yum:/var/yum #{CONTAINER_NAME} /sbin/init`
+      container = Docker::Container.create(
+          "Cmd" => [
+            "/sbin/init"
+          ],
+          "Domainname" => "puppetlabs.vm",
+          "Env" => [
+            "RUNLEVEL=3",
+            "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+            "HOME=/root/",
+            "TERM=xterm"
+          ],
+          "ExposedPorts" => {
+            "80/tcp" => {
+            }
+          },
+          "Hostname" => "#{username}",
+          "Image" => "#{CONTAINER_NAME}",
+        "HostConfig" => {
+          "Binds" => [
+            "/var/yum:/var/yum",
+            "/etc/puppetlabs/puppet/environments/#{username}:/root/puppetcode",
+            "/home/#{username}/share:/share"
+          ],
+          "ExtraHosts" => [
+            "#{MASTER_HOSTNAME} puppet:172.17.42.1"
+          ],
+          "PortBindings" => {
+            "80/tcp" => [
+              {
+                "HostPort" => "#{port}"
+              }
+            ]
+          },
+        },
+        "Name" => "#{username}",
+        "Volumes" => {
+          "/root/puppetcode" => "/etc/puppetlabs/puppet/environments/#{username}",
+          "/share" => "/home/#{username}/share",
+          "/var/yum" => "/var/yum"
+        }
+
+      )
+
+
+      # Set default login to attach to container
+      File.open("/home/#{username}/.bashrc", 'w') do |bashrc|
+        bashrc.puts "docker exec -it #{container.id} su -"
+        bashrc.puts "exit 0"
+      end
+
 
       # Copy userprefs module into user environment
       `cp -r #{ENVIRONMENTS}/production/modules/userprefs #{ENVIRONMENTS}/#{username}/modules`
       `chown -R #{username}:pe-puppet #{ENVIRONMENTS}/#{username}`
 
-      # Boot container to runlevel 3
-      `docker exec #{username} /etc/rc`
-
-      # Copy puppet.conf in place
-      `docker exec #{username} cp -f /share/puppet.conf /etc/puppetlabs/puppet/puppet.conf`
+      # Start container and copy puppet.conf in place
+      container.start
+      container.exec('cp -f /share/puppet.conf /etc/puppetlabs/puppet/puppet.conf')
 
       # Create init scripts for container
       init_scripts(username.downcase)
-
-      container_status(username) ? "Container #{username} created" : "Error creating container #{username}" 
     end
 
     def remove_container(username)
@@ -279,17 +333,6 @@ class Puppetfactory  < Sinatra::Base
       `rm -rf #{ENVIRONMENTS}/#{username}`
       output = `docker kill #{username} && docker rm #{username}`
       $? == 0 ? "Container #{username} removed" : "Error removing container #{username}" 
-    end
-
-    def container_status(username)
-      case `docker inspect -f {{.State.Running}} #{username}`.chomp
-      when "true"
-        true
-      when "false"
-        false
-      else
-        nil
-      end
     end
 
     def init_scripts(username)
@@ -334,19 +377,6 @@ class Puppetfactory  < Sinatra::Base
       certname = "#{username}.#{USERSUFFIX}"
       output = puppetclassify.groups.get_group_id(certname)
       output != nil ? true : false
-    end
-
-    def cert_status(username)
-      output = `puppet cert list #{username}.#{USERSUFFIX}`
-      if $? == 0 then
-        if output =~ /\+/ then
-          true
-        else
-          false
-        end
-      else
-        nil
-      end
     end
 
     # Basic auth boilerplate

@@ -2,7 +2,7 @@
   "operatingsystem_support": [
     {
       "operatingsystem": "CentOS",
-      "operatingsystemrelease": [ "5.0", "6.0", "7.0" ]
+      "operatingsystemrelease": [ "7.0" ]
     }
   ],
   "requirements": [
