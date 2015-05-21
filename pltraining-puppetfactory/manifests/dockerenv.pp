@@ -10,7 +10,7 @@ class puppetfactory::dockerenv inherits puppetfactory::params{
 
   file { '/etc/docker/ubuntuagent/Dockerfile':
     ensure  => present,
-    content => template('puppetfactory/centos.dockerfile.erb'),
+    content => template('puppetfactory/ubuntu.dockerfile.erb'),
     require => File['/etc/docker/ubuntuagent/'],
     notify => Docker::Image['ubuntuagent'],
   }
