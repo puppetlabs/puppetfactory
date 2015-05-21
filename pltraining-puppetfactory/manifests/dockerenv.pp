@@ -1,6 +1,10 @@
 class puppetfactory::dockerenv inherits puppetfactory::params{
   include docker
   
+  if $pe {
+    include pe_repo::platform::ubuntu_1404_amd64
+  }
+
   file { '/etc/docker/ubuntuagent/':
     ensure  => directory,
     recurse => true,
