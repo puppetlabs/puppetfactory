@@ -249,7 +249,8 @@ class Puppetfactory  < Sinatra::Base
       ]
       volumes = {
         "/share" => "/home/#{username}/share",
-        "/var/yum" => "/var/yum"
+        "/var/yum" => "/var/yum",
+        "/sys/fs/cgroup" => "/sys/fs/cgroup:ro"
       }
 
       if MAP_ENVIRONMENTS then
