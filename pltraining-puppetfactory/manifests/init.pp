@@ -26,6 +26,7 @@ class puppetfactory (
   $docker_group = $puppetfactory::params::docker_group,
 
   $pe = $puppetfactory::params::pe,
+  $map_environments = $puppetfactory::params::map_environments,
 ) inherits puppetfactory::params {
 
   include puppetfactory::service
