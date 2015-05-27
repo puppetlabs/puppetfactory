@@ -255,12 +255,13 @@ class Puppetfactory  < Sinatra::Base
       }
 
       if MAP_ENVIRONMENTS then
-        File.open("#{ENVIRONMENTS}/#{username}/manifests/site.pp", 'w') do |f|
-          f.write ERB.new(File.read("#{templates}/site.pp.erb")).result(binding)
-        end
         # configure environment
         FileUtils.mkdir_p "#{ENVIRONMENTS}/#{username}/manifests"
         FileUtils.mkdir_p "#{ENVIRONMENTS}/#{username}/modules"
+        
+        File.open("#{ENVIRONMENTS}/#{username}/manifests/site.pp", 'w') do |f|
+          f.write ERB.new(File.read("#{templates}/site.pp.erb")).result(binding)
+        end
 
         # make sure the user and pe-puppet can access all the needful
         FileUtils.chown_R username, 'pe-puppet', "#{ENVIRONMENTS}/#{username}"
