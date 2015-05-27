@@ -366,10 +366,10 @@ class Puppetfactory  < Sinatra::Base
         'environment_trumps' => true,
         'parent'             => '00000000-0000-4000-8000-000000000000',
         'classes'            => {}
-      })
+      }
       if MAP_ENVIRONMENTS then
         group_hash['rule'] = ['or', ['=', 'name', certname]]
-      else
+      end
       
       puppetclassify.groups.create_group(group_hash)
 
