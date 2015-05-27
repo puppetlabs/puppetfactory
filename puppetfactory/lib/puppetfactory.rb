@@ -245,7 +245,8 @@ class Puppetfactory  < Sinatra::Base
 
       binds = [
         "/var/yum:/var/yum",
-        "/home/#{username}/share:/share"
+        "/home/#{username}/share:/share",
+        "/sys/fs/cgroup:/sys/fs/cgroup:ro"
       ]
       volumes = {
         "/share" => "/home/#{username}/share",
