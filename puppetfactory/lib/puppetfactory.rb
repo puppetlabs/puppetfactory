@@ -186,10 +186,10 @@ class Puppetfactory  < Sinatra::Base
 
     def delete(username)
       user_container = Docker::Container.get(username)
-      remove_system_user(username)
       remove_console_user(username)
       remove_container(username, user_container)
       remove_node_group(username)
+      remove_system_user(username)
     end
 
     def add_system_user(username, password)
