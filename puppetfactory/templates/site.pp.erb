@@ -19,7 +19,7 @@
 
 # Define filebucket 'main':
 filebucket { 'main':
-  server => '<%= @servername %>',
+  server => '<%= servername %>',
   path   => false,
 }
 
@@ -45,4 +45,14 @@ node default {
   # This is where you can declare classes for all nodes.
   # Example:
   #   class { 'my_class': }
+  <% if MAP_ENVIRONMENTS %>
+    file { '/etc/puppetlabs/puppet/modules':
+      ensure => link,
+      target => '<%= PUPPETCODE %>/modules',
+    }
+    file { '/etc/puppetlabs/puppet/manifests':
+      ensure => link,
+      target => '<%= PUPPETCODE %>/manifests',
+    }
+  <% end %>
 }

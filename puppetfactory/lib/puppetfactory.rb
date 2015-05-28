@@ -43,6 +43,7 @@ PUPPETCODE   =  OPTIONS['PUPPETCODE'] || '/var/opt/puppetcode'
 MASTER_HOSTNAME = `hostname`.strip
 DOCKER_GROUP = OPTIONS['DOCKER_GROUP'] || 'docker'
 
+MAP_ENVIRONMENTS = OPTIONS['MAP_ENVIRONMENTS'] || false
 PE  = OPTIONS['PE'] || true
 
 class Puppetfactory  < Sinatra::Base
@@ -107,10 +108,6 @@ class Puppetfactory  < Sinatra::Base
   get '/api/users/:username/port' do
     user_port(params[:username])
   end
-
- # get '/api/users/:username/container_status' do
- #   container_status(params[:username]).to_json
- # end
 
   get '/api/users/:username/node_group_status' do
     node_group_status(params[:username]).to_json
@@ -238,56 +235,70 @@ class Puppetfactory  < Sinatra::Base
     end
 
     def create_container(username)
-      @username   = username
-      @servername = `/bin/hostname`.chomp
+      # Set up variables for the site.pp template
+      servername = `/bin/hostname`.chomp
+      puppetcode = PUPPETCODE
+      map_environments = MAP_ENVIRONMENTS
 
       templates = "#{File.dirname(__FILE__)}/../templates"
-
-      # configure environment
-      FileUtils.mkdir_p "#{ENVIRONMENTS}/#{username}/manifests"
-      FileUtils.mkdir_p "#{ENVIRONMENTS}/#{username}/modules"
-      FileUtils.mkdir_p "/home/#{username}/share"
-
-      File.open("#{ENVIRONMENTS}/#{username}/manifests/site.pp", 'w') do |f|
-        f.write ERB.new(File.read("#{templates}/site.pp.erb")).result(binding)
-      end
-
-      File.open("/home/#{username}/share/puppet.conf","w") do |f|
-        f.write ERB.new(File.read("#{templates}/puppet.conf.erb")).result(binding)
-      end
-
-      # make sure the user and pe-puppet can access all the needful
-      FileUtils.chown_R username, 'pe-puppet', "#{ENVIRONMENTS}/#{username}"
-      FileUtils.chmod 0750, "#{ENVIRONMENTS}/#{username}"
-
 
       # Get the uid of the new user and set up URL
       port = user_port(username)
 
+      binds = [
+        "/var/yum:/var/yum",
+        "/home/#{username}/share:/share",
+        "/sys/fs/cgroup:/sys/fs/cgroup:ro"
+      ]
+      volumes = {
+        "/share" => "/home/#{username}/share",
+        "/var/yum" => "/var/yum",
+        "/sys/fs/cgroup" => "/sys/fs/cgroup:ro"
+      }
+
+      if MAP_ENVIRONMENTS then
+        # configure environment
+        FileUtils.mkdir_p "#{ENVIRONMENTS}/#{username}/manifests"
+        FileUtils.mkdir_p "#{ENVIRONMENTS}/#{username}/modules"
+        
+        File.open("#{ENVIRONMENTS}/#{username}/manifests/site.pp", 'w') do |f|
+          f.write ERB.new(File.read("#{templates}/site.pp.erb")).result(binding)
+        end
+
+        # make sure the user and pe-puppet can access all the needful
+        FileUtils.chown_R username, 'pe-puppet', "#{ENVIRONMENTS}/#{username}"
+        FileUtils.chmod 0750, "#{ENVIRONMENTS}/#{username}"
+
+        binds.push("/etc/puppetlabs/puppet/environments/#{username}:/root/puppetcode")
+        volumes["/root/puppetcode"] = "/etc/puppetlabs/puppet/environments/#{username}"
+      end
+
+      # Create shared folder to map and create puppet.conf
+      FileUtils.mkdir_p "/home/#{username}/share"
+      File.open("/home/#{username}/share/puppet.conf","w") do |f|
+        f.write ERB.new(File.read("#{templates}/puppet.conf.erb")).result(binding)
+      end
+
       # Create container with hostname set for username with port 80 mapped to 3000 + uid
       container = Docker::Container.create(
-          "Cmd" => [
-            "/sbin/init"
-          ],
-          "Domainname" => "puppetlabs.vm",
-          "Env" => [
-            "RUNLEVEL=3",
-            "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
-            "HOME=/root/",
-            "TERM=xterm"
-          ],
-          "ExposedPorts" => {
-            "80/tcp" => {
-            }
-          },
-          "Hostname" => "#{username}",
-          "Image" => "#{CONTAINER_NAME}",
+        "Cmd" => [
+          "/sbin/init"
+        ],
+        "Domainname" => "puppetlabs.vm",
+        "Env" => [
+          "RUNLEVEL=3",
+          "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+          "HOME=/root/",
+          "TERM=xterm"
+        ],
+        "ExposedPorts" => {
+          "80/tcp" => {
+          }
+        },
+        "Hostname" => "#{username}",
+        "Image" => "#{CONTAINER_NAME}",
         "HostConfig" => {
-          "Binds" => [
-            "/var/yum:/var/yum",
-            "/etc/puppetlabs/puppet/environments/#{username}:/root/puppetcode",
-            "/home/#{username}/share:/share"
-          ],
+          "Binds" => binds,
           "ExtraHosts" => [
             "#{MASTER_HOSTNAME} puppet:172.17.42.1"
           ],
@@ -300,11 +311,7 @@ class Puppetfactory  < Sinatra::Base
           },
         },
         "Name" => "#{username}",
-        "Volumes" => {
-          "/root/puppetcode" => "/etc/puppetlabs/puppet/environments/#{username}",
-          "/share" => "/home/#{username}/share",
-          "/var/yum" => "/var/yum"
-        }
+        "Volumes" => volumes
 
       )
 
@@ -317,8 +324,10 @@ class Puppetfactory  < Sinatra::Base
 
 
       # Copy userprefs module into user environment
-      `cp -r #{ENVIRONMENTS}/production/modules/userprefs #{ENVIRONMENTS}/#{username}/modules`
-      `chown -R #{username}:pe-puppet #{ENVIRONMENTS}/#{username}`
+      if MAP_ENVIRONMENTS then
+        `cp -r #{ENVIRONMENTS}/production/modules/userprefs #{ENVIRONMENTS}/#{username}/modules`
+        `chown -R #{username}:pe-puppet #{ENVIRONMENTS}/#{username}`
+      end
 
       # Start container and copy puppet.conf in place
       container.start
@@ -328,9 +337,10 @@ class Puppetfactory  < Sinatra::Base
       init_scripts(username.downcase)
     end
 
+
     def remove_container(username)
       remove_init_scripts(username)
-      `rm -rf #{ENVIRONMENTS}/#{username}`
+      #`rm -rf #{ENVIRONMENTS}/#{username}`
       output = `docker kill #{username} && docker rm #{username}`
       $? == 0 ? "Container #{username} removed" : "Error removing container #{username}" 
     end
@@ -354,14 +364,19 @@ class Puppetfactory  < Sinatra::Base
       certname = "#{username}.#{USERSUFFIX}"
       groupstr = groups.join('\,')
 
-      puppetclassify.groups.create_group({
+      group_hash = {
         'name'               => certname,
         'environment'        => username,
         'environment_trumps' => true,
         'parent'             => '00000000-0000-4000-8000-000000000000',
-        'classes'            => {},
-        'rule'               => ['or', ['=', 'name', certname]]
-      })
+        'classes'            => {}
+      }
+      if MAP_ENVIRONMENTS then
+        group_hash['rule'] = ['or', ['=', 'name', certname]]
+      end
+      
+      puppetclassify.groups.create_group(group_hash)
+
     end
 
     def remove_node_group(username)
