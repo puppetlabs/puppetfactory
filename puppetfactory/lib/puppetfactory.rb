@@ -137,28 +137,18 @@ class Puppetfactory  < Sinatra::Base
 
   helpers do
     def load_users()
-      # Loop through the containers to get the full data 
-      # rather than just the reference
-      containers = []
-      Docker::Container.all().each do |container|
-        containers.push(container.json)
-      end
-
+      # Get the users from the filesystem and look up their info
       users  = {}
       Dir.glob('/home/*').each do |path|
         username = File.basename path
-        user_container = ""
-        containers.each do |container|
-          if container['Name'] = "/" + username
-            user_container = container
-          end
-        end
-        users[username] = load_user(username, user_container)
+        users[username] = load_user(username)
       end
       users
     end
 
-    def load_user(username, user_container)
+    def load_user(username)
+      # Lookup the container by username and convert to json
+      user_container = Docker::Container.get(username).json
 
       user = {}
       certname = "#{username}.#{USERSUFFIX}"
@@ -195,10 +185,11 @@ class Puppetfactory  < Sinatra::Base
     end
 
     def delete(username)
-      remove_system_user(username)
+      user_container = Docker::Container.get(username)
       remove_console_user(username)
-      remove_container(username)
+      remove_container(username, user_container)
       remove_node_group(username)
+      remove_system_user(username)
     end
 
     def add_system_user(username, password)
@@ -315,6 +306,8 @@ class Puppetfactory  < Sinatra::Base
 
       )
 
+      # Set container name to username
+      container.rename(username)
 
       # Set default login to attach to container
       File.open("/home/#{username}/.bashrc", 'w') do |bashrc|
@@ -338,10 +331,9 @@ class Puppetfactory  < Sinatra::Base
     end
 
 
-    def remove_container(username)
+    def remove_container(username, container)
       remove_init_scripts(username)
-      #`rm -rf #{ENVIRONMENTS}/#{username}`
-      output = `docker kill #{username} && docker rm #{username}`
+      output = container.delete(:force => true)
       $? == 0 ? "Container #{username} removed" : "Error removing container #{username}" 
     end
 
