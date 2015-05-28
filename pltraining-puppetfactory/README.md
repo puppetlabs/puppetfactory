@@ -27,15 +27,12 @@ for an SSH console login.
 ## Usage
 
 1. Start with a standard Puppetlabs Training VM
-1. Configure it as `master.puppetlabs.vm` and install PE.
+1. Configure it as `puppetfactory.puppetlabs.vm` and install PE.
+*Note: There is also puppetfactory base VM build with PE preinstalled*
 1. `puppet module install pltraining/puppetfactory`
 1. Classify the master only (not default) with `puppetfactory`.
-1. Run Puppet a few times to ensure that MCollective is completely configured.
 1. Load up [http://${ipaddress}](http://${ipaddress}) in a browser.
 1. Write the URL on the board and start class.
-
-*Note*: a UTF encoding issue currently requires two Puppet runs to get the gems
-installed properly. This is only cosmetic.
 
 Students will need to use the _Users_ tab to create their accounts. This tab
 will also list all known users along with statuses, including useful information
@@ -59,6 +56,24 @@ they are on a seperate machine running as root.
 Users can be created by treating the classroom manager like a RESTful API:
   curl --data 'username=fooh&password=bar' admin:admin@localhost/new
 
+There are also the following RESTful API endpoints:
+  `GET /api/users`
+    - The current users with container status
+  `GET /api/users/:username`
+    - Same as users but only the user indicated
+  `GET /api/users/:username/port`
+    - The port on the host which is mapped to port 80 on the container
+  `GET /api/users/:username/node_group_status`
+    - Status of the PE node group
+  `GET /api/users/:username/consoe_user_status`
+    - Status of the PE console user
+  `POST /api/users`
+    - Create a new user, container, node group, and console user
+  `DELETE /api/users/:username`
+    - Remove all trace of the user, container, etc.
+
+These are mostly intended for use in a future UI, but they can be helpful for troubleshooting.
+
 ## Troubleshooting and recovery
 
 Because we're using docker containers for the student environements there are a
@@ -72,6 +87,10 @@ To trigger a puppet run on a student node:
 
 To start a container that has been stopped (e.g. after a reboot):
 `docker start #{username}`
+
+The containers also have valid init scripts so they can be start/stopped with:
+`service docker-#{username} start`
+`service docker-#{username} stop`
 
 ## Acknowledgements
 
