@@ -50,7 +50,7 @@ class puppetfactory (
   file { '/etc/puppetfactory.yaml':
     ensure  => present,
     content => template('puppetfactory/puppetfactory.yaml.erb'),
-    before  => Service['puppetfactory'],
+    notify  => Service['puppetfactory'],
   }
 
   file_line { 'remove tty requirement':
