@@ -1,4 +1,4 @@
-class puppetfactory::intro {
+class puppetfactory::profile::intro {
   # Classroom for Intro to puppet course
   class { 'puppetfactory':
     # Put students' puppetcode directories somewhere obvious
