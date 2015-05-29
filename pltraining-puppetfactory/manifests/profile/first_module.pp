@@ -1,8 +1,8 @@
-class puppetfactory::intro {
-  # Classroom for Intro to puppet course
+class puppetfactory::profile::first_module {
+  # Classroom for First Module
   class { 'puppetfactory':
     # Put students' puppetcode directories somewhere obvious
-    puppetcode       => '/root/puppetcode',
+    puppetcode       => '/var/puppetcode',
     map_environments => true,
     container_name   => 'centosagent',
   }
