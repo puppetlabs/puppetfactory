@@ -1,19 +1,12 @@
 $(document).ready(function(){
 
-  function validate(fld) {
-    var error = "";
+  function validUsername(text) {
     var legalChars = /^[a-z][a-z0-9]{2,}$/; // Allow only letters for first character and then alphanumeric
-
-    if (fld.value == "") {
-      if (!legalChars.test(fld.value)) {
-        fld.style.background = 'Yellow';
-        error = "Only alphanumeric characters are allowed in usernames.\n";
-        alert(error);
-        return '';
-      }
-      // Return an empty string if username is invalid
-      return fld;
+    if (!legalChars.test(text)) {
+      alert("Usernames must be at least 3 lowercase alphanumeric characters and start with a letter\n");
+      return false;
     };
+    return true;
   };
 
   // toggle hide the newuser dialog
@@ -44,10 +37,7 @@ $(document).ready(function(){
     $('#password').removeClass("fail");
     $('#password2').removeClass("fail");
 
-    // Validate the user input and replace with blank if invalid
-    username = validate(username);
-
-    if(username == '') {
+    if(!validUsername(username)) {
       $('#user').attr("value", "");
       $('#user').addClass("fail");
       $('#user').focus();
