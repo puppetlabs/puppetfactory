@@ -148,7 +148,7 @@ class Puppetfactory  < Sinatra::Base
 
     def load_user(username)
       # Lookup the container by username and convert to json
-      user_container = Docker::Container.get(username).json
+      user_container = Docker::Container.get(username).json rescue {}
 
       user = {}
       certname = "#{username}.#{USERSUFFIX}"
