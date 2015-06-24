@@ -56,8 +56,7 @@ $(document).ready(function(){
       $('#newuser').addClass("processing");
       $('#newuser table').activity({width: 5.5, space: 6, length: 13});
 
-      /*
-      $.get("/new/"+username, function(data) {
+      $.post('/new', {username: username, password: password}, function(data) {
         console.log(data);
         var results = jQuery.parseJSON(data);
         if(results.status == 'success') {
@@ -69,19 +68,6 @@ $(document).ready(function(){
           $('#newuser table').activity(false);
         }
       });
-      */
-        $.post('/new', {username: username, password: password}, function(data) {
-          console.log(data);
-          var results = jQuery.parseJSON(data);
-          if(results.status == 'success') {
-            location.reload();
-          }
-          else {
-            alert('Could not create user: ' + results.message);
-            $('#newuser').removeClass("processing");
-            $('#newuser table').activity(false);
-          }
-        });
 
     }
 
