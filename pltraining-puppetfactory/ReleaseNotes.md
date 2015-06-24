@@ -1,3 +1,6 @@
+## Version 0.2.3
+* Validate usernames
+
 ## Version 0.2.2
 * Adding wrapper for first_module course
 
