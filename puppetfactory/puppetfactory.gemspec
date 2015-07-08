@@ -3,7 +3,7 @@ require 'date'
 
 Gem::Specification.new do |s|
   s.name              = "puppetfactory"
-  s.version           = '0.1.7'
+  s.version           = '0.1.8'
   s.date              = Date.today.to_s
   s.summary           = "Stands up a graphical classroom manager with containerized puppet agents."
   s.homepage          = "http://www.puppetlabs.com/education"
@@ -20,7 +20,7 @@ Gem::Specification.new do |s|
   s.files            += Dir.glob("public/**/*")
   s.files            += Dir.glob("templates/**/*")
 
-  s.add_dependency      "sinatra", "~> 1.3"
+  s.add_dependency      "sinatra", ">= 1.3"
   s.add_dependency      "json_pure"
   s.add_dependency      "puppetclassify", ">= 0.1.0"
   s.add_dependency      "docker-api"

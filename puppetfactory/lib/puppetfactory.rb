@@ -289,6 +289,7 @@ class Puppetfactory  < Sinatra::Base
         "Hostname" => "#{username}",
         "Image" => "#{CONTAINER_NAME}",
         "HostConfig" => {
+          "Privileged" => true,
           "Binds" => binds,
           "ExtraHosts" => [
             "#{MASTER_HOSTNAME} puppet:172.17.42.1"
