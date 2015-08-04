@@ -39,6 +39,7 @@ CONFDIR      =  OPTIONS['CONFDIR'] || '/etc/puppetlabs/puppet'
 ENVIRONMENTS = "#{CONFDIR}/environments"
 USERSUFFIX   =  OPTIONS['USERSUFFIX'] || 'puppetlabs.vm'
 PUPPETCODE   =  OPTIONS['PUPPETCODE'] || '/var/opt/puppetcode'
+HOOKS_PATH   =  OPTIONS['HOOKS_PATH'] || '/etc/puppetfactory/hooks'
 
 MASTER_HOSTNAME = `hostname`.strip
 DOCKER_GROUP = OPTIONS['DOCKER_GROUP'] || 'docker'
@@ -55,7 +56,8 @@ class Puppetfactory  < Sinatra::Base
 
     # why do I have to do this? This page implies I shouldn't.
     # https://github.com/sinatra/sinatra#logging
-    set :logger,    WEBrick::Log::new(LOGFILE, WEBrick::Log::DEBUG)
+    $logger = WEBrick::Log::new(LOGFILE, WEBrick::Log::DEBUG)
+
     set :semaphore, Mutex.new
   end
 
@@ -178,6 +180,8 @@ class Puppetfactory  < Sinatra::Base
           classify(username.downcase)
         end
 
+        call_hooks(:create, username)
+
         {:status => :success, :message => "Created user #{username.downcase}."}.to_json
       rescue Exception => e
         {:status => :failure, :message => e.message}.to_json
@@ -185,6 +189,8 @@ class Puppetfactory  < Sinatra::Base
     end
 
     def delete(username)
+      call_hooks(:delete, username)
+
       user_container = Docker::Container.get(username)
       remove_console_user(username)
       remove_container(username, user_container)
@@ -251,7 +257,7 @@ class Puppetfactory  < Sinatra::Base
         # configure environment
         FileUtils.mkdir_p "#{ENVIRONMENTS}/#{username}/manifests"
         FileUtils.mkdir_p "#{ENVIRONMENTS}/#{username}/modules"
-        
+
         File.open("#{ENVIRONMENTS}/#{username}/manifests/site.pp", 'w') do |f|
           f.write ERB.new(File.read("#{templates}/site.pp.erb")).result(binding)
         end
@@ -335,7 +341,7 @@ class Puppetfactory  < Sinatra::Base
     def remove_container(username, container)
       remove_init_scripts(username)
       output = container.delete(:force => true)
-      $? == 0 ? "Container #{username} removed" : "Error removing container #{username}" 
+      $? == 0 ? "Container #{username} removed" : "Error removing container #{username}"
     end
 
     def init_scripts(username)
@@ -367,7 +373,7 @@ class Puppetfactory  < Sinatra::Base
       if MAP_ENVIRONMENTS then
         group_hash['rule'] = ['or', ['=', 'name', certname]]
       end
-      
+
       puppetclassify.groups.create_group(group_hash)
 
     end
@@ -377,7 +383,7 @@ class Puppetfactory  < Sinatra::Base
       certname = "#{username}.#{USERSUFFIX}"
       group_id = puppetclassify.groups.get_group_id(certname)
       output = puppetclassify.groups.delete_group(group_id)
-      $? == 0 ? "Node group #{certname} removed" : "Error removing node group #{certname} : #{output}" 
+      $? == 0 ? "Node group #{certname} removed" : "Error removing node group #{certname} : #{output}"
     end
 
     def node_group_status(username)
@@ -385,6 +391,21 @@ class Puppetfactory  < Sinatra::Base
       certname = "#{username}.#{USERSUFFIX}"
       output = puppetclassify.groups.get_group_id(certname)
       output != nil ? true : false
+    end
+
+    def call_hooks(hook_type, username)
+      # the .to_s allows us to accept strings or symbols
+      Dir.glob("#{HOOKS_PATH}/#{hook_type.to_s}/*") do |hook|
+        next unless File.file?(hook)
+        next unless File.executable?(hook)
+
+        begin
+          $logger.info `#{hook} #{username}`
+        rescue => e
+          $logger.warn "Error running hook: #{hook}"
+          $logger.warn e.message
+        end
+      end
     end
 
     # Basic auth boilerplate
