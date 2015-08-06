@@ -5,8 +5,8 @@ class puppetfactory::params {
 
   $classifier_url = "http://${::fqdn}:4433/classifier-api"
 
-  $puppet = '/opt/puppet/bin/puppet'
-  $rake = '/opt/puppet/bin/rake'
+  $puppet = '/opt/puppetlabs/puppet/bin/puppet'
+  $rake = '/opt/puppetlabs/puppet/bin/rake'
 
   $dash_path = '/opt/puppet/share/puppet-dashboard'
 
@@ -18,6 +18,7 @@ class puppetfactory::params {
   $container_name = 'centosagent'
 
   $confdir = '/etc/puppetlabs/puppet/'
+  $codedir = '/etc/puppetlabs/code/'
   $usersuffix = 'puppetlabs.vm'
   $puppetcode = '/root/puppetcode'
 
