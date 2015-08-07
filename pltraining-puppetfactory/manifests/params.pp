@@ -1,7 +1,7 @@
 class puppetfactory::params {
-  $ca_certificate_path = '/opt/puppet/share/puppet-dashboard/certs/ca_cert.pem'
-  $certificate_path = '/opt/puppet/share/puppet-dashboard/certs/pe-internal-dashboard.cert.pem'
-  $private_key_path = '/opt/puppet/share/puppet-dashboard/certs/pe-internal-dashboard.private_key.pem'
+  $ca_certificate_path = $settings::cacert
+  $certificate_path    = $settings::hostcert
+  $private_key_path    = $settings::privkey
 
   $classifier_url = "http://${::fqdn}:4433/classifier-api"
 

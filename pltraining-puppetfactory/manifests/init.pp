@@ -36,12 +36,12 @@ class puppetfactory (
   include epel
 
   unless $pe {
-    file { ["${confdir}/environments","${confdir}/environments/production"]:,
+    file { ["${codedir}/environments","${codedir}/environments/production"]:,
       ensure => directory,
     }
   }
 
-  file { "${confdir}/environments/production/environment.conf":
+  file { "${codedir}/environments/production/environment.conf":
     ensure  => file,
     content => "environment_timeout = 0\n",
     replace => false,
@@ -72,7 +72,7 @@ class puppetfactory (
     ensure     => absent,
     managehome => true,
   }
-  
+
   # Keep ssh sessions alive
   augeas{'sshd-clientalive':
     context => '/files/etc/ssh/sshd_config',
