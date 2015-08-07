@@ -1,0 +1,15 @@
+---
+cachedir: '/opt/puppetlabs/server/data/r10k'
+sources:
+  main:
+    remote: 'https://github.com/puppetlabs/classroom-control.git'
+    basedir: '/etc/puppet/environments'
+    prefix: false # Prefix defaults to false so this is only here for clarity
+#   binford2k:
+#     remote: 'git@github.com:binford2k/classroom-control-fundamentals.git'
+#     basedir: '/etc/puppet/environments'
+#     prefix: true
+#   carthik:
+#     remote: 'git@github.com:carthik/classroom-control-fundamentals.git'
+#     basedir: '/etc/puppet/environments'
+#     prefix: true
