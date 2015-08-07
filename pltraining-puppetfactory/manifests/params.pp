@@ -25,5 +25,6 @@ class puppetfactory::params {
   $docker_group = 'docker'
 
   $pe = true
+  $prefix = false
   $map_environments = false
 }
