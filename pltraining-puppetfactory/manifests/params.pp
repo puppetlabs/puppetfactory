@@ -1,7 +1,7 @@
 class puppetfactory::params {
   $ca_certificate_path = $settings::cacert
   $certificate_path    = $settings::hostcert
-  $private_key_path    = $settings::privkey
+  $private_key_path    = $settings::hostprivkey
 
   $classifier_url = "http://${::fqdn}:4433/classifier-api"
 
