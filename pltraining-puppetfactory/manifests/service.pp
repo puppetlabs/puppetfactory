@@ -25,7 +25,7 @@ class puppetfactory::service {
     ensure  => file,
     owner   => 'root',
     group   => 'root',
-    mode    => 755,
+    mode    => '0755',
     content => template('puppetfactory/puppetfactory.init.erb'),
     before  => Service['puppetfactory'],
   }
