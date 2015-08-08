@@ -19,6 +19,7 @@ class puppetfactory::params {
 
   $confdir = '/etc/puppetlabs/puppet/'
   $codedir = '/etc/puppetlabs/code/'
+
   $usersuffix = 'puppetlabs.vm'
   $puppetcode = '/root/puppetcode'
 
