@@ -28,6 +28,7 @@ class puppetfactory (
   $pe = $puppetfactory::params::pe,
   $prefix = $puppetfactory::params::prefix,
   $map_environments = $puppetfactory::params::map_environments,
+  $map_modulepath = $puppetfactory::params::map_environments, # maintain backwards compatibility and simplicity
 ) inherits puppetfactory::params {
 
   include puppetfactory::service
