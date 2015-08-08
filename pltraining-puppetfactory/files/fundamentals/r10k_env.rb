@@ -36,27 +36,34 @@ if ARGV.size != 1
   exit 1
 end
 
-user = ARGV[0]
-r10k = YAML.load_file(R10KYAML)
+File.open(R10KYAML) do |file|
+  # make sure we don't have any concurrency issues
+  file.flock(File::LOCK_EX)
 
-# look at the script name to determine mode.
-# We do this instead of an argument so it can be a Puppetfactory hook.
-if NAME =~ /create/
-  r10k['sources'][user] = {
-    'remote'  => sprintf(PATTERN, user),
-    'basedir' => '/etc/puppet/environments',
-    'prefix'  => true,
-  }
+  user = ARGV[0]
+  r10k = YAML.load_file(R10KYAML)
 
-elsif NAME =~ /delete/
-  r10k['sources'].delete user
+  # look at the script name to determine mode.
+  # We do this instead of an argument so it can be a Puppetfactory hook.
+  if NAME =~ /create/
+    r10k['sources'][user] = {
+      'remote'  => sprintf(PATTERN, user),
+      'basedir' => '/etc/puppet/environments',
+      'prefix'  => true,
+    }
+    puts "Created r10k user #{user}"
 
-else
-  puts "Script name #{NAME} unknown"
-  exit 1
+  elsif NAME =~ /delete/
+    r10k['sources'].delete user
+    puts "Removed r10k user #{user}"
+
+  else
+    puts "Script name #{NAME} unknown"
+    exit 1
+  end
+
+  # Ruby 1.8.7, why don't you just go away now
+  File.open(R10KYAML, 'w') { |f| f.write(r10k.to_yaml) } unless options[:noop]
+
+  puts r10k.to_yaml if options[:output]
 end
-
-# Ruby 1.8.7, why don't you just go away now
-File.open(R10KYAML, 'w') { |f| f.write(r10k.to_yaml) } unless options[:noop]
-
-puts r10k.to_yaml if options[:output]
