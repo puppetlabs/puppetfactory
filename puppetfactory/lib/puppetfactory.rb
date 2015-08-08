@@ -90,10 +90,6 @@ class Puppetfactory  < Sinatra::Base
     create(params[:username], params[:password])
   end
 
-  not_found do
-    halt 404, 'page not found'
-  end
-
   # RESTful API endpoints
 
   # Return details for all users as JSON
@@ -121,20 +117,16 @@ class Puppetfactory  < Sinatra::Base
   end
 
   post '/api/users' do
-    user_status = {}
-    username = params[:username]
-    password = params[:password]
-    user_status = {
-      :system_user_status => add_system_user(username,password),
-      :console_user_status => add_console_user(username,password),
-      :container_status => create_container(username.downcase),
-      :node_group_status => classify(username.downcase),
-    }
-    user_status.to_json
+    # no need for all the returned status. That was a workaround for not having any real logging
+    create(params[:username], params[:password])
   end
 
   delete '/api/users/:username' do
     delete(params[:username])
+  end
+
+  not_found do
+    halt 404, 'page not found'
   end
 
   helpers do
@@ -175,176 +167,212 @@ class Puppetfactory  < Sinatra::Base
     end
 
     def create(username, password = 'puppet')
+      username.downcase!
+
       begin
-        add_system_user(username,password)
-        create_container(username.downcase)
+        $logger.info add_system_user(username,password)
+        $logger.info create_container(username)
         if PE
-          add_console_user(username,password)
-          classify(username.downcase)
+          $logger.info add_console_user(username,password)
+          $logger.info classify(username)
         end
 
         call_hooks(:create, username)
 
-        {:status => :success, :message => "Created user #{username.downcase}."}.to_json
-      rescue Exception => e
-        {:status => :failure, :message => e.message}.to_json
+        { :status => :success, :message => "Created user #{username}."}.to_json
+      rescue => e
+        # TODO: should we call delete to cleanup?
+        #delete(username) # Don't leave artifacts.
+        $logger.error "Error creating #{username}: #{e.message}"
+        {:status => :failure, :message => "Error creating #{username}: #{e.message}"}.to_json
       end
     end
 
     def delete(username)
-      call_hooks(:delete, username)
+      username.downcase!
 
-      user_container = Docker::Container.get(username)
-      remove_console_user(username)
-      remove_container(username, user_container)
-      remove_node_group(username)
-      remove_system_user(username)
+      begin
+        call_hooks(:delete, username)
+
+        errors  = 0
+        errors += 1 if failed? { remove_console_user(username) }
+        errors += 1 if failed? { remove_container(username)    }
+        errors += 1 if failed? { remove_node_group(username)   }
+        errors += 1 if failed? { remove_system_user(username)  }
+
+        if errors > 0
+          {:status => :failure, :message => "#{errors} errors deleting user #{username}. See logs for details." }.to_json
+        else
+          {:status => :success, :message => "Deleted user #{username}."}.to_json
+        end
+      rescue => e
+        {:status => :failure, :message => "Error deleting #{username}: #{e.message}" }.to_json
+      end
     end
 
     def add_system_user(username, password)
       # ssh login user
       crypted = password.crypt("$5$a1")
       output = `adduser #{username} -p '#{crypted}' -G pe-puppet,#{DOCKER_GROUP} -m 2>&1`
-      $? == 0 ? "User #{username} created successfully" : "Could not create login user #{username}: #{output}"
+
+      raise "Could not create system user #{username}: #{output}" unless $? == 0
+      "System user #{username} created successfully"
     end
 
     def remove_system_user(username)
-      output = `userdel #{username} && rm -rf /home/#{username}`
-      $? == 0 ? "User #{username} removed successfully" : "Could not remove login user #{username}: #{output}"
+      output = `userdel -fr #{username}`
+
+      raise "Could not remove system user #{username}: #{output}" unless $? == 0
+      "System user #{username} removed successfully"
     end
 
     def add_console_user(username,password)
       # pe console user
       attributes = "display_name=#{username} roles=Operators email=#{username}@puppetlabs.vm password=#{password}"
       output     = `#{PUPPET} resource rbac_user #{username} ensure=present #{attributes} 2>&1`
-      $? == 0 ? "Console user #{username} created successfully" :  "Could not create PE Console user #{username}: #{output}"
+
+      raise "Could not create PE Console user #{username}: #{output}" unless $? == 0
+      "Console user #{username} created successfully"
     end
 
     def remove_console_user(username)
-      output     = `#{PUPPET} resource rbac_user #{username} ensure=absent 2>&1`
-      $? == 0 ? "Console user #{username} removed successfully" :  "Could not remove PE Console user #{username}: #{output}"
+      output = `#{PUPPET} resource rbac_user #{username} ensure=absent 2>&1`
+
+      raise "Could not remove PE Console user #{username}: #{output}" unless $? == 0
+      "Console user #{username} removed successfully"
     end
 
     def console_user_status(username)
-      output     = `#{PUPPET} resource rbac_user #{username} 2>&1`
-      if $? == 0 then
-        output =~ /present/ ? true : false
-      else
-        nil
-      end
+      output = `#{PUPPET} resource rbac_user #{username} 2>&1`
+
+      raise "Could not query Puppet user #{username}: #{output}" unless $? == 0
+      output =~ /present/
     end
 
+    # TODO: refactor this method. It's too long and does too much
     def create_container(username)
-      # Set up variables for the site.pp template
-      servername = `/bin/hostname`.chomp
-      puppetcode = PUPPETCODE
-      map_environments = MAP_ENVIRONMENTS
+      begin
+        # Set up variables for the site.pp template
+        servername = `/bin/hostname`.chomp
+        puppetcode = PUPPETCODE
+        map_environments = MAP_ENVIRONMENTS
 
-      templates = "#{File.dirname(__FILE__)}/../templates"
+        templates = "#{File.dirname(__FILE__)}/../templates"
 
-      # Get the uid of the new user and set up URL
-      port = user_port(username)
+        # Get the uid of the new user and set up URL
+        port = user_port(username)
 
-      binds = [
-        "/var/yum:/var/yum",
-        "/home/#{username}/share:/share",
-        "/sys/fs/cgroup:/sys/fs/cgroup:ro"
-      ]
-      volumes = {
-        "/share" => "/home/#{username}/share",
-        "/var/yum" => "/var/yum",
-        "/sys/fs/cgroup" => "/sys/fs/cgroup:ro"
-      }
+        binds = [
+          "/var/yum:/var/yum",
+          "/home/#{username}/share:/share",
+          "/sys/fs/cgroup:/sys/fs/cgroup:ro"
+        ]
+        volumes = {
+          "/share" => "/home/#{username}/share",
+          "/var/yum" => "/var/yum",
+          "/sys/fs/cgroup" => "/sys/fs/cgroup:ro"
+        }
 
-      if MAP_ENVIRONMENTS then
-        # configure environment
-        FileUtils.mkdir_p "#{ENVIRONMENTS}/#{username}/manifests"
-        FileUtils.mkdir_p "#{ENVIRONMENTS}/#{username}/modules"
+        if MAP_ENVIRONMENTS then
+          environment = "#{ENVIRONMENTS}/#{environment_name(username)}"
 
-        File.open("#{ENVIRONMENTS}/#{username}/manifests/site.pp", 'w') do |f|
-          f.write ERB.new(File.read("#{templates}/site.pp.erb")).result(binding)
+          # configure environment
+          FileUtils.mkdir_p "#{environment}/manifests"
+          FileUtils.mkdir_p "#{environment}/modules"
+
+          File.open("#{environment}/manifests/site.pp", 'w') do |f|
+            f.write ERB.new(File.read("#{templates}/site.pp.erb")).result(binding)
+          end
+
+          # Copy userprefs module into user environment
+          FileUtils.cp_r("#{ENVIRONMENTS}/production/modules/userprefs", "#{environment}/modules/")
+
+          # make sure the user and pe-puppet can access all the needful
+          FileUtils.chown_R(username, 'pe-puppet', environment)
+          FileUtils.chmod(0750, environment)
+
+          binds.push("#{environment}:/root/puppetcode")
+          volumes["/root/puppetcode"] = environment
         end
 
-        # make sure the user and pe-puppet can access all the needful
-        FileUtils.chown_R username, 'pe-puppet', "#{ENVIRONMENTS}/#{username}"
-        FileUtils.chmod 0750, "#{ENVIRONMENTS}/#{username}"
+        # Create shared folder to map and create puppet.conf
+        FileUtils.mkdir_p "/home/#{username}/share"
+        File.open("/home/#{username}/share/puppet.conf","w") do |f|
+          f.write ERB.new(File.read("#{templates}/puppet.conf.erb")).result(binding)
+        end
 
-        binds.push("/etc/puppetlabs/puppet/environments/#{username}:/root/puppetcode")
-        volumes["/root/puppetcode"] = "/etc/puppetlabs/puppet/environments/#{username}"
-      end
-
-      # Create shared folder to map and create puppet.conf
-      FileUtils.mkdir_p "/home/#{username}/share"
-      File.open("/home/#{username}/share/puppet.conf","w") do |f|
-        f.write ERB.new(File.read("#{templates}/puppet.conf.erb")).result(binding)
-      end
-
-      # Create container with hostname set for username with port 80 mapped to 3000 + uid
-      container = Docker::Container.create(
-        "Cmd" => [
-          "/sbin/init"
-        ],
-        "Domainname" => "puppetlabs.vm",
-        "Env" => [
-          "RUNLEVEL=3",
-          "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
-          "HOME=/root/",
-          "TERM=xterm"
-        ],
-        "ExposedPorts" => {
-          "80/tcp" => {
-          }
-        },
-        "Hostname" => "#{username}",
-        "Image" => "#{CONTAINER_NAME}",
-        "HostConfig" => {
-          "Privileged" => true,
-          "Binds" => binds,
-          "ExtraHosts" => [
-            "#{MASTER_HOSTNAME} puppet:172.17.42.1"
+        # Create container with hostname set for username with port 80 mapped to 3000 + uid
+        container = Docker::Container.create(
+          "Cmd" => [
+            "/sbin/init"
           ],
-          "PortBindings" => {
-            "80/tcp" => [
-              {
-                "HostPort" => "#{port}"
-              }
-            ]
+          "Domainname" => "puppetlabs.vm",
+          "Env" => [
+            "RUNLEVEL=3",
+            "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+            "HOME=/root/",
+            "TERM=xterm"
+          ],
+          "ExposedPorts" => {
+            "80/tcp" => {
+            }
           },
-        },
-        "Name" => "#{username}",
-        "Volumes" => volumes
+          "Hostname" => "#{username}",
+          "Image" => "#{CONTAINER_NAME}",
+          "HostConfig" => {
+            "Privileged" => true,
+            "Binds" => binds,
+            "ExtraHosts" => [
+              "#{MASTER_HOSTNAME} puppet:172.17.42.1"
+            ],
+            "PortBindings" => {
+              "80/tcp" => [
+                {
+                  "HostPort" => "#{port}"
+                }
+              ]
+            },
+          },
+          "Name" => "#{username}",
+          "Volumes" => volumes
+        )
 
-      )
+        # Set container name to username
+        container.rename(username)
 
-      # Set container name to username
-      container.rename(username)
+        # Set default login to attach to container
+        File.open("/home/#{username}/.bashrc", 'w') do |bashrc|
+          bashrc.puts "docker exec -it #{container.id} su -"
+          bashrc.puts "exit 0"
+        end
 
-      # Set default login to attach to container
-      File.open("/home/#{username}/.bashrc", 'w') do |bashrc|
-        bashrc.puts "docker exec -it #{container.id} su -"
-        bashrc.puts "exit 0"
+
+        # Start container and copy puppet.conf in place
+        container.start
+        container.exec('cp -f /share/puppet.conf /etc/puppetlabs/puppet/puppet.conf')
+
+        # Create init scripts for container
+        init_scripts(username)
+
+      rescue => e
+        raise "Error creating container #{username}: #{e.message}"
       end
 
-
-      # Copy userprefs module into user environment
-      if MAP_ENVIRONMENTS then
-        `cp -r #{ENVIRONMENTS}/production/modules/userprefs #{ENVIRONMENTS}/#{username}/modules`
-        `chown -R #{username}:pe-puppet #{ENVIRONMENTS}/#{username}`
-      end
-
-      # Start container and copy puppet.conf in place
-      container.start
-      container.exec('cp -f /share/puppet.conf /etc/puppetlabs/puppet/puppet.conf')
-
-      # Create init scripts for container
-      init_scripts(username.downcase)
+      "Container #{username} created"
     end
 
 
-    def remove_container(username, container)
-      remove_init_scripts(username)
-      output = container.delete(:force => true)
-      $? == 0 ? "Container #{username} removed" : "Error removing container #{username}"
+    def remove_container(username)
+      begin
+        remove_init_scripts(username)
+
+        container = Docker::Container.get(username)
+        output = container.delete(:force => true)
+      rescue => e
+        raise "Error removing container #{username}: #{e.message}"
+      end
+
+      "Container #{username} removed"
     end
 
     def init_scripts(username)
@@ -358,7 +386,7 @@ class Puppetfactory  < Sinatra::Base
 
     def remove_init_scripts(username)
       `chkconfig docker-#{username} off`
-      `rm /etc/init.d/docker-#{username}`
+      FileUtils.rm("/etc/init.d/docker-#{username}")
     end
 
     def classify(username, groups=[''])
@@ -377,23 +405,34 @@ class Puppetfactory  < Sinatra::Base
         group_hash['rule'] = ['or', ['=', 'name', certname]]
       end
 
-      puppetclassify.groups.create_group(group_hash)
+      begin
+        puppetclassify.groups.create_group(group_hash)
+      rescue => e
+        raise "Could not create node group #{certname}: #{e.message}"
+      end
 
+      "Created node group #{certname} assigned to environment #{environment_name(username)}"
     end
 
     def remove_node_group(username)
       puppetclassify = PuppetClassify.new(CLASSIFIER_URL, AUTH_INFO)
       certname = "#{username}.#{USERSUFFIX}"
-      group_id = puppetclassify.groups.get_group_id(certname)
-      output = puppetclassify.groups.delete_group(group_id)
-      $? == 0 ? "Node group #{certname} removed" : "Error removing node group #{certname} : #{output}"
+
+      begin
+        group_id = puppetclassify.groups.get_group_id(certname)
+        puppetclassify.groups.delete_group(group_id)
+      rescue => e
+        raise "Error removing node group #{certname}: #{e.message}"
+      end
+
+      "Node group #{certname} removed"
     end
 
     def node_group_status(username)
       puppetclassify = PuppetClassify.new(CLASSIFIER_URL, AUTH_INFO)
       certname = "#{username}.#{USERSUFFIX}"
-      output = puppetclassify.groups.get_group_id(certname)
-      output != nil ? true : false
+
+      ! puppetclassify.groups.get_group_id(certname).nil?
     end
 
     def environment_name(username)
@@ -414,8 +453,19 @@ class Puppetfactory  < Sinatra::Base
           $logger.info `#{hook} #{username}`
         rescue => e
           $logger.warn "Error running hook: #{hook}"
-          $logger.warn e.message
+          $logger.debug e.message
         end
+      end
+    end
+
+    # execute code and log its success or failure, then return a boolean success flag
+    def failed?
+      begin
+        $logger.info yield
+        false
+      rescue => e
+        $logger.error e.message
+        true
       end
     end
 
