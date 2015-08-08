@@ -365,7 +365,7 @@ class Puppetfactory  < Sinatra::Base
 
       group_hash = {
         'name'               => certname,
-        'environment'        => username,
+        'environment'        => environment_name(username),
         'environment_trumps' => true,
         'parent'             => '00000000-0000-4000-8000-000000000000',
         'classes'            => {}
@@ -391,6 +391,14 @@ class Puppetfactory  < Sinatra::Base
       certname = "#{username}.#{USERSUFFIX}"
       output = puppetclassify.groups.get_group_id(certname)
       output != nil ? true : false
+    end
+
+    def environment_name(username)
+      if OPTIONS['PREFIX']
+        "#{username}_production"
+      else
+        username
+      end
     end
 
     def call_hooks(hook_type, username)
