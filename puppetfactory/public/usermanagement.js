@@ -52,7 +52,7 @@ $(document).ready(function(){
       $('#password').focus();
     }
     else {
-      $('#newuser input[type=button]').attr("disabled", "disabled");
+      $('#newuser input[type=button]').attr("disabled", true);
       $('#newuser').addClass("processing");
       $('#newuser table').activity({width: 5.5, space: 6, length: 13});
 
@@ -65,6 +65,7 @@ $(document).ready(function(){
         else {
           alert('Could not create user: ' + results.message);
           $('#newuser').removeClass("processing");
+          $('#newuser input[type=button]').attr("disabled", false);
           $('#newuser table').activity(false);
         }
       });

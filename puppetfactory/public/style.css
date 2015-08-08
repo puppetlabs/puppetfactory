@@ -36,6 +36,10 @@ tr.even {
   margin-top: 0.5em;
 }
 
+#newuser table {
+  padding: 0.25em 0;
+}
+
 #newuser.processing table,
 #newuser.processing table input {
   background: #565656;
