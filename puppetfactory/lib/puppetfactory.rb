@@ -361,7 +361,6 @@ class Puppetfactory  < Sinatra::Base
       "Container #{username} created"
     end
 
-
     def remove_container(username)
       begin
         remove_init_scripts(username)
