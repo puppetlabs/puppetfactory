@@ -15,14 +15,6 @@ require 'docker'
 
 OPTIONS = YAML.load_file('/etc/puppetfactory.yaml') rescue nil
 
-AUTH_INFO = OPTIONS['AUTH_INFO'] || {
-  "ca_certificate_path" => "/opt/puppet/share/puppet-dashboard/certs/ca_cert.pem",
-  "certificate_path"    => "/opt/puppet/share/puppet-dashboard/certs/pe-internal-dashboard.cert.pem",
-  "private_key_path"    => "/opt/puppet/share/puppet-dashboard/certs/pe-internal-dashboard.private_key.pem"
-}
-
-CLASSIFIER_URL = OPTIONS['CLASSIFIER_URL'] || 'http://master.puppetlabs.vm:4433/classifier-api'
-
 PUPPET    =  OPTIONS['PUPPET'] || '/opt/puppet/bin/puppet'
 RAKE      =  OPTIONS['RAKE'] || '/opt/puppet/bin/rake'
 DASH_PATH =  OPTIONS['DASH_PATH'] || '/opt/puppet/share/puppet-dashboard'
@@ -36,18 +28,28 @@ PASSWORD  =  OPTIONS['PASSWORD'] || 'admin'
 CONTAINER_NAME =  OPTIONS['CONTAINER_NAME'] || 'centosagent'
 
 CONFDIR      =  OPTIONS['CONFDIR'] || '/etc/puppetlabs/puppet'
-ENVIRONMENTS = "#{CONFDIR}/environments"
+CODEDIR      =  OPTIONS['CODEDIR'] || '/etc/puppetlabs/code'
+ENVIRONMENTS = "#{CODEDIR}/environments"
+
 USERSUFFIX   =  OPTIONS['USERSUFFIX'] || 'puppetlabs.vm'
 PUPPETCODE   =  OPTIONS['PUPPETCODE'] || '/var/opt/puppetcode'
 HOOKS_PATH   =  OPTIONS['HOOKS_PATH'] || '/etc/puppetfactory/hooks'
 
 MASTER_HOSTNAME = `hostname`.strip
-DOCKER_GROUP = OPTIONS['DOCKER_GROUP'] || 'docker'
+DOCKER_GROUP    = OPTIONS['DOCKER_GROUP'] || 'docker'
 
 MAP_ENVIRONMENTS = OPTIONS['MAP_ENVIRONMENTS'] || false
 MAP_MODULEPATH   = OPTIONS['MAP_MODULEPATH']   || MAP_ENVIRONMENTS # maintain backwards compatibility
 
 PE  = OPTIONS['PE'] || true
+
+AUTH_INFO = OPTIONS['AUTH_INFO'] || {
+  "ca_certificate_path" => "#{CONFDIR}/ssl/ca/ca_crt.pem",
+  "certificate_path"    => "#{CONFDIR}/ssl/certs/#{MASTER_HOSTNAME}.pem",
+  "private_key_path"    => "#{CONFDIR}/ssl/private_keys/#{MASTER_HOSTNAME}.pem"
+}
+
+CLASSIFIER_URL = OPTIONS['CLASSIFIER_URL'] || "http://#{MASTER_HOSTNAME}:4433/classifier-api"
 
 class Puppetfactory  < Sinatra::Base
   set :views, File.dirname(__FILE__) + '/../views'
@@ -353,7 +355,7 @@ class Puppetfactory  < Sinatra::Base
 
         # Start container and copy puppet.conf in place
         container.start
-        container.exec('cp -f /share/puppet.conf /etc/puppetlabs/puppet/puppet.conf')
+        container.exec("cp -f /share/puppet.conf #{CONFDIR}/puppet.conf")
 
         # Create init scripts for container
         init_scripts(username)

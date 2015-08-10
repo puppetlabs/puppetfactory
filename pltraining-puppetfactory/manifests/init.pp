@@ -20,6 +20,8 @@ class puppetfactory (
   $container_name = $puppetfactory::params::container_name,
 
   $confdir = $puppetfactory::params::confdir,
+  $codedir = $puppetfactory::params::codedir,
+
   $usersuffix = $puppetfactory::params::usersuffix,
   $puppetcode = $puppetfactory::params::puppetcode,
 
