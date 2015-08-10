@@ -24,12 +24,13 @@ Gem::Specification.new do |s|
   s.add_dependency      "json_pure"
   s.add_dependency      "puppetclassify", ">= 0.1.0"
   s.add_dependency      "docker-api"
+  s.add_dependency      "httparty"
 
   s.description       = <<-desc
-  Puppetfactory creates a Puppet Enterprise infrastructure on the classroom server. 
+  Puppetfactory creates a Puppet Enterprise infrastructure on the classroom server.
   Each student has a container for Puppet code and configuration linked to their
-  environment on the master.  The containers are built on docker and duplicate most 
-  of the behavior of a full VM or bare-metal system.  The classroom server will also 
+  environment on the master.  The containers are built on docker and duplicate most
+  of the behavior of a full VM or bare-metal system.  The classroom server will also
   be running the unmodified Puppet Enterprise Console with an account for each student.
   desc
 end
