@@ -1,4 +1,5 @@
 class puppetfactory::profile::fundamentals {
+  include puppetfactory
 
   File {
     owner => 'root',
