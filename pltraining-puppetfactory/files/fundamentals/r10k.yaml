@@ -1,0 +1,7 @@
+---
+cachedir: '/opt/puppetlabs/server/data/r10k'
+sources:
+  main:
+    remote: 'https://github.com/puppetlabs/classroom-control.git'
+    basedir: '/etc/puppet/environments'
+    prefix: false
