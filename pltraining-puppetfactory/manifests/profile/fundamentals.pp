@@ -1,4 +1,9 @@
 class puppetfactory::profile::fundamentals {
+  class { 'puppetfactory':
+    prefix           => true,
+    map_environments => true,
+    map_modulepath   => false,
+  }
 
   File {
     owner => 'root',
