@@ -45,7 +45,7 @@ if ARGV.size == 0
   opts = {
           :Port               => 8000,
           :Host               => '0.0.0.0',
-          :Logger             => WEBrick::Log::new(LOGFILE, WEBrick::Log::DEBUG),
+          :Logger             => WEBrick::Log::new(LOGFILE, WEBrick::Log::INFO),
           :ServerType         => WEBrick::Daemon,
           :DocumentRoot       => DOCROOT,
           :SSLEnable          => false,
