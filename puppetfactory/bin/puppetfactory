@@ -2,20 +2,81 @@
 
 require 'rubygems'
 require 'puppetfactory'
+require 'optparse'
 
-opts = {
-        :Port               => 8000,
-        :Host               => '0.0.0.0',
-        :Logger             => WEBrick::Log::new(LOGFILE, WEBrick::Log::DEBUG),
-        :ServerType         => WEBrick::Daemon,
-        :DocumentRoot       => DOCROOT,
-        :SSLEnable          => false,
-#         :SSLVerifyClient    => OpenSSL::SSL::VERIFY_NONE,
-#         :SSLCertificate     => OpenSSL::X509::Certificate.new(  File.open(File.join(CERT_PATH, 'server.crt')).read),
-#         :SSLPrivateKey      => OpenSSL::PKey::RSA.new(          File.open(File.join(CERT_PATH, 'server.key')).read),
-#         :SSLCertName        => [ [ "CN",WEBrick::Utils::getservername ] ]
+NAME = File.basename($PROGRAM_NAME)
+
+options = {}
+optparse = OptionParser.new { |opts|
+  opts.banner = "Usage : #{NAME} [command] [target]
+
+When called with no arguments, this will start the PuppetFactory server.
+You can also pass arguments to invoke CLI commands.
+  * ls | list
+      * List all PuppetFactory users
+  * new |create <username> [password]
+      * Create a new PuppetFactory user with an optional password
+  * remove | delete <username>
+      * Delete a PuppetFactory user
+
+This will send commands to the PuppetFactory server specified in
+/etc/puppetfactory.yaml, defaulting to localhost if unspecified.
+"
+
+  opts.on("-s SERVER", "--server SERVER", "Remote PuppetFactory server.") do |arg|
+    options[:server] = arg
+  end
+
+  opts.on("-d", "--debug", "Display extra debugging information.") do
+    options[:debug] = true
+  end
+
+  opts.separator('')
+
+  opts.on("-h", "--help", "Displays this help") do
+    puts opts
+    exit
+  end
 }
+optparse.parse!
 
-Rack::Handler::WEBrick.run(Puppetfactory, opts) do |server|
-        [:INT, :TERM].each { |sig| trap(sig) { server.stop } }
+# if no arguments, start up the server
+if ARGV.size == 0
+  opts = {
+          :Port               => 8000,
+          :Host               => '0.0.0.0',
+          :Logger             => WEBrick::Log::new(LOGFILE, WEBrick::Log::DEBUG),
+          :ServerType         => WEBrick::Daemon,
+          :DocumentRoot       => DOCROOT,
+          :SSLEnable          => false,
+  #         :SSLVerifyClient    => OpenSSL::SSL::VERIFY_NONE,
+  #         :SSLCertificate     => OpenSSL::X509::Certificate.new(  File.open(File.join(CERT_PATH, 'server.crt')).read),
+  #         :SSLPrivateKey      => OpenSSL::PKey::RSA.new(          File.open(File.join(CERT_PATH, 'server.key')).read),
+  #         :SSLCertName        => [ [ "CN",WEBrick::Utils::getservername ] ]
+  }
+
+  Rack::Handler::WEBrick.run(Puppetfactory, opts) do |server|
+          [:INT, :TERM].each { |sig| trap(sig) { server.stop } }
+  end
+else
+  require 'puppetfactory/cli'
+
+  puppetfactory = Puppetfactory::Cli.new(options)
+
+  command, user, password = ARGV
+  case command
+  when 'ls', 'list'
+    puppetfactory.list
+
+  when 'new', 'create'
+    puppetfactory.create(user, password)
+
+  when 'remove', 'delete'
+    puppetfactory.delete(user)
+
+  else
+    puts "Unknown command: #{command}"
+    puts "Run #{NAME} -h for usage."
+    exit 1
+  end
 end
