@@ -149,20 +149,23 @@ class Puppetfactory  < Sinatra::Base
     end
 
     def load_user(username)
-      # Lookup the container by username and convert to json
-      user_container = Docker::Container.get(username).json rescue {}
-
-      user = {}
-      certname = "#{username}.#{USERSUFFIX}"
-      console  = "#{username}@#{USERSUFFIX}"
-
+      # build the basic user object
       user = {
-        :console  => console,
-        :port     => user_port(username),
-        :certname => certname,
-        :container_status   => user_container['State'],
-        :node_group_status => node_group_status(username),
+          :console  => "#{username}@#{USERSUFFIX}",
+          :certname => "#{username}.#{USERSUFFIX}",
       }
+
+      begin
+        # Lookup the container by username and convert to json
+        user_container = Docker::Container.get(username).json rescue {}
+
+        user[:port]              = user_port(username)
+        user[:container_status]  = user_container['State']
+        user[:node_group_status] = node_group_status(username)
+      rescue => ex
+        $logger.error "Error loading user #{username}: #{ex.message}"
+        $logger.debug ex.backtrace.join "\n"
+      end
       user
     end
 
