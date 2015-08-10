@@ -45,6 +45,8 @@ MASTER_HOSTNAME = `hostname`.strip
 DOCKER_GROUP = OPTIONS['DOCKER_GROUP'] || 'docker'
 
 MAP_ENVIRONMENTS = OPTIONS['MAP_ENVIRONMENTS'] || false
+MAP_MODULEPATH   = OPTIONS['MAP_MODULEPATH']   || MAP_ENVIRONMENTS # maintain backwards compatibility
+
 PE  = OPTIONS['PE'] || true
 
 class Puppetfactory  < Sinatra::Base
@@ -290,7 +292,9 @@ class Puppetfactory  < Sinatra::Base
           # make sure the user and pe-puppet can access all the needful
           FileUtils.chown_R(username, 'pe-puppet', environment)
           FileUtils.chmod(0750, environment)
+        end
 
+        if MAP_MODULEPATH then
           binds.push("#{environment}:/root/puppetcode")
           volumes["/root/puppetcode"] = environment
         end
@@ -360,7 +364,6 @@ class Puppetfactory  < Sinatra::Base
 
       "Container #{username} created"
     end
-
 
     def remove_container(username)
       begin
