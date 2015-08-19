@@ -1,7 +1,7 @@
 class puppetfactory::profile::parser_agent {
   file { '/usr/local/bin/course_selector':
     ensure => present,
-    mode   => 755,
+    mode   => '0755',
     source => '/usr/src/courseware-lms-content/scripts/course_selector.rb',
     require => Vcsrepo['/usr/src/courseware-lms-content'],
   }
