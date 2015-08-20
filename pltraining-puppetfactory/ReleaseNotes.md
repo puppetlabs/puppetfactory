@@ -1,3 +1,6 @@
+## Version 0.3.2
+* Support for Practical Hiera Usage course
+
 ## Version 0.3.1
 * Add support for Puppet 4 parser course
 
