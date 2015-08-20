@@ -1,4 +1,4 @@
-##
+## Version 0.3.1
 * Add support for Puppet 4 parser course
 
 ## Version 0.2.3
