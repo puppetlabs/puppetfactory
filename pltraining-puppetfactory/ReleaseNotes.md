@@ -1,3 +1,6 @@
+##
+* Add support for Puppet 4 parser course
+
 ## Version 0.2.3
 * Validate usernames
 
