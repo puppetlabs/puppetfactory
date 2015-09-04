@@ -1,3 +1,6 @@
+## Version 0.3.2
+* Fixes environment path for 2015.2
+
 ## Version 0.3.1
 * Add support for Puppet 4 parser course
 
