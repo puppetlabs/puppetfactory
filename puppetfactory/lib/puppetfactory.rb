@@ -289,7 +289,7 @@ class Puppetfactory  < Sinatra::Base
           end
 
           # Copy userprefs module into user environment
-          FileUtils.cp_r("#{ENVIRONMENTS}/production/modules/userprefs", "#{environment}/modules/")
+          FileUtils.cp_r("#{CODEDIR}/modules/userprefs", "#{environment}/modules/")
 
           # make sure the user and pe-puppet can access all the needful
           FileUtils.chown_R(username, 'pe-puppet', environment)
