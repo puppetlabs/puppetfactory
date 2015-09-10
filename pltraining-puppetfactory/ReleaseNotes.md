@@ -1,3 +1,6 @@
+## Version 0.3.3
+* Profile for AMD course
+
 ## Version 0.3.2
 * Fixes environment path for 2015.2
 
