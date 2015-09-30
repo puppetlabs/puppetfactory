@@ -271,11 +271,6 @@ class Puppetfactory  < Sinatra::Base
           "/home/#{username}/share:/share",
           "/sys/fs/cgroup:/sys/fs/cgroup:ro"
         ]
-        volumes = {
-          "/share" => "/home/#{username}/share",
-          "/var/yum" => "/var/yum",
-          "/sys/fs/cgroup" => "/sys/fs/cgroup:ro"
-        }
 
         if MAP_ENVIRONMENTS then
           environment = "#{ENVIRONMENTS}/#{environment_name(username)}"
@@ -298,7 +293,6 @@ class Puppetfactory  < Sinatra::Base
 
         if MAP_MODULEPATH then
           binds.push("#{environment}:/root/puppetcode")
-          volumes["/root/puppetcode"] = environment
         end
 
         # Create shared folder to map and create puppet.conf
@@ -339,8 +333,7 @@ class Puppetfactory  < Sinatra::Base
               ]
             },
           },
-          "Name" => "#{username}",
-          "Volumes" => volumes
+          "Name" => "#{username}"
         )
 
         # Set container name to username
