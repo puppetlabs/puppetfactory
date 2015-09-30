@@ -258,6 +258,8 @@ class Puppetfactory  < Sinatra::Base
       begin
         # Set up variables for the site.pp template
         servername = `/bin/hostname`.chomp
+        @servername = servername
+        @username = username
         puppetcode = PUPPETCODE
         map_environments = MAP_ENVIRONMENTS
 
