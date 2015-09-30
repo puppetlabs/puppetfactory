@@ -48,10 +48,12 @@ node default {
   <% if MAP_ENVIRONMENTS %>
     file { '/etc/puppetlabs/puppet/modules':
       ensure => link,
+      force  => true,
       target => '<%= PUPPETCODE %>/modules',
     }
     file { '/etc/puppetlabs/puppet/manifests':
       ensure => link,
+      force  => true,
       target => '<%= PUPPETCODE %>/manifests',
     }
   <% end %>
