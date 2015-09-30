@@ -270,7 +270,7 @@ class Puppetfactory  < Sinatra::Base
 
         binds = [
           "/var/yum:/var/yum",
-          "/home/#{username}/share:/share",
+          "/home/#{username}/puppet:#{CONFDIR}",
           "/sys/fs/cgroup:/sys/fs/cgroup:ro"
         ]
 
@@ -298,8 +298,8 @@ class Puppetfactory  < Sinatra::Base
         end
 
         # Create shared folder to map and create puppet.conf
-        FileUtils.mkdir_p "/home/#{username}/share"
-        File.open("/home/#{username}/share/puppet.conf","w") do |f|
+        FileUtils.mkdir_p "/home/#{username}/puppet"
+        File.open("/home/#{username}/puppet/puppet.conf","w") do |f|
           f.write ERB.new(File.read("#{templates}/puppet.conf.erb")).result(binding)
         end
 
@@ -350,7 +350,6 @@ class Puppetfactory  < Sinatra::Base
 
         # Start container and copy puppet.conf in place
         container.start
-        container.exec(["cp -f /share/puppet.conf #{CONFDIR}/puppet.conf"])
 
         # Create init scripts for container
         init_scripts(username)
