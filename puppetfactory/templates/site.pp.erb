@@ -46,12 +46,14 @@ node default {
   # Example:
   #   class { 'my_class': }
   <% if MAP_ENVIRONMENTS %>
-    file { '/etc/puppetlabs/puppet/modules':
+    file { '<%= CODEDIR %>/environments/production/modules':
       ensure => link,
+      force  => true,
       target => '<%= PUPPETCODE %>/modules',
     }
-    file { '/etc/puppetlabs/puppet/manifests':
+    file { '<%= CODEDIR %>/environments/production/manifests':
       ensure => link,
+      force  => true,
       target => '<%= PUPPETCODE %>/manifests',
     }
   <% end %>
