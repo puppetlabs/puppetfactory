@@ -355,7 +355,7 @@ class Puppetfactory  < Sinatra::Base
 
         # Start container and copy puppet.conf in place
         container.start
-        container.exec("cp -f /share/puppet.conf #{CONFDIR}/puppet.conf")
+        container.exec(["cp -f /share/puppet.conf #{CONFDIR}/puppet.conf"])
 
         # Create init scripts for container
         init_scripts(username)
