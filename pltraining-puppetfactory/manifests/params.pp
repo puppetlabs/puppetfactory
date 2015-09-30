@@ -17,8 +17,8 @@ class puppetfactory::params {
   $password = 'admin'
   $container_name = 'centosagent'
 
-  $confdir = '/etc/puppetlabs/puppet/'
-  $codedir = '/etc/puppetlabs/code/'
+  $confdir = '/etc/puppetlabs/puppet'
+  $codedir = '/etc/puppetlabs/code'
 
   $usersuffix = 'puppetlabs.vm'
   $puppetcode = '/root/puppetcode'
