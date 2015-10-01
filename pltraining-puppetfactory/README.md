@@ -24,6 +24,8 @@ This is the actual graphical Web UI allowing the students to interact with the
 system. It allows students to create their own user account and provides a tab
 for an SSH console login.
 
+![Screenshot](screenshot.png)
+
 ## Usage
 
 1. Start with a standard Puppetlabs Training VM
