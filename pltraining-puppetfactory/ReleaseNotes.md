@@ -1,3 +1,7 @@
+## Version 0.3.5
+
+* Installs course_selector tool into containers
+
 ## Version 0.3.3
 * Profile for AMD course
 
