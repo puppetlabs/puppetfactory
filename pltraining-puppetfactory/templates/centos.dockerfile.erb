@@ -12,4 +12,5 @@ ADD base_local.repo /etc/yum.repos.d/base_local.repo
 ADD epel_local.repo /etc/yum.repos.d/epel_local.repo
 ADD updates_local.repo /etc/yum.repos.d/updates_local.repo
 RUN echo 'if ! hash puppet; then curl -k https://<%= @fqdn %>:8140/packages/current/install.bash | sudo bash; puppet apply -e "include course_selector"; fi' >> /root/.bash
+RUN mkdir -p /etc/puppetlabs/code/modules
 RUN git clone https://github.com/puppetlabs/pltraining-course_selector /etc/puppetlabs/code/modules/course_selector
