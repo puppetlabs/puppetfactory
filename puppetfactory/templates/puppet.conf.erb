@@ -1,7 +1,7 @@
 [main]
     certname = <%= @username %>.puppetlabs.vm
     server = <%= @servername %>
-    basemodulepath = /root/puppetcode/modules
+    basemodulepath = /root/puppetcode/modules:/etc/puppetlabs/code/modules
 
 [agent]
     report = true
