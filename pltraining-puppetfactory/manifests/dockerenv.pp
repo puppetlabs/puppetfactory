@@ -46,6 +46,7 @@ class puppetfactory::dockerenv inherits puppetfactory::params{
 
   file { '/var/run/docker.sock':
     group   => $docker_group,
+    mode    => '0664',
     require => [Class['docker'],Group['docker']],
   }
 
