@@ -35,7 +35,7 @@ USERSUFFIX   =  OPTIONS['USERSUFFIX'] || 'puppetlabs.vm'
 PUPPETCODE   =  OPTIONS['PUPPETCODE'] || '/var/opt/puppetcode'
 HOOKS_PATH   =  OPTIONS['HOOKS_PATH'] || '/etc/puppetfactory/hooks'
 
-MASTER_HOSTNAME = `hostname`.strip
+MASTER_HOSTNAME = OPTIONS['PUPPETMASTER'] || `hostname`.strip
 DOCKER_GROUP    = OPTIONS['DOCKER_GROUP'] || 'docker'
 
 MAP_ENVIRONMENTS = OPTIONS['MAP_ENVIRONMENTS'] || false
