@@ -25,6 +25,12 @@ class puppetfactory::params {
 
   $docker_group = 'docker'
 
+  # support for old facter versions
+  $manage_selinux = $::os['selinux'] ? {
+    undef   => $::selinux,
+    default => $::os['selinux']['enabled'],
+  }
+
   $pe = true
   $prefix = false
   $map_environments = false
