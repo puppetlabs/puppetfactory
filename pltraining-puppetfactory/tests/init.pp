@@ -9,8 +9,6 @@ class { 'puppetfactory':
   puppet => '/usr/bin/puppet',
   rake   => '/usr/bin/rake',
 
-  dash_path => '/opt/puppet/share/puppet-dashboard',
-
   docroot        => '/opt/puppetfactory',
   logfile        => '/var/log/puppetfactory',
   cert_path      => 'certs',
