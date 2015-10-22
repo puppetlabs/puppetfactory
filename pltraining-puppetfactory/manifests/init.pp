@@ -27,6 +27,8 @@ class puppetfactory (
 
   $docker_group = $puppetfactory::params::docker_group,
 
+  $manage_selinux = $puppetfactory::params::manage_selinux,
+
   $pe = $puppetfactory::params::pe,
   $prefix = $puppetfactory::params::prefix,
   $map_environments = $puppetfactory::params::map_environments,
@@ -36,8 +38,11 @@ class puppetfactory (
   include puppetfactory::service
   include puppetfactory::shellinabox
   include puppetfactory::dockerenv
-  include puppetfactory::proxy
   include epel
+
+  class { 'puppetfactory::proxy':
+     manage_selinux => $manage_selinux,
+  }
 
   unless $pe {
     file { ["${codedir}/environments","${codedir}/environments/production"]:,
