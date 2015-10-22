@@ -7,16 +7,13 @@ class puppetfactory::params {
   $classifier_url = "http://${puppetmaster}:4433/classifier-api"
 
   $puppet = '/opt/puppetlabs/puppet/bin/puppet'
-  $rake = '/opt/puppetlabs/puppet/bin/rake'
+  $rake   = '/opt/puppetlabs/puppet/bin/rake'
 
-  $dash_path = '/opt/puppet/share/puppet-dashboard'
-
-  $docroot = '/opt/puppetfactory'
-  $logfile = '/var/log/puppetfactory'
+  $docroot   = '/opt/puppetfactory'
+  $logfile   = '/var/log/puppetfactory'
   $cert_path = 'certs'
-  $user = 'admin'
-  $password = 'admin'
-  $container_name = 'centosagent'
+  $user      = 'admin'
+  $password  = 'admin'
 
   $confdir = '/etc/puppetlabs/puppet'
   $codedir = '/etc/puppetlabs/code'
@@ -24,7 +21,8 @@ class puppetfactory::params {
   $usersuffix = 'puppetlabs.vm'
   $puppetcode = '/root/puppetcode'
 
-  $docker_group = 'docker'
+  $container_name = 'centosagent'
+  $docker_group   = 'docker'
 
   # support for old facter versions
   $manage_selinux = $::os['selinux'] ? {
@@ -32,7 +30,7 @@ class puppetfactory::params {
     default => $::os['selinux']['enabled'],
   }
 
-  $pe = true
-  $prefix = false
+  $pe               = true
+  $prefix           = false
   $map_environments = false
 }

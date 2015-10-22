@@ -1,39 +1,35 @@
 class puppetfactory (
-  $puppetcode = $puppetfactory::params::puppetcode,
-
   $ca_certificate_path = $puppetfactory::params::ca_certificate_path,
-  $certificate_path = $puppetfactory::params::certificate_path,
-  $private_key_path = $puppetfactory::params::private_key_path,
+  $certificate_path    = $puppetfactory::params::certificate_path,
+  $private_key_path    = $puppetfactory::params::private_key_path,
 
-  $puppetmaster   = $puppetfactory::params::puppetmaster,
-  $classifier_url = $puppetfactory::params::classifier_url,
+  $puppetmaster        = $puppetfactory::params::puppetmaster,
+  $classifier_url      = $puppetfactory::params::classifier_url,
 
-  $puppet = $puppetfactory::params::puppet,
-  $rake = $puppetfactory::params::rake,
+  $puppet              = $puppetfactory::params::puppet,
+  $rake                = $puppetfactory::params::rake,
 
-  $dash_path = $puppetfactory::params::dash_path,
+  $docroot             = $puppetfactory::params::docroot,
+  $logfile             = $puppetfactory::params::logfile,
+  $cert_path           = $puppetfactory::params::cert_path,
+  $user                = $puppetfactory::params::user,
+  $password            = $puppetfactory::params::password,
 
-  $docroot = $puppetfactory::params::docroot,
-  $logfile = $puppetfactory::params::logfile,
-  $cert_path = $puppetfactory::params::cert_path,
-  $user = $puppetfactory::params::user,
-  $password = $puppetfactory::params::password,
-  $container_name = $puppetfactory::params::container_name,
+  $confdir             = $puppetfactory::params::confdir,
+  $codedir             = $puppetfactory::params::codedir,
 
-  $confdir = $puppetfactory::params::confdir,
-  $codedir = $puppetfactory::params::codedir,
+  $usersuffix          = $puppetfactory::params::usersuffix,
+  $puppetcode          = $puppetfactory::params::puppetcode,
 
-  $usersuffix = $puppetfactory::params::usersuffix,
-  $puppetcode = $puppetfactory::params::puppetcode,
+  $container_name      = $puppetfactory::params::container_name,
+  $docker_group        = $puppetfactory::params::docker_group,
 
-  $docker_group = $puppetfactory::params::docker_group,
+  $manage_selinux      = $puppetfactory::params::manage_selinux,
 
-  $manage_selinux = $puppetfactory::params::manage_selinux,
-
-  $pe = $puppetfactory::params::pe,
-  $prefix = $puppetfactory::params::prefix,
-  $map_environments = $puppetfactory::params::map_environments,
-  $map_modulepath = $puppetfactory::params::map_environments, # maintain backwards compatibility and simplicity
+  $pe                  = $puppetfactory::params::pe,
+  $prefix              = $puppetfactory::params::prefix,
+  $map_environments    = $puppetfactory::params::map_environments,
+  $map_modulepath      = $puppetfactory::params::map_environments, # maintain backwards compatibility and simplicity
 ) inherits puppetfactory::params {
 
   include puppetfactory::service
