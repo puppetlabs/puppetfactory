@@ -5,6 +5,7 @@ class puppetfactory (
   $certificate_path = $puppetfactory::params::certificate_path,
   $private_key_path = $puppetfactory::params::private_key_path,
 
+  $puppetmaster   = $puppetfactory::params::puppetmaster,
   $classifier_url = $puppetfactory::params::classifier_url,
 
   $puppet = $puppetfactory::params::puppet,

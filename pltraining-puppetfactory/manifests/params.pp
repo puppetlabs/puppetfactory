@@ -3,7 +3,8 @@ class puppetfactory::params {
   $certificate_path    = $settings::hostcert
   $private_key_path    = $settings::hostprivkey
 
-  $classifier_url = "http://${::fqdn}:4433/classifier-api"
+  $puppetmaster   = $::settings::certname
+  $classifier_url = "http://${puppetmaster}:4433/classifier-api"
 
   $puppet = '/opt/puppetlabs/puppet/bin/puppet'
   $rake = '/opt/puppetlabs/puppet/bin/rake'
