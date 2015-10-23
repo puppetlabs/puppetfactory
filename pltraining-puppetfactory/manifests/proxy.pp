@@ -1,7 +1,7 @@
 # Use nginx to create a reverse proxy
-class puppetfactory::proxy (
-  $manage_selinux = $puppetfactory::params::manage_selinux,
-) inherits puppetfactory::params {
+class puppetfactory::proxy {
+  assert_private('This class should not be called directly')
+
   package {'nginx':
     ensure => present,
   }
@@ -23,7 +23,7 @@ class puppetfactory::proxy (
   }
 
   # This will allow the nginx proxy rules to work with selinux enabled
-  if $manage_selinux {
+  if $puppetfactory::manage_selinux {
     selboolean { 'httpd_can_network_connect':
       value      => 'on',
       persistent => true,
