@@ -32,14 +32,11 @@ class puppetfactory (
   $map_modulepath      = $puppetfactory::params::map_environments, # maintain backwards compatibility and simplicity
 ) inherits puppetfactory::params {
 
+  include puppetfactory::proxy
   include puppetfactory::service
   include puppetfactory::shellinabox
   include puppetfactory::dockerenv
   include epel
-
-  class { 'puppetfactory::proxy':
-     manage_selinux => $manage_selinux,
-  }
 
   unless $pe {
     file { ["${codedir}/environments","${codedir}/environments/production"]:,
