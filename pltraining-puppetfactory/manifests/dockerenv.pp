@@ -1,7 +1,11 @@
-class puppetfactory::dockerenv inherits puppetfactory::params{
+class puppetfactory::dockerenv {
+  assert_private('This class should not be called directly')
+
+  $puppetmaster = $puppetfactory::puppetmaster
+
   include docker
-  
-  if $pe {
+
+  if $puppetfactory::pe {
     include pe_repo::platform::ubuntu_1404_amd64
   }
 
@@ -45,12 +49,12 @@ class puppetfactory::dockerenv inherits puppetfactory::params{
 
 
   file { '/var/run/docker.sock':
-    group   => $docker_group,
+    group   => $puppetfactory::docker_group,
     mode    => '0664',
     require => [Class['docker'],Group['docker']],
   }
 
-  group { $docker_group:
+  group { $puppetfactory::docker_group:
     ensure => present,
   }
 }
