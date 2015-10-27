@@ -1,7 +1,9 @@
 #! /usr/bin/env ruby
 require 'yaml'
 require 'optparse'
+require 'fileutils'
 
+BASEDIR  = '/etc/puppetlabs/code/environments'
 R10KYAML = '/etc/puppetlabs/r10k/r10k.yaml'
 PATTERN  = 'https://github.com/%s/classroom-control.git'
 NAME     = File.basename($PROGRAM_NAME)
@@ -48,13 +50,15 @@ File.open(R10KYAML) do |file|
   if NAME =~ /create/
     r10k['sources'][user] = {
       'remote'  => sprintf(PATTERN, user),
-      'basedir' => '/etc/puppet/environments',
+      'basedir' => BASEDIR,
       'prefix'  => true,
     }
+    FileUtils.mkdir_p "#{BASEDIR}/#{user}"
     puts "Created r10k user #{user}"
 
   elsif NAME =~ /delete/
     r10k['sources'].delete user
+    FileUtils.rm_rf "#{BASEDIR}/#{user}"
     puts "Removed r10k user #{user}"
 
   else
