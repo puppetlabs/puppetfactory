@@ -22,14 +22,14 @@ class Puppetfactory
 
     def list()
       begin
-        puts ' Username          Sandbox URL                    Certname                 Container | Node Group'
+        puts ' Username        Sandbox URL                   Certname                 Container | Node Group'
         response = HTTParty.get("#{@server}/api/users")
         raise "PuppetFactory service not responding: #{@server}" unless response.code == 200
 
         JSON.parse(response.body).each do |user, params|
-          container = params['container_status']['Dead'] ? 'X' : '+'
+          container = params['container_status']['Dead'] ? 'X' : '+' rescue '?'
           nodegroup = params['node_group_status']        ? '+' : 'X'
-          printf("%-16s  #{@server}:%5s  %-25s      %1s        %1s\n", user, params['port'], params['certname'], container, nodegroup)
+          printf("%-14s  #{@server}:%5s        %-25s     %1s          %1s\n", user, params['port'], params['certname'], container, nodegroup)
         end
       rescue => e
         puts "API error listing users: #{e.message}"
