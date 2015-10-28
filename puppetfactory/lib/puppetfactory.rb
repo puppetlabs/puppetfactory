@@ -217,7 +217,7 @@ class Puppetfactory  < Sinatra::Base
     def add_system_user(username, password)
       # ssh login user
       crypted = password.crypt("$5$a1")
-      output = `adduser #{username} -p '#{crypted}' -G pe-puppet,#{DOCKER_GROUP} -m 2>&1`
+      output = `adduser #{username} -p '#{crypted}' -G pe-puppet,puppetfactory,#{DOCKER_GROUP} -m 2>&1`
 
       raise "Could not create system user #{username}: #{output}" unless $? == 0
       "System user #{username} created successfully"
