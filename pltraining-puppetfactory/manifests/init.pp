@@ -80,6 +80,11 @@ class puppetfactory (
     ensure => present,
   }
 
+  file { '/etc/issue.net':
+    ensure => file,
+    source => 'puppet:///modules/puppetfactory/issue.net',
+  }
+
   # Keep ssh sessions alive and allow puppetfactory users to log in with passwords
   class { "ssh::server":
     client_alive_interval          => 300,
