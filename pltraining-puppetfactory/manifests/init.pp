@@ -76,6 +76,10 @@ class puppetfactory (
     managehome => true,
   }
 
+  group { 'puppetfactory':
+    ensure => present,
+  }
+
   # Keep ssh sessions alive and allow puppetfactory users to log in with passwords
   class { "ssh::server":
     client_alive_interval          => 300,
