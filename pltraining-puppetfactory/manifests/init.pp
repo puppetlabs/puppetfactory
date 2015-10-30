@@ -76,12 +76,20 @@ class puppetfactory (
     managehome => true,
   }
 
-  # Keep ssh sessions alive
-  augeas{'sshd-clientalive':
-    context => '/files/etc/ssh/sshd_config',
-    changes => [
-      'set ClientAliveInterval 300',
-      'set ClientAliveCountMax 2'
-    ],
+  group { 'puppetfactory':
+    ensure => present,
   }
+
+  file { '/etc/issue.net':
+    ensure => file,
+    source => 'puppet:///modules/puppetfactory/issue.net',
+  }
+
+  # Keep ssh sessions alive and allow puppetfactory users to log in with passwords
+  class { "ssh::server":
+    client_alive_interval          => 300,
+    client_alive_count_max         => 2,
+    password_authentication_groups => ['puppetfactory'],
+  }
+
 }
