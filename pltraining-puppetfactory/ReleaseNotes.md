@@ -1,3 +1,11 @@
+## Version 0.3.7
+
+* Use the configured setting for master hostname in config files on containers
+
+## Version 0.3.6
+
+* Allow password based logins for students.  Useful for EC2 Instances.
+
 ## Version 0.3.5
 
 * Installs course_selector tool into containers

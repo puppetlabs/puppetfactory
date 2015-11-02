@@ -257,7 +257,7 @@ class Puppetfactory  < Sinatra::Base
     def create_container(username)
       begin
         # Set up variables for the site.pp template
-        servername = `/bin/hostname`.chomp
+        servername = MASTER_HOSTNAME
         @servername = servername
         @username = username
         puppetcode = PUPPETCODE
