@@ -1,3 +1,7 @@
+## Version 0.3.7
+
+* Use the configured setting for master hostname in config files on containers
+
 ## Version 0.3.6
 
 * Allow password based logins for students.  Useful for EC2 Instances.
