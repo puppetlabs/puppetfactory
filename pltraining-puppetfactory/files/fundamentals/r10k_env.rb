@@ -5,7 +5,7 @@ require 'fileutils'
 
 BASEDIR  = '/etc/puppetlabs/code/environments'
 R10KYAML = '/etc/puppetlabs/r10k/r10k.yaml'
-PATTERN  = 'https://github.com/%s/classroom-control.git'
+PATTERN  = 'https://github.com/%s/classroom-control-vf.git'
 NAME     = File.basename($PROGRAM_NAME)
 
 options = {}
