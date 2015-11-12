@@ -1,3 +1,7 @@
+## Version 0.3.8
+
+* Enable root login with a password when not running in EC2
+
 ## Version 0.3.7
 
 * Use the configured setting for master hostname in config files on containers
