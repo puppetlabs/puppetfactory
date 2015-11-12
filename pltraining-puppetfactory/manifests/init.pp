@@ -94,7 +94,7 @@ class puppetfactory (
   class { "ssh::server":
     client_alive_interval          => 300,
     client_alive_count_max         => 2,
-    permit_root_login              => $allow_root 
+    permit_root_login              => $allow_root,
     password_authentication_groups => ['puppetfactory'],
   }
 
