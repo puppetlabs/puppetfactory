@@ -86,9 +86,15 @@ class puppetfactory (
   }
 
   # Keep ssh sessions alive and allow puppetfactory users to log in with passwords
+  # disable root login on EC2 but enable every else
+  $allow_root = $ec2_metadata ? {
+    undef   => 'yes',
+    default => 'no',
+  }
   class { "ssh::server":
     client_alive_interval          => 300,
     client_alive_count_max         => 2,
+    permit_root_login              => $allow_root 
     password_authentication_groups => ['puppetfactory'],
   }
 
