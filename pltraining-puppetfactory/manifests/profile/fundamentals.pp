@@ -1,4 +1,9 @@
 class puppetfactory::profile::fundamentals {
+
+  ensure_packages('gcc', {
+    before => Package['puppetfactory']
+  })
+
   class { 'puppetfactory':
     prefix           => true,
     map_environments => true,
