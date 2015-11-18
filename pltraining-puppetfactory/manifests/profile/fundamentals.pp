@@ -56,4 +56,17 @@ class puppetfactory::profile::fundamentals {
     user    => 'root',
     require => Class['r10k::webhook::config'],
   }
+
+  class { 'puppetfactory::facts':
+    coursename => 'fundamentals',
+  }
+
+  # Because PE writes a default, we have to do tricks to see if we've already managed this.
+  # We don't want to stomp on instructors doing demonstrations.
+  unless defined('$puppetlabs_class') {
+    file { '/etc/puppetlabs/code/hiera.yaml':
+      ensure  => file,
+      content => 'puppet:///modules/puppetfactory/fundamentals/hiera.yaml',
+    }
+  }
 }
