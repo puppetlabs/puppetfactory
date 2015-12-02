@@ -9,17 +9,43 @@ $(document).ready(function(){
     return true;
   };
 
-  // toggle hide the newuser dialog
-  $('#showuser').click(function(){
-    $(this).hide();
+  function open() {
+    $('#showuser').hide();
     $('#newuserwrapper').addClass("open");
     $('#newuser').slideDown("fast");
     $('#user').focus();
-  });
-  $('#hideuser').click(function(){
+  }
+
+  function close() {
     $('#showuser').show();
     $('#newuserwrapper').removeClass("open");
     $('#newuser').hide();
+  }
+
+  function start_processing() {
+    $('#newuser input[type=button]').attr("disabled", true);
+    $('#newuser').addClass("processing");
+    $('#newuser table').activity({width: 5.5, space: 6, length: 13});
+  }
+
+  function stop_processing() {
+    $('#newuser').removeClass("processing");
+    $('#newuser input[type=button]').attr("disabled", false);
+    $('#newuser table').activity(false);
+  }
+
+  function failing(item) {
+    item.attr("value", "");
+    item.addClass("fail");
+    item.focus();
+  }
+
+  // toggle hide the newuser dialog
+  $('#showuser').click(function(){
+    open();
+  });
+  $('#hideuser').click(function(){
+    close();
   });
 
   // save the new user
@@ -27,47 +53,40 @@ $(document).ready(function(){
     var username  = $('#user').val();
     var password  = $('#password').val();
     var password2 = $('#password2').val();
-
-    console.log(" username:"+username);
-    console.log(" password:"+password);
-    console.log("password2:"+password2);
+    var session   = $('#session').val();
 
     // reset warnings
     $('#user').removeClass("fail");
     $('#password').removeClass("fail");
     $('#password2').removeClass("fail");
+    $('#session').removeClass("fail");
 
     if(!validUsername(username)) {
-      $('#user').attr("value", "");
-      $('#user').addClass("fail");
-      $('#user').focus();
+      failing($('#user'));
     }
     else if(password == '' || password != password2) {
-      $('#password').attr("value", "");
-      $('#password').addClass("fail");
-
-      $('#password2').attr("value", "");
-      $('#password2').addClass("fail");
-
-      $('#password').focus();
+      failing($('#password'));
+      failing($('#password2'));
+    }
+    else if(session == '') {
+      failing($('#session'));
     }
     else {
-      $('#newuser input[type=button]').attr("disabled", true);
-      $('#newuser').addClass("processing");
-      $('#newuser table').activity({width: 5.5, space: 6, length: 13});
+      start_processing();
 
-      $.post('/new', {username: username, password: password}, function(data) {
+      $.post('/new', {username: username, password: password, session: session}, function(data) {
         console.log(data);
         var results = jQuery.parseJSON(data);
         if(results.status == 'success') {
           location.reload();
         }
         else {
-          alert('Could not create user: ' + results.message);
-          $('#newuser').removeClass("processing");
-          $('#newuser input[type=button]').attr("disabled", false);
-          $('#newuser table').activity(false);
+          stop_processing();
+          alert("Could not create user:\n" + results.message);
         }
+      }).fail(function(jqXHR) {
+        stop_processing();
+        alert("Could not create user:\n" + jqXHR.responseText);
       });
 
     }
