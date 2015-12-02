@@ -1,3 +1,7 @@
+## Version 0.3.9
+
+* .vimrc inside containers
+
 ## Version 0.3.8
 
 * Enable root login with a password when not running in EC2
