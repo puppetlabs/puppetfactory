@@ -1,3 +1,7 @@
+## Version 0.3.10
+
+* Install lynx on containers
+
 ## Version 0.3.9
 
 * .vimrc inside containers
