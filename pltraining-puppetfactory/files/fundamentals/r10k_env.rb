@@ -42,7 +42,7 @@ File.open(R10KYAML) do |file|
   # make sure we don't have any concurrency issues
   file.flock(File::LOCK_EX)
 
-  user = ARGV[0]
+  user = ARGV[0].downcase
   r10k = YAML.load_file(R10KYAML)
 
   # look at the script name to determine mode.

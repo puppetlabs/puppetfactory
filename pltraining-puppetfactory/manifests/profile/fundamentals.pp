@@ -49,6 +49,7 @@ class puppetfactory::profile::fundamentals {
     protected         => false,
     use_mcollective   => false,
     prefix            => ':user',
+    allow_uppercase   => false,
     repository_events => ['release'],
   }
 
