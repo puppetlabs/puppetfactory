@@ -105,3 +105,74 @@ table#users td.status {
   float: right;
   margin-left: 0.5em;
 }
+
+#dashboard {
+
+}
+
+#dashboard #notifications {
+  font-size: 0.5em;
+  color: :666;
+}
+
+#dashboard #notifications.fail {
+  font-weight: bold;
+  background-color: red;
+  border: 1px solid black;
+  border-radius: 0.5em;
+  padding: 0.25em 0.5em;
+}
+
+#dashboard #tools {
+  float: right;
+  top: 1em;
+  font-size: 0.8em;
+  margin-bottom: 0.5em;
+}
+
+#dashboard #tools * {
+  font-size: 0.8em;
+}
+
+#dashboard #tools * .ui-button-text {
+  padding-top: 0.25em;
+  padding-bottom: 0.25em;
+}
+
+#dashboard .user {
+  border: 1px solid #ccc;
+  border-radius: 0.5em;
+  padding: 0 0.5em 0.5em;
+  margin: 0.5em 0;
+  clear: both;
+}
+
+#dashboard .gutter {
+  background-color: #ffdddd;
+  border-radius: 0.25em;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.25) inset;
+  font-size: 0.8em;
+}
+
+#dashboard .gutter .label {
+  float: right;
+  padding-right: 1em;
+}
+
+#dashboard .completed {
+  white-space: nowrap;
+  overflow-x: visible;
+  background-color: #80f36f;
+  border-radius: 0.25em;
+  min-width: 0.25em;
+  border: 1px solid #666;
+}
+
+#dashboard .completed a {
+  font-size: 0.5em;
+  text-decoration: none;
+}
+
+#dashboard .completed a:hover {
+  border-bottom: 2px solid black;
+}
