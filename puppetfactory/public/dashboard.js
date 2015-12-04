@@ -39,8 +39,7 @@ $(document).ready(function(){
     // Unbind existing event handlers so they don't cascade when the content is updated
     $('#update').off();
     $('#current').off();
-    var idx = $("#tabs").tabs("option","active");
-    $("#tabs").tabs('load', idx);
+    updatePage();
   }
 
   function initializeView() {

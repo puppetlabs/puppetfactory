@@ -6,9 +6,6 @@ table {
   -moz-border-radius: 5px;
   border-radius: 5px;
 }
-th {
-  border-bottom: 2px solid #999;
-}
 tr.even {
   background: #b3c6ae;
 }
@@ -26,7 +23,6 @@ tr.even {
 
 #usercontent {
   position: relative;
-  padding-top: 1.25em;
 }
 
 #newuserwrapper {
@@ -71,19 +67,30 @@ tr.even {
   background: #f88484;
 }
 
+table#current th.header {
+  width: 10%;
+  white-space: nowrap;
+  text-align: right;
+  padding-right: 1em;
+}
+
 table#users {
   margin-top: 1em;
+}
+
+table#users th {
+  border-bottom: 2px solid #999;
 }
 
 table#users td {
   border-right: 1px solid #ccc;
   border-collapse: collapse;
-  padding: 0 0.25em;
+  padding: 0 0.5em;
+  text-align: center;
 }
 
-table#users td.status {
-  text-align: center;
-  border-left: none;
+table#users td.select {
+  font-size: 0.8em;
 }
 
 #console {

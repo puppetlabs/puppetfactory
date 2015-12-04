@@ -23,3 +23,8 @@ $(document).ready(function(){
     }
   });
 });
+
+function updatePage() {
+  var idx = $("#tabs").tabs("option","active");
+  $("#tabs").tabs('load', idx);
+}
