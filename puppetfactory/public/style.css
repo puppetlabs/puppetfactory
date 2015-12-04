@@ -119,7 +119,7 @@ table#users td.select {
 
 #dashboard #notifications {
   font-size: 0.5em;
-  color: :666;
+  color: #666;
 }
 
 #dashboard #notifications.fail {
