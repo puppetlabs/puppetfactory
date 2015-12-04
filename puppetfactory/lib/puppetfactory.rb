@@ -96,8 +96,14 @@ class Puppetfactory < Sinatra::Base
   end
 
   get '/users' do
-    @users = load_users()
+    @users   = load_users()
+    @current = load_user(session[:username]) if session.include? :username
     erb :users
+  end
+
+  get '/users/active/:username' do |username|
+    session[:username] = username
+    {"status" => "ok"}.to_json
   end
 
   get '/shell' do
@@ -163,7 +169,7 @@ class Puppetfactory < Sinatra::Base
 
   # Return details for all users as JSON
   get '/api/users' do
-    load_users().to_json
+    load_users(true).to_json
   end
 
   # Return details for single user
@@ -199,12 +205,12 @@ class Puppetfactory < Sinatra::Base
   end
 
   helpers do
-    def load_users()
+    def load_users(extended = false)
       # Get the users from the filesystem and look up their info
       users = {}
       Dir.glob('/home/*').each do |path|
         username        = File.basename path
-        users[username] = basic_user(username)
+        users[username] = extended ? load_user(username) : basic_user(username)
       end
       users
     end
@@ -216,8 +222,8 @@ class Puppetfactory < Sinatra::Base
         # Lookup the container by username and convert to json
         user_container = Docker::Container.get(username).json rescue {}
 
-        user[:container_status]  = user_container['State']
-        user[:node_group_status] = node_group_status(username)
+        user[:container_status] = massage_container_state(user_container['State'])
+        user[:node_group_url]   = node_group_url(username)
       rescue => ex
         $logger.error "Error loading user #{username}: #{ex.message}"
         $logger.debug ex.backtrace.join "\n"
@@ -228,10 +234,17 @@ class Puppetfactory < Sinatra::Base
     def basic_user(username)
       # build the basic user object
       {
-          :console  => "#{username}@#{USERSUFFIX}",
-          :certname => "#{username}.#{USERSUFFIX}",
-          :port     => user_port(username),
+        :username => username,
+        :console  => "#{username}@#{USERSUFFIX}",
+        :certname => "#{username}.#{USERSUFFIX}",
+        :port     => user_port(username),
+        :url      => sandbox_url(username),
       }
+    end
+
+    def sandbox_url(username)
+      port = user_port(username)
+      "http://#{request.host}/port/#{port}"
     end
 
     def user_port(username)
@@ -443,6 +456,21 @@ class Puppetfactory < Sinatra::Base
       "Container #{username} removed"
     end
 
+    def massage_container_state(state)
+      if state['OOMKilled']
+        state['Description'] = 'Halted because host machine is out of memory.'
+      elsif state['Restarting']
+        state['Description'] = 'Container is restarting.'
+      elsif state['Paused']
+        state['Description'] = 'Container is paused.'
+      elsif state['Running']
+        state['Description'] = "Running since #{Time.parse(state['StartedAt']).strftime("%b %d at %I:%M%p")}"
+      else
+        state['Description'] = 'Halted.'
+      end
+      state
+    end
+
     def init_scripts(username)
       templates = "#{File.dirname(__FILE__)}/../templates"
       File.open("/etc/init.d/docker-#{username}","w") do |f|
@@ -496,11 +524,20 @@ class Puppetfactory < Sinatra::Base
       "Node group #{certname} removed"
     end
 
-    def node_group_status(username)
+    def node_group_id(username)
       puppetclassify = PuppetClassify.new(CLASSIFIER_URL, AUTH_INFO)
       certname = "#{username}.#{USERSUFFIX}"
 
-      ! puppetclassify.groups.get_group_id(certname).nil?
+      puppetclassify.groups.get_group_id(certname)
+    end
+
+    def node_group_url(username)
+      nodegroup = node_group_id(username)
+      "https://#{request.host}/#/node_groups/groups/#{nodegroup}" if nodegroup
+    end
+
+    def node_group_status(username)
+      ! node_group_id(username).nil?
     end
 
     def environment_name(username)

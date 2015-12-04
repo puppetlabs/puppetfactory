@@ -12,20 +12,32 @@
       <input type="button" id="save" value="Save" />
     </div>
   </div>
-
+<% if @current %>
+  <h2>Selected User</h2>
+  <table id="current">
+    <tr><th class="header">Username:</th>    <td><%= @current[:username] %></td></tr>
+    <tr><th class="header">Certname:</th>    <td><%= @current[:certname] %></td></tr>
+    <tr><th class="header">Sandbox URL:</th> <td><a href="/port/<%= @current[:port] %>/"><%= @current[:url] %></a></td></tr>
+    <tr><th class="header">Container:</th>   <td><%= @current[:container_status]['Description'] %></td></tr>
+    <tr><th class="header">Node Group:</th>  <td><a href="<%= @current[:node_group_url] %>" target="_console">Console login</a></td></tr>
+  </table>
+<% end %>
+  <h2>All Users</h2>
   <table id="users">
     <tr class="header">
       <th>Username</th>
-      <th>Sandbox URL</th>
       <th>Certname</th>
+      <th>Sandbox URL</th>
+      <th>&nbsp;</th>
     </tr>
     <% if @users %>
       <% even = true %>
       <% @users.each do |key, user| %>
         <tr class="<%= even ? "even":"odd" %>">
-          <td class="username" align="center"><%= key %></td>
-          <td class="url" align="center"><a href="port/<%= user[:port] %>/"><%= user[:certname] %></a></td>
-          <td class="certname" align="center"><%= user[:certname] %></td>
+          <td class="username"><%= key %></td>
+          <td class="certname"><%= user[:certname] %></td>
+          <td class="url"><a href="/port/<%= user[:port] %>/"><%= user[:url] %></a></td>
+          <td class="select"><a href="/users/active/<%= user[:username] %>">select</a></td>
         </tr>
         <% even = !even %>
       <% end %>

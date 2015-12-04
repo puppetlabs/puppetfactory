@@ -48,6 +48,15 @@ $(document).ready(function(){
     close();
   });
 
+  $('#users .select a').click(function(event){
+    event.preventDefault();
+    var action = $(this).attr('href');
+
+    $.get(action, function(data) {
+      updatePage();
+    });
+  });
+
   // save the new user
   $('#save').click(function(){
     var username  = $('#user').val();
@@ -78,7 +87,7 @@ $(document).ready(function(){
         console.log(data);
         var results = jQuery.parseJSON(data);
         if(results.status == 'success') {
-          location.reload();
+          updatePage();
         }
         else {
           stop_processing();

@@ -28,8 +28,8 @@ class Puppetfactory
 
         JSON.parse(response.body).each do |user, params|
           container = params['container_status']['Dead'] ? 'X' : '+' rescue '?'
-          nodegroup = params['node_group_status']        ? '+' : 'X'
-          printf("%-14s  #{@server}:%5s        %-25s     %1s          %1s\n", user, params['port'], params['certname'], container, nodegroup)
+          nodegroup = params['node_group_url'].nil?      ? 'X' : '+'
+          printf("%-14s  %-25s        %-25s     %1s          %1s\n", user, params['url'], params['certname'], container, nodegroup)
         end
       rescue => e
         puts "API error listing users: #{e.message}"
