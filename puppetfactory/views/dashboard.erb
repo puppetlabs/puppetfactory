@@ -1,3 +1,38 @@
-<p>This is just a placeholder for now.</p>
+<div id="dashboard">
+  <span id="notifications">Last updated <%= approximate_time_difference(@test_data['timestamp']) %></span>
+  <div id="tools">
+    <a id="update">Update</a>
+    <select name="current" id="current">
+      <option value="summary"<%= 'selected' if @current == 'summary' %> >Summary Only</option>
+      <option value="all" <%= 'selected' if @current == 'all' %> >All Tests</option>
+    <% @available.each do |test| %>
+      <option value="<%= test %>" <%= 'selected' if @current == test %> ><%= test %></option>
+    <% end %>
+    </select>
+  </div>
+  <div class="content">
+  <% @test_data.each do |user, userdata| %>
+  <% next if user == 'timestamp' %>
+  <% total, passed, percent = test_completion(userdata['summary']) %>
+  <% details="/dashboard/details/#{user}/summary" %>
+    <div class="user">
+      <label><%= user %></label>
+      <div class="progressbar gutter summary <%= user %>">
+        <span class="label"><%= passed %> of <%= total %> tests passing</span>
+        <div class="completed" style="width: <%= percent %>%">Overall completion <a target="_results" href="<%= details %>">(details)</a></div>
+      </div>
 
-<p>The next project will be to build an actual dashboard.</p>
+      <% userdata.each do |result, data| %>
+        <% next if result == 'summary' %>
+        <% total, passed, percent = test_completion(data) %>
+        <% details="/dashboard/details/#{user}/#{result}" %>
+      <div class="progressbar gutter <%= result %> <%= user %>">
+        <span class="label"><%= passed %> of <%= total %> tests passing</span>
+        <div class="completed" style="width: <%= percent %>%"><%= result %> <a target="_results" href="<%= details %>">(details)</a></div>
+      </div>
+      <% end %>
+    </div>
+  <% end %>
+  </div>
+</div>
+<script type="text/javascript" src="dashboard.js"></script>

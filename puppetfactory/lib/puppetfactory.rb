@@ -10,10 +10,11 @@ require 'json'
 require 'fileutils'
 require 'erb'
 require 'yaml'
+require 'time'
 require 'puppetclassify'
 require 'docker'
 
-OPTIONS = YAML.load_file('/etc/puppetfactory.yaml') rescue nil
+OPTIONS = YAML.load_file('/etc/puppetfactory.yaml') rescue {}
 
 PUPPET    =  OPTIONS['PUPPET'] || '/opt/puppet/bin/puppet'
 RAKE      =  OPTIONS['RAKE'] || '/opt/puppet/bin/rake'
@@ -44,7 +45,8 @@ DOCKER_GROUP    = OPTIONS['DOCKER_GROUP'] || 'docker'
 MAP_ENVIRONMENTS = OPTIONS['MAP_ENVIRONMENTS'] || false
 MAP_MODULEPATH   = OPTIONS['MAP_MODULEPATH']   || MAP_ENVIRONMENTS # maintain backwards compatibility
 
-DASHBOARD  = OPTIONS['DASHBOARD'] || '/etc/puppetfactory/dashboard'
+DASHBOARD          = OPTIONS['DASHBOARD']          || '/etc/puppetfactory/dashboard'
+DASHBOARD_INTERVAL = OPTIONS['DASHBOARD_INTERVAL'] || 5 * 60 # test interval in seconds
 
 PE  = OPTIONS['PE'] || true
 
@@ -56,7 +58,7 @@ AUTH_INFO = OPTIONS['AUTH_INFO'] || {
 
 CLASSIFIER_URL = OPTIONS['CLASSIFIER_URL'] || "http://#{MASTER_HOSTNAME}:4433/classifier-api"
 
-class Puppetfactory  < Sinatra::Base
+class Puppetfactory < Sinatra::Base
   set :views, File.dirname(__FILE__) + '/../views'
   set :public_folder, File.dirname(__FILE__) + '/../public'
 
@@ -68,7 +70,15 @@ class Puppetfactory  < Sinatra::Base
     # https://github.com/sinatra/sinatra#logging
     $logger = WEBrick::Log::new(LOGFILE, WEBrick::Log::DEBUG)
 
+    @@current_test = 'summary'
+    @@test_running = false
+
     set :semaphore, Mutex.new
+  end
+
+  def initialize(app=nil)
+    super(app)
+    start_testing(DASHBOARD)
   end
 
   get '/' do
@@ -97,8 +107,45 @@ class Puppetfactory  < Sinatra::Base
   get '/dashboard' do
     protected!
 
-    @dashboard = DASHBOARD
+    return 'No dashboard configured' unless DASHBOARD
+
+    @current   = @@current_test
+    @available = get_available_tests(DASHBOARD)
+    @test_data = get_test_data(DASHBOARD)
+
+    return 'No testing data' unless @available and @test_data
+
     erb :dashboard
+  end
+
+  get '/dashboard/details/:user/:result' do |user, result|
+
+    begin
+    if result == 'summary'
+      File.read("#{DASHBOARD}/output/html/#{user}.html")
+    else
+      File.read("#{DASHBOARD}/output/html/#{result}/#{user}.html")
+    end
+    rescue Errno::ENOENT
+      'No results found'
+    end
+  end
+
+  get '/dashboard/update' do
+    $logger.info "Triggering dashboard update."
+
+    if update_dashboard_results(DASHBOARD)
+      {'status' => 'success'}.to_json
+    else
+      {'status' => 'fail', 'message' => 'Already running'}.to_json
+    end
+  end
+
+  get '/dashboard/set/:current' do |current|
+    $logger.info "Setting current test to #{current}."
+    @@current_test = current
+
+    {'status' => 'success'}.to_json
   end
 
   get '/new/:username' do |username|
@@ -483,6 +530,70 @@ class Puppetfactory  < Sinatra::Base
       rescue => e
         $logger.error e.message
         true
+      end
+    end
+
+
+    def start_testing(path)
+      Thread.new do
+        loop do
+          $logger.info "Updating dashboard after #{DASHBOARD_INTERVAL} seconds."
+          update_dashboard_results(path)
+          sleep(DASHBOARD_INTERVAL)
+        end
+      end
+    end
+
+    def update_dashboard_results(path)
+      return false if @@test_running
+
+      Dir.chdir(path) do
+        @@test_running = true
+        case @@current_test
+        when 'all', 'summary'
+          `rake generate`
+        else
+          `rake generate current_test=#{@@current_test}`
+        end
+        @@test_running = false
+      end
+
+      true
+    end
+
+    def get_available_tests(path)
+      Dir.chdir(path) { `rake list`.split } rescue []
+    end
+
+    def set_current_test(current)
+      @current_test = current
+    end
+
+    def get_test_data(path)
+      JSON.parse(File.read("#{path}/output/summary.json")) rescue {}
+    end
+
+    def test_completion(data)
+      total  = data['example_count'] rescue 0
+      failed = data['failure_count'] rescue 0
+      passed = total - failed
+      percent = passed.to_f / total * 100.0 rescue 0
+
+      [total, passed, percent]
+    end
+
+    def approximate_time_difference(timestamp)
+      return 'never' if timestamp.nil?
+
+      start = Time.parse(timestamp)
+      delta = (Time.now - start)
+
+      if delta > 60
+        # This grossity is rounding to the nearest whole minute
+        mins = ((delta / 600).round(1)*10).to_i
+        "about #{mins} minutes ago"
+      else
+        "#{delta.to_i} seconds ago"
       end
     end
 
