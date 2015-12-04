@@ -23,8 +23,11 @@ RAKE_API  = "#{RAKE} -f #{DASH_PATH}/Rakefile RAILS_ENV=production"
 DOCROOT   =  OPTIONS['DOCROOT'] || '/opt/puppetfactory'           # where templates and public files go
 LOGFILE   =  OPTIONS['LOGFILE'] || '/var/log/puppetfactory'
 CERT_PATH =  OPTIONS['CERT_PATH'] || 'certs'
-USER      =  OPTIONS['USER'] || 'admin'
+
+USER      =  OPTIONS['USER']     || 'admin'
 PASSWORD  =  OPTIONS['PASSWORD'] || 'admin'
+SESSION   =  OPTIONS['SESSION']  || '12345'
+
 CONTAINER_NAME =  OPTIONS['CONTAINER_NAME'] || 'centosagent'
 
 CONFDIR      =  OPTIONS['CONFDIR'] || '/etc/puppetlabs/puppet'
@@ -40,6 +43,8 @@ DOCKER_GROUP    = OPTIONS['DOCKER_GROUP'] || 'docker'
 
 MAP_ENVIRONMENTS = OPTIONS['MAP_ENVIRONMENTS'] || false
 MAP_MODULEPATH   = OPTIONS['MAP_MODULEPATH']   || MAP_ENVIRONMENTS # maintain backwards compatibility
+
+DASHBOARD  = OPTIONS['DASHBOARD'] || '/etc/puppetfactory/dashboard'
 
 PE  = OPTIONS['PE'] || true
 
@@ -57,6 +62,7 @@ class Puppetfactory  < Sinatra::Base
 
   configure :production, :development do
     enable :logging
+    enable :sessions
 
     # why do I have to do this? This page implies I shouldn't.
     # https://github.com/sinatra/sinatra#logging
@@ -66,7 +72,13 @@ class Puppetfactory  < Sinatra::Base
   end
 
   get '/' do
+    @dashboard = DASHBOARD
     erb :index
+  end
+
+  get '/login' do
+    protected!
+    redirect '/'
   end
 
   get '/home' do
@@ -74,14 +86,19 @@ class Puppetfactory  < Sinatra::Base
   end
 
   get '/users' do
-    protected!
     @users = load_users()
     erb :users
   end
 
-  get '/login' do
+  get '/shell' do
+    erb :shell
+  end
+
+  get '/dashboard' do
     protected!
-    erb :login
+
+    @dashboard = DASHBOARD
+    erb :dashboard
   end
 
   get '/new/:username' do |username|
@@ -90,7 +107,8 @@ class Puppetfactory  < Sinatra::Base
   end
 
   post '/new' do
-    # protected!
+    confined!
+    session[:username] = params[:username]
     create(params[:username], params[:password])
   end
 
@@ -136,7 +154,7 @@ class Puppetfactory  < Sinatra::Base
   helpers do
     def load_users()
       # Get the users from the filesystem and look up their info
-      users  = {}
+      users = {}
       Dir.glob('/home/*').each do |path|
         username = File.basename path
         users[username] = load_user(username)
@@ -476,9 +494,26 @@ class Puppetfactory  < Sinatra::Base
       end
     end
 
+    def confined!
+      unless params[:session] == SESSION
+        throw(:halt, [403, "Only classroom members are allowed to create accounts!\n"])
+      end
+    end
+
+    def privileged?
+      session[:privileges] == 'admin'
+    end
+
     def authorized?
       @auth ||=  Rack::Auth::Basic::Request.new(request.env)
-      @auth.provided? && @auth.basic? && @auth.credentials && @auth.credentials == [USER, PASSWORD]
+
+      if @auth.provided? && @auth.basic? && @auth.credentials == [USER, PASSWORD]
+        session[:privileges] = 'admin'
+        true
+      else
+        session.delete :privileges
+        false
+      end
     end
 
   end

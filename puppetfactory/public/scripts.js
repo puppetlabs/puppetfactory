@@ -16,4 +16,10 @@ $(document).ready(function(){
       return keepLoading;
     },
   });
+
+  $('#login').button({
+    icons: {
+      primary: "ui-icon-locked"
+    }
+  });
 });

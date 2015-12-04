@@ -10,15 +10,17 @@
 </head>
 <body>
     <h1>Puppet Labs Training Classroom Manager</h1>
+    <% unless privileged? %><a href="/login" id="login">Admin Login</a><% end %>
     <div id="tabs">
       <ul>
-    		<li><a href="#home">Home</a></li>
-    		<li><a href="/users">Users</a></li>
-    		<li><a class="cache" href="/login">SSH Login</a></li>
-    	</ul>
-    	<div id="home">
-      	<%= erb :home %>
-    	</div>
+        <li><a href="#home">Home</a></li>
+        <li><a href="/users">Users</a></li>
+        <li><a class="cache" href="/shell">SSH Login</a></li>
+        <% if privileged? and @dashboard %><li><a href="/dashboard">Dashboard</a></li><% end %>
+      </ul>
+      <div id="home">
+        <%= erb :home %>
+      </div>
     </div>
 </body>
 </html>

@@ -13,6 +13,17 @@ tr.even {
   background: #b3c6ae;
 }
 
+#login {
+  position: absolute;
+  top: 0.5em;
+  right: 0.5em;
+  font-size: 8pt;
+  opacity: 0;
+}
+#login:hover {
+  opacity: 1;
+}
+
 #usercontent {
   position: relative;
   padding-top: 1.25em;
@@ -80,7 +91,7 @@ table#users td.status {
   height: 24em;
 }
 
-#login code {
+#shell code {
   background-color: #ddd;
   border-bottom: 2px dotted #aaa;
   padding: 0.25em;
