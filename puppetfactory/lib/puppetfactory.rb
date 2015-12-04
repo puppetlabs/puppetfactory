@@ -203,24 +203,19 @@ class Puppetfactory < Sinatra::Base
       # Get the users from the filesystem and look up their info
       users = {}
       Dir.glob('/home/*').each do |path|
-        username = File.basename path
-        users[username] = load_user(username)
+        username        = File.basename path
+        users[username] = basic_user(username)
       end
       users
     end
 
     def load_user(username)
       # build the basic user object
-      user = {
-          :console  => "#{username}@#{USERSUFFIX}",
-          :certname => "#{username}.#{USERSUFFIX}",
-      }
-
+      user = basic_user(username)
       begin
         # Lookup the container by username and convert to json
         user_container = Docker::Container.get(username).json rescue {}
 
-        user[:port]              = user_port(username)
         user[:container_status]  = user_container['State']
         user[:node_group_status] = node_group_status(username)
       rescue => ex
@@ -228,6 +223,15 @@ class Puppetfactory < Sinatra::Base
         $logger.debug ex.backtrace.join "\n"
       end
       user
+    end
+
+    def basic_user(username)
+      # build the basic user object
+      {
+          :console  => "#{username}@#{USERSUFFIX}",
+          :certname => "#{username}.#{USERSUFFIX}",
+          :port     => user_port(username),
+      }
     end
 
     def user_port(username)
