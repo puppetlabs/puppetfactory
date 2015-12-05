@@ -7,7 +7,7 @@ task :default => :spec
 
 desc "List all available tests"
 task :list do
-  Dir.glob('spec/*').each do |dir|
+  Dir.glob('spec/*').sort.each do |dir|
     puts File.basename(dir, '_spec.rb')
   end
 end
