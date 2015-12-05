@@ -67,7 +67,7 @@ class puppetfactory::profile::fundamentals {
   unless defined('$puppetlabs_class') {
     file { '/etc/puppetlabs/code/hiera.yaml':
       ensure  => file,
-      content => 'puppet:///modules/puppetfactory/fundamentals/hiera.yaml',
+      source => 'puppet:///modules/puppetfactory/fundamentals/hiera.yaml',
     }
   }
 }
