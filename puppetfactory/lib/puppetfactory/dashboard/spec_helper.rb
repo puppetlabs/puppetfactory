@@ -5,7 +5,7 @@ username = ENV['TARGET_HOST']
 RSpec.configure do |c|
   c.environmentpath = "/etc/puppetlabs/code/environments"
   c.module_path     = "/etc/puppetlabs/code/environments/#{username}/modules"
-  c.manifest_dir    = "/etc/puppetlabs/code/environments/#{username}/manifests"
+  c.manifest        = "/etc/puppetlabs/code/environments/#{username}/manifests"
 
   # Adds to the built in defaults from rspec-puppet
   c.default_facts = {
