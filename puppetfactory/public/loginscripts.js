@@ -3,6 +3,7 @@ $(document).ready(function(){
     e.preventDefault();
 
     $( "#alternate" ).dialog({
+      title: $(this).attr("title"),
       buttons: {
         Ok: function() {
           $( this ).dialog( "close" );
