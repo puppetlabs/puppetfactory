@@ -71,6 +71,30 @@ $(document).ready(function(){
     pokeServer('/dashboard/set/' + selected);
   });
 
+  $('#show-explanation').click( function(e) {
+    e.preventDefault();
+
+    $( "#explanation" ).dialog({
+      title: $(this).attr("title"),
+      position: {
+        my: "top",
+        at: "top",
+        of: window
+      },
+      buttons: {
+        Ok: function() {
+          $( this ).dialog( "close" );
+        }
+      },
+      open: function () {
+        $(this).scrollTop(0);
+        $(this).parent().find('button:nth-child(1)').focus();
+      },
+      height: 500,
+      width: 600,
+    });
+  });
+
   /*******************   Set up initial page state *****************/
   initializeView();
 });

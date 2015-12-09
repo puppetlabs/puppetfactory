@@ -10,6 +10,10 @@ tr.even {
   background: #b3c6ae;
 }
 
+li {
+  margin-bottom: 0.5em;
+}
+
 #login {
   position: absolute;
   top: 0.5em;
@@ -104,7 +108,8 @@ table#users td.select {
   padding: 0.25em;
 }
 
-#alternate {
+#alternate,
+#explanation {
   display: none;
 }
 
