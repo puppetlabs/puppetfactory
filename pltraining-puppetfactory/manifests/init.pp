@@ -24,6 +24,8 @@ class puppetfactory (
   $container_name      = $puppetfactory::params::container_name,
   $docker_group        = $puppetfactory::params::docker_group,
 
+  $dashboard           = $puppetfactory::params::dashboard,
+
   $manage_selinux      = $puppetfactory::params::manage_selinux,
 
   $pe                  = $puppetfactory::params::pe,

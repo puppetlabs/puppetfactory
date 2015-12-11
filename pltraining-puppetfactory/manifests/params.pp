@@ -24,6 +24,8 @@ class puppetfactory::params {
   $container_name = 'centosagent'
   $docker_group   = 'docker'
 
+  $dashboard = false
+
   # support for old facter versions
   $manage_selinux = $::os['selinux'] ? {
     undef   => $::selinux,
