@@ -45,7 +45,7 @@ DOCKER_GROUP    = OPTIONS['DOCKER_GROUP'] || 'docker'
 MAP_ENVIRONMENTS = OPTIONS['MAP_ENVIRONMENTS'] || false
 MAP_MODULEPATH   = OPTIONS['MAP_MODULEPATH']   || MAP_ENVIRONMENTS # maintain backwards compatibility
 
-DASHBOARD          = OPTIONS['DASHBOARD']          || '/etc/puppetfactory/dashboard'
+DASHBOARD          = OPTIONS['DASHBOARD'].nil? ? '/etc/puppetfactory/dashboard' : OPTIONS['DASHBOARD']
 DASHBOARD_INTERVAL = OPTIONS['DASHBOARD_INTERVAL'] || 5 * 60 # test interval in seconds
 
 PE  = OPTIONS['PE'] || true
