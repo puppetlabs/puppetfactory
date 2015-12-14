@@ -165,6 +165,18 @@ class Puppetfactory < Sinatra::Base
     create(params[:username], params[:password])
   end
 
+  get '/wetty' do
+    redirect "http://#{request.host}:4200"
+  end
+
+  get '/port/:port' do |port|
+    redirect "http://#{request.host}:#{port}"
+  end
+
+  get '/port/:port/' do |port|
+    redirect "http://#{request.host}:#{port}"
+  end
+
   # RESTful API endpoints
 
   # Return details for all users as JSON
