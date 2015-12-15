@@ -5,6 +5,7 @@ class puppetfactory::profile::fundamentals {
   })
 
   class { 'puppetfactory':
+    dashboard        => true,
     prefix           => true,
     map_environments => true,
     map_modulepath   => false,
