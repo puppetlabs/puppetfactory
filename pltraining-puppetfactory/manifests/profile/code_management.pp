@@ -1,8 +1,11 @@
-class puppetfactory::profile::code_management {
+class puppetfactory::profile::code_management (
+  $session_id = $puppetfactory::params::session_id,
+) inherits puppetfactory::params {
   # Classroom for the codemanagement course
   class { 'puppetfactory':
     # Put students' puppetcode directories somewhere less distracting
     puppetcode => '/var/opt/puppetcode',
+    session_id       => $session_id,
   }
 
   class { 'r10k':

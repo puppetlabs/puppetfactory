@@ -14,6 +14,7 @@ class puppetfactory (
   $cert_path           = $puppetfactory::params::cert_path,
   $user                = $puppetfactory::params::user,
   $password            = $puppetfactory::params::password,
+  $session_id          = $puppetfactory::params::session_id,
 
   $confdir             = $puppetfactory::params::confdir,
   $codedir             = $puppetfactory::params::codedir,
