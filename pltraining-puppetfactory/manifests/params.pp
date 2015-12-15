@@ -9,11 +9,12 @@ class puppetfactory::params {
   $puppet = '/opt/puppetlabs/puppet/bin/puppet'
   $rake   = '/opt/puppetlabs/puppet/bin/rake'
 
-  $docroot   = '/opt/puppetfactory'
-  $logfile   = '/var/log/puppetfactory'
-  $cert_path = 'certs'
-  $user      = 'admin'
-  $password  = 'admin'
+  $docroot    = '/opt/puppetfactory'
+  $logfile    = '/var/log/puppetfactory'
+  $cert_path  = 'certs'
+  $user       = 'admin'
+  $password   = 'admin'
+  $session_id = '12345'
 
   $confdir = '/etc/puppetlabs/puppet'
   $codedir = '/etc/puppetlabs/code'

@@ -1,4 +1,6 @@
-class puppetfactory::profile::fundamentals {
+class puppetfactory::profile::fundamentals (
+  $session_id = $puppetfactory::params::session_id,
+) inherits puppetfactory::params {
 
   ensure_packages('gcc', {
     before => Package['puppetfactory']
@@ -8,6 +10,7 @@ class puppetfactory::profile::fundamentals {
     prefix           => true,
     map_environments => true,
     map_modulepath   => false,
+    session_id       => $session_id,
   }
 
   File {
