@@ -1,3 +1,8 @@
+## Version 0.4.0
+
+* Instructor dashboard
+* Wetty for web terminal instead of shellinabox
+
 ## Version 0.3.10
 
 * lynx installed inside containers
