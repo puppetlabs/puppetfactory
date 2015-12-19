@@ -400,8 +400,9 @@ class Puppetfactory < Sinatra::Base
         # Create container with hostname set for username with port 80 mapped to 3000 + uid
         container = Docker::Container.create(
           "Cmd" => [
-            "/sbin/init"
+            "/bin/bash"
           ],
+          "Tty" => true,
           "Domainname" => "puppetlabs.vm",
           "Env" => [
             "RUNLEVEL=3",
