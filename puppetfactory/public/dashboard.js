@@ -29,7 +29,7 @@ $(document).ready(function(){
     }
     else {
       $('.progressbar').hide();
-      $('.progressbar.'+selected).show();
+      if(selected) { $('.progressbar.'+selected).show(); }
     }
 
     return selected;

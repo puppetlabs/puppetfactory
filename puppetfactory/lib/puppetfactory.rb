@@ -124,17 +124,12 @@ class Puppetfactory < Sinatra::Base
     erb :dashboard
   end
 
-  get '/dashboard/details/:user/:result' do |user, result|
+  get '/dashboard/details/:user' do |user|
+    get_user_test_html(user, @@current_test)
+  end
 
-    begin
-    if result == 'summary'
-      File.read("#{DASHBOARD}/output/html/#{user}.html")
-    else
-      File.read("#{DASHBOARD}/output/html/#{result}/#{user}.html")
-    end
-    rescue Errno::ENOENT
-      'No results found'
-    end
+  get '/dashboard/details/:user/:result' do |user, result|
+    get_user_test_html(user, result)
   end
 
   get '/dashboard/update' do
@@ -625,6 +620,18 @@ class Puppetfactory < Sinatra::Base
 
     def get_test_data(path)
       JSON.parse(File.read("#{path}/output/summary.json")) rescue {}
+    end
+
+    def get_user_test_html(user, result)
+      begin
+      if result == 'summary'
+        File.read("#{DASHBOARD}/output/html/#{user}.html")
+      else
+        File.read("#{DASHBOARD}/output/html/#{result}/#{user}.html")
+      end
+      rescue Errno::ENOENT
+        'No results found'
+      end
     end
 
     def test_completion(data)
