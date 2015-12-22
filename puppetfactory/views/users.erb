@@ -20,6 +20,7 @@
     <tr><th class="header">Sandbox URL:</th> <td><a href="/port/<%= @current[:port] %>/"><%= @current[:url] %></a></td></tr>
     <tr><th class="header">Container:</th>   <td><%= @current[:container_status]['Description'] %></td></tr>
     <tr><th class="header">Node Group:</th>  <td><a href="<%= @current[:node_group_url] %>" target="_console">Console login</a></td></tr>
+    <tr><th class="header">Spec Tests:</th>  <td><a href="/dashboard/details/<%= @current[:username] %>" target="_results">results</a> <small>(may not always be available)</small></td></tr>
   </table>
 <% end %>
   <h2>All Users</h2>
