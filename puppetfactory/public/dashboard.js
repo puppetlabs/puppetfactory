@@ -39,7 +39,7 @@ $(document).ready(function(){
     // Unbind existing event handlers so they don't cascade when the content is updated
     $('#update').off();
     $('#current').off();
-    updatePage();
+    updatePage('Dashboard');
   }
 
   function initializeView() {

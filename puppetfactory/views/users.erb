@@ -14,7 +14,7 @@
   </div>
 <% if @current %>
   <h2>Selected User</h2>
-  <table id="current">
+  <table id="currentuser">
     <tr><th class="header">Username:</th>    <td><%= @current[:username] %></td></tr>
     <tr><th class="header">Certname:</th>    <td><%= @current[:certname] %></td></tr>
     <tr><th class="header">Sandbox URL:</th> <td><a href="/port/<%= @current[:port] %>/"><%= @current[:url] %></a></td></tr>

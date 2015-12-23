@@ -24,7 +24,13 @@ $(document).ready(function(){
   });
 });
 
-function updatePage() {
-  var idx = $("#tabs").tabs("option","active");
+function updatePage(name) {
+  if (name) {
+    var idx = $("#tabs > ul > li:contains("+name+")").index();
+  }
+  else {
+    var idx = $("#tabs").tabs("option","active");
+  }
+
   $("#tabs").tabs('load', idx);
 }

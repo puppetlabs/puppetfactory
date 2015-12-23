@@ -71,7 +71,7 @@ li {
   background: #f88484;
 }
 
-table#current th.header {
+table#currentuser th.header {
   width: 10%;
   white-space: nowrap;
   text-align: right;
