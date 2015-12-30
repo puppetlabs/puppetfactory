@@ -465,6 +465,8 @@ class Puppetfactory < Sinatra::Base
     end
 
     def massage_container_state(state)
+      return {'Description' => 'No container.'} if state.nil?
+      
       if state['OOMKilled']
         state['Description'] = 'Halted because host machine is out of memory.'
       elsif state['Restarting']
