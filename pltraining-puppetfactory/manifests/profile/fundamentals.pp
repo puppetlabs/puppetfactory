@@ -1,6 +1,13 @@
 class puppetfactory::profile::fundamentals (
   $session_id = $puppetfactory::params::session_id,
+  $sshkey,
 ) inherits puppetfactory::params {
+
+  File {
+    owner => 'root',
+    group => 'root',
+    mode  => '0644',
+  }
 
   ensure_packages('gcc', {
     before => Package['puppetfactory']
@@ -14,10 +21,9 @@ class puppetfactory::profile::fundamentals (
     session_id       => $session_id,
   }
 
-  File {
-    owner => 'root',
-    group => 'root',
-    mode  => '0644',
+  class { 'puppetfactory::profile::showoff':
+    preso  => 'fundamentals',
+    sshkey => $sshkey,
   }
 
   file { '/etc/puppetlabs/r10k/r10k.yaml':
