@@ -1,6 +1,5 @@
 class puppetfactory::profile::fundamentals (
   $session_id = $puppetfactory::params::session_id,
-  $sshkey,
 ) inherits puppetfactory::params {
 
   File {
@@ -23,7 +22,6 @@ class puppetfactory::profile::fundamentals (
 
   class { 'puppetfactory::profile::showoff':
     preso  => 'fundamentals',
-    sshkey => $sshkey,
   }
 
   file { '/etc/puppetlabs/r10k/r10k.yaml':
