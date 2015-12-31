@@ -9,7 +9,7 @@ class puppetfactory::profile::fundamentals (
     mode  => '0644',
   }
 
-  ensure_packages('gcc', {
+  ensure_packages(['gcc', 'zlib-devel'], {
     before => Package['puppetfactory']
   })
 
