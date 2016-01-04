@@ -2,22 +2,26 @@ class puppetfactory::profile::fundamentals (
   $session_id = $puppetfactory::params::session_id,
 ) inherits puppetfactory::params {
 
-  ensure_packages('gcc', {
-    before => Package['puppetfactory']
-  })
-
-  class { 'puppetfactory':
-    dashboard        => true,
-    prefix           => true,
-    map_environments => true,
-    map_modulepath   => false,
-    session_id       => $session_id,
-  }
-
   File {
     owner => 'root',
     group => 'root',
     mode  => '0644',
+  }
+
+  ensure_packages(['gcc', 'zlib-devel'], {
+    before => Package['puppetfactory']
+  })
+
+  class { 'puppetfactory::profile::showoff':
+    preso  => 'fundamentals',
+  }
+
+  class { 'puppetfactory':
+    prefix           => true,
+    map_environments => true,
+    map_modulepath   => false,
+    dashboard        => "${showoff::root}/courseware/fundamentals/_files/tests",
+    session_id       => $session_id,
   }
 
   file { '/etc/puppetlabs/r10k/r10k.yaml':
