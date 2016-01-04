@@ -12,16 +12,16 @@ class puppetfactory::profile::fundamentals (
     before => Package['puppetfactory']
   })
 
+  class { 'puppetfactory::profile::showoff':
+    preso  => 'fundamentals',
+  }
+
   class { 'puppetfactory':
-    dashboard        => true,
     prefix           => true,
     map_environments => true,
     map_modulepath   => false,
+    dashboard        => "${showoff::root}/courseware/fundamentals/_files/tests",
     session_id       => $session_id,
-  }
-
-  class { 'puppetfactory::profile::showoff':
-    preso  => 'fundamentals',
   }
 
   file { '/etc/puppetlabs/r10k/r10k.yaml':
