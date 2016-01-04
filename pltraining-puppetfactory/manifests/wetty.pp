@@ -22,4 +22,19 @@ class puppetfactory::wetty {
     ensure  => 'running',
     require => [File['/etc/init.d/wetty'],Exec['npm -g install wetty']],
   }
+
+  if $puppetfactory::manage_selinux {
+    # Source code in weblogin.te
+    file { '/usr/share/selinux/targeted/weblogin.pp':
+      ensure => file,
+      owner  => 'root',
+      group  => 'root',
+      mode   => '0644',
+      source => 'puppet:///modules/puppetfactory/weblogin.pp',
+    }
+
+    selmodule { 'weblogin':
+      ensure => present,
+    }
+  }
 }
