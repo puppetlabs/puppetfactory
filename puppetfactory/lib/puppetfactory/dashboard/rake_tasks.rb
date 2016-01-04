@@ -33,11 +33,12 @@ end
 
 namespace :spec do
   targets = []
-  Dir.glob('/home/*').each do |dir|
+  Dir.glob('/etc/puppetlabs/code/environments/*').each do |dir|
     next unless File.directory?(dir)
-    targets << File.basename(dir)
+    target = File.basename(dir.sub('_production', ''))
+    next if target == 'production'
+    targets << target
   end
-
   task :all_agents => targets
 
   if ENV.include? 'current_test'
