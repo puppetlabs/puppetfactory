@@ -18,8 +18,9 @@ class puppetfactory::proxy {
     require => Package['nginx'],
   }
   service {'nginx':
-    ensure  => running,
-    require => [File['/etc/nginx/conf.d/default.conf'],File['/etc/nginx/nginx.conf']],
+    ensure    => running,
+    enable    => true,
+    subscribe => [File['/etc/nginx/conf.d/default.conf'],File['/etc/nginx/nginx.conf']],
   }
 
   # This will allow the nginx proxy rules to work with selinux enabled

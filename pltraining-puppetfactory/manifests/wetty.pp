@@ -19,8 +19,10 @@ class puppetfactory::wetty {
     source => 'puppet:///modules/puppetfactory/wetty.conf',
   }
   service { 'wetty':
-    ensure  => 'running',
-    require => [File['/etc/init.d/wetty'],Exec['npm -g install wetty']],
+    ensure    => 'running',
+    enable    => true,
+    require   => Exec['npm -g install wetty'],
+    subscribe => File['/etc/init.d/wetty'],
   }
 
   if $puppetfactory::manage_selinux {
