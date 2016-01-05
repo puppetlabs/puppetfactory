@@ -395,7 +395,7 @@ class Puppetfactory < Sinatra::Base
         # Create container with hostname set for username with port 80 mapped to 3000 + uid
         container = Docker::Container.create(
           "Cmd" => [
-            "/bin/bash"
+            "/usr/lib/systemd/systemd"
           ],
           "Tty" => true,
           "Domainname" => "puppetlabs.vm",
@@ -412,7 +412,7 @@ class Puppetfactory < Sinatra::Base
           "Hostname" => "#{username}",
           "Image" => "#{CONTAINER_NAME}",
           "HostConfig" => {
-            "Privileged" => true,
+            "Privileged" => false,
             "Binds" => binds,
             "ExtraHosts" => [
               "#{MASTER_HOSTNAME} puppet:172.17.42.1"
