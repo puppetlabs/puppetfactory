@@ -1,10 +1,24 @@
 module weblogin 1.0;
 
 require {
-  type unconfined_t;
-  type unconfined_service_t;
-  class process transition;
+	type unconfined_t;
+	type systemd_unit_file_t;
+	type logrotate_t;
+	type systemd_logind_t;
+	type tmpfs_t;
+	type initrc_t;
+	class process transition;
+	class service stop;
+	class file getattr;
 }
 
-#============= unconfined_service_t ==============
-allow unconfined_service_t unconfined_t:process transition;
+#============= initrc_t ==============
+
+#!!!! This avc is allowed in the current policy
+allow initrc_t unconfined_t:process transition;
+
+#============= logrotate_t ==============
+allow logrotate_t systemd_unit_file_t:service stop;
+
+#============= systemd_logind_t ==============
+allow systemd_logind_t tmpfs_t:file getattr;
