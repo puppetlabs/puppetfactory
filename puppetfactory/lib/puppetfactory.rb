@@ -41,7 +41,7 @@ HOOKS_PATH   =  OPTIONS['HOOKS_PATH'] || '/etc/puppetfactory/hooks'
 
 MASTER_HOSTNAME = OPTIONS['PUPPETMASTER'] || `hostname`.strip
 DOCKER_GROUP    = OPTIONS['DOCKER_GROUP'] || 'docker'
-DOCKER_IP       = OPTIONS['DOCKER_IP'] || `facter ipaddress_docker0`
+DOCKER_IP       = OPTIONS['DOCKER_IP'] || `facter ipaddress_docker0`.strip
 
 MAP_ENVIRONMENTS = OPTIONS['MAP_ENVIRONMENTS'] || false
 MAP_MODULEPATH   = OPTIONS['MAP_MODULEPATH']   || MAP_ENVIRONMENTS # maintain backwards compatibility
