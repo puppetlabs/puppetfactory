@@ -363,9 +363,12 @@ class Puppetfactory < Sinatra::Base
           "/home/#{username}/puppet:#{CONFDIR}",
           "/sys/fs/cgroup:/sys/fs/cgroup:ro"
         ]
+        
+        # Create environment dir so that nodegroup works
+        environment = "#{ENVIRONMENTS}/#{environment_name(username)}"
+        FileUtils.mkdir_p "#{environment}"
 
         if MAP_ENVIRONMENTS then
-          environment = "#{ENVIRONMENTS}/#{environment_name(username)}"
 
           # configure environment
           FileUtils.mkdir_p "#{environment}/manifests"
