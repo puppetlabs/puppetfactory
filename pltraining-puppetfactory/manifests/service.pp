@@ -34,5 +34,6 @@ class puppetfactory::service {
     ensure    => running,
     enable    => true,
     subscribe => Package['puppetfactory'],
+    require   => Class['docker'], # I don't like this coupling, but it's a reflection of reality
   }
 }
