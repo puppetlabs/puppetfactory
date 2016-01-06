@@ -12,6 +12,11 @@ class puppetfactory::profile::fundamentals (
     before => Package['puppetfactory']
   })
 
+  package { ['serverspec', 'puppetlabs_spec_helper']:
+    ensure   => present,
+    provider => gem,
+  }
+
   class { 'puppetfactory::profile::showoff':
     preso  => 'fundamentals',
   }
