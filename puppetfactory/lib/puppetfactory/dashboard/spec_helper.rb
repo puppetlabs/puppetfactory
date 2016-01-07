@@ -12,7 +12,7 @@ end
 
 RSpec.configure do |c|
   c.environmentpath = environmentpath
-  c.module_path     = "#{environmentpath}/#{environment}/modules"
+  c.module_path     = "#{environmentpath}/#{environment}/site"
   c.manifest        = "#{environmentpath}/#{environment}/manifests"
 
   # Adds to the built in defaults from rspec-puppet
