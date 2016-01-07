@@ -15,6 +15,14 @@ class puppetfactory::profile::fundamentals (
   package { ['serverspec', 'puppetlabs_spec_helper']:
     ensure   => present,
     provider => gem,
+    require  => Package['puppet'],
+  }
+
+  # lol, this is great.
+  package { 'puppet':
+    ensure          => present,
+    provider        => gem,
+    install_options => { '--bindir' => '/tmp' },
   }
 
   class { 'puppetfactory::profile::showoff':
