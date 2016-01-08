@@ -1,3 +1,11 @@
+## Version 0.4.1
+
+* Virtual Fundamentals profile
+* Manage Showoff presentations
+* wetty and dashboard fixes
+* Fix for high CPU usage and console corruption
+* Support Docker 1.5.0
+
 ## Version 0.4.0
 
 * Instructor dashboard
