@@ -1,3 +1,7 @@
+## Version 0.4.2
+
+* Gitlab support
+
 ## Version 0.4.1
 
 * Virtual Fundamentals profile
