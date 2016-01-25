@@ -9,6 +9,10 @@ class puppetfactory::dockerenv {
     include pe_repo::platform::ubuntu_1404_amd64
   }
 
+  if $puppetfactory::params::gitlab {
+    include puppetfactory::gitlab
+  }
+
   file { '/etc/docker/ubuntuagent/':
     ensure  => directory,
     recurse => true,
