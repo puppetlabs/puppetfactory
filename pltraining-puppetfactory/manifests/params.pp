@@ -36,5 +36,5 @@ class puppetfactory::params {
   $pe               = true
   $prefix           = false
   $map_environments = false
-  $gitlab           = false
+  $gitlab_enabled   = false
 }

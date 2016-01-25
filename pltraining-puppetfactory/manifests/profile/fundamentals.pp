@@ -35,6 +35,7 @@ class puppetfactory::profile::fundamentals (
     map_modulepath   => false,
     dashboard        => "${showoff::root}/courseware/fundamentals/_files/tests",
     session_id       => $session_id,
+    gitlab_enabled   => false,
   }
 
   file { '/etc/puppetlabs/r10k/r10k.yaml':

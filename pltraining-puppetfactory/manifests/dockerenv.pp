@@ -9,7 +9,7 @@ class puppetfactory::dockerenv {
     include pe_repo::platform::ubuntu_1404_amd64
   }
 
-  if $puppetfactory::params::gitlab {
+  if $puppetfactory::gitlab_enabled {
     include puppetfactory::gitlab
   }
 
