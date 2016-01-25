@@ -316,7 +316,7 @@ class Puppetfactory < Sinatra::Base
           $users = JSON.parse(RestClient.get('http://localhost:8080/api/v3/users', {"PRIVATE-TOKEN" => $gitlab_token}))
           $users.each do |user|
             if user['username'] == username
-              RestClient.delete('http://localhost:8080/api/v3/users' + user['id'] , {"PRIVATE-TOKEN" => $gitlab_token})) 
+              RestClient.delete('http://localhost:8080/api/v3/users' + user['id'] , {"PRIVATE-TOKEN" => $gitlab_token})
             end
           end
         end
