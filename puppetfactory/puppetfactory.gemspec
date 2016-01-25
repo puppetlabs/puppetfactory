@@ -25,6 +25,7 @@ Gem::Specification.new do |s|
   s.add_dependency      "puppetclassify", ">= 0.1.0"
   s.add_dependency      "docker-api"
   s.add_dependency      "httparty"
+  s.add_dependency      "rest-client"
 
   s.description       = <<-desc
   Puppetfactory creates a Puppet Enterprise infrastructure on the classroom server.

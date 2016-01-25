@@ -280,9 +280,9 @@ class Puppetfactory < Sinatra::Base
           end
 
           # Use default gitlab root password to get session token
-          $gitlab_token = JSON.parse(RestClient.post('http://localhost:8080/api/v3/session', {:login => 'root', :password => '5iveL!fe'}))['private_token']
+          $gitlab_token = JSON.parse(RestClient.post('http://localhost:8888/api/v3/session', {:login => 'root', :password => '5iveL!fe'}))['private_token']
 
-          RestClient.post('http://localhost:8080/api/v3/users',
+          RestClient.post('http://localhost:8888/api/v3/users',
                           {
                             :email => username + "@puppetfactory.vm",
                             :password => password,
@@ -312,11 +312,11 @@ class Puppetfactory < Sinatra::Base
 
         if GITLAB
           # Use default gitlab root password to get session token
-          $gitlab_token = JSON.parse(RestClient.post('http://localhost:8080/api/v3/session', {:login => 'root', :password => '5iveL!fe'}))['private_token']
-          $users = JSON.parse(RestClient.get('http://localhost:8080/api/v3/users', {"PRIVATE-TOKEN" => $gitlab_token}))
+          $gitlab_token = JSON.parse(RestClient.post('http://localhost:8888/api/v3/session', {:login => 'root', :password => '5iveL!fe'}))['private_token']
+          $users = JSON.parse(RestClient.get('http://localhost:8888/api/v3/users', {"PRIVATE-TOKEN" => $gitlab_token}))
           $users.each do |user|
             if user['username'] == username
-              RestClient.delete('http://localhost:8080/api/v3/users' + user['id'] , {"PRIVATE-TOKEN" => $gitlab_token})
+              RestClient.delete('http://localhost:8888/api/v3/users' + user['id'] , {"PRIVATE-TOKEN" => $gitlab_token})
             end
           end
         end
