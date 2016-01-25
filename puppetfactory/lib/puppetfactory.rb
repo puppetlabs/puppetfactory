@@ -275,6 +275,10 @@ class Puppetfactory < Sinatra::Base
         end
 
         if GITLAB
+          if password.length < 8
+            raise "Password must be at least 8 characters"
+          end
+
           # Use default gitlab root password to get session token
           $gitlab_token = JSON.parse(RestClient.post('http://localhost:8080/api/v3/session', {:login => 'root', :password => '5iveL!fe'}))['private_token']
 
@@ -305,6 +309,17 @@ class Puppetfactory < Sinatra::Base
 
       begin
         call_hooks(:delete, username)
+
+        if GITLAB
+          # Use default gitlab root password to get session token
+          $gitlab_token = JSON.parse(RestClient.post('http://localhost:8080/api/v3/session', {:login => 'root', :password => '5iveL!fe'}))['private_token']
+          $users = JSON.parse(RestClient.get('http://localhost:8080/api/v3/users', {"PRIVATE-TOKEN" => $gitlab_token}))
+          $users.each do |user|
+            if user['username'] == username
+              RestClient.delete('http://localhost:8080/api/v3/users' + user['id'] , {"PRIVATE-TOKEN" => $gitlab_token})) 
+            end
+          end
+        end
 
         errors  = 0
         errors += 1 if failed? { remove_console_user(username) }
