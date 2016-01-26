@@ -43,6 +43,11 @@ class puppetfactory (
   include puppetfactory::dockerenv
   include epel
 
+  $gitserver = $gitlab_enabled ? {
+    true    => 'http://localhost:8888',
+    default => 'https://github.com',
+  }
+
   unless $pe {
     file { ["${codedir}/environments","${codedir}/environments/production"]:,
       ensure => directory,

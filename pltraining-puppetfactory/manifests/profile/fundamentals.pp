@@ -55,9 +55,9 @@ class puppetfactory::profile::fundamentals (
   }
 
   file { '/etc/puppetfactory/hooks/create/r10k_create_user.rb':
-    ensure => file,
-    mode   => '0755',
-    source => 'puppet:///modules/puppetfactory/fundamentals/r10k_env.rb',
+    ensure  => file,
+    mode    => '0755',
+    content => epp('puppetfactory/fundamentals/r10k_env.rb.epp',{ 'gitserver' => $puppetfactory::gitserver }),
   }
 
   # this looks wonky, but the script uses its name to determine mode of operation
