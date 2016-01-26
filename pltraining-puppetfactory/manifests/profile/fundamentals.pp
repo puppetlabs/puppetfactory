@@ -35,6 +35,7 @@ class puppetfactory::profile::fundamentals (
     map_modulepath   => false,
     dashboard        => "${showoff::root}/courseware/fundamentals/_files/tests",
     session_id       => $session_id,
+    gitlab_enabled   => false,
   }
 
   file { '/etc/puppetlabs/r10k/r10k.yaml':
@@ -54,9 +55,9 @@ class puppetfactory::profile::fundamentals (
   }
 
   file { '/etc/puppetfactory/hooks/create/r10k_create_user.rb':
-    ensure => file,
-    mode   => '0755',
-    source => 'puppet:///modules/puppetfactory/fundamentals/r10k_env.rb',
+    ensure  => file,
+    mode    => '0755',
+    content => epp('puppetfactory/fundamentals/r10k_env.rb.epp',{ 'gitserver' => $puppetfactory::gitserver }),
   }
 
   # this looks wonky, but the script uses its name to determine mode of operation

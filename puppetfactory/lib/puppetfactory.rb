@@ -13,6 +13,7 @@ require 'yaml'
 require 'time'
 require 'puppetclassify'
 require 'docker'
+require 'rest-client'
 
 OPTIONS = YAML.load_file('/etc/puppetfactory.yaml') rescue {}
 
@@ -50,6 +51,8 @@ DASHBOARD          = OPTIONS['DASHBOARD'].nil? ? '/etc/puppetfactory/dashboard' 
 DASHBOARD_INTERVAL = OPTIONS['DASHBOARD_INTERVAL'] || 5 * 60 # test interval in seconds
 
 PE  = OPTIONS['PE'] || true
+
+GITLAB = OPTIONS['GITLAB'] || false
 
 AUTH_INFO = OPTIONS['AUTH_INFO'] || {
   "ca_certificate_path" => "#{CONFDIR}/ssl/ca/ca_crt.pem",
@@ -260,7 +263,7 @@ class Puppetfactory < Sinatra::Base
       $? == 0 ? output : nil
     end
 
-    def create(username, password = 'puppet')
+    def create(username, password = 'puppetlabs')
       username.downcase!
 
       begin
@@ -269,6 +272,25 @@ class Puppetfactory < Sinatra::Base
         if PE
           $logger.info add_console_user(username,password)
           $logger.info classify(username)
+        end
+
+        if GITLAB
+          if password.length < 8
+            raise "Password must be at least 8 characters"
+          end
+
+          # Use default gitlab root password to get session token
+          $gitlab_token = JSON.parse(RestClient.post('http://localhost:8888/api/v3/session', {:login => 'root', :password => '5iveL!fe'}))['private_token']
+
+          RestClient.post('http://localhost:8888/api/v3/users',
+                          {
+                            :email => username + "@puppetfactory.vm",
+                            :password => password,
+                            :username => username,
+                            :name => username,
+                            :confirm => false,
+                            :private_token => $gitlab_token
+                          })
         end
 
         call_hooks(:create, username)
@@ -287,6 +309,17 @@ class Puppetfactory < Sinatra::Base
 
       begin
         call_hooks(:delete, username)
+
+        if GITLAB
+          # Use default gitlab root password to get session token
+          $gitlab_token = JSON.parse(RestClient.post('http://localhost:8888/api/v3/session', {:login => 'root', :password => '5iveL!fe'}))['private_token']
+          $users = JSON.parse(RestClient.get('http://localhost:8888/api/v3/users', {"PRIVATE-TOKEN" => $gitlab_token}))
+          $users.each do |user|
+            if user['username'] == username
+              RestClient.delete('http://localhost:8888/api/v3/users' + user['id'] , {"PRIVATE-TOKEN" => $gitlab_token})
+            end
+          end
+        end
 
         errors  = 0
         errors += 1 if failed? { remove_console_user(username) }

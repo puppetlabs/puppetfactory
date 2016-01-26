@@ -33,6 +33,8 @@ class puppetfactory (
   $prefix              = $puppetfactory::params::prefix,
   $map_environments    = $puppetfactory::params::map_environments,
   $map_modulepath      = $puppetfactory::params::map_environments, # maintain backwards compatibility and simplicity
+
+  $gitlab_enabled      = $puppetfactory::params::gitlab_enabled,
 ) inherits puppetfactory::params {
 
   include puppetfactory::proxy
@@ -40,6 +42,11 @@ class puppetfactory (
   include puppetfactory::wetty
   include puppetfactory::dockerenv
   include epel
+
+  $gitserver = $gitlab_enabled ? {
+    true    => 'http://localhost:8888',
+    default => 'https://github.com',
+  }
 
   unless $pe {
     file { ["${codedir}/environments","${codedir}/environments/production"]:,

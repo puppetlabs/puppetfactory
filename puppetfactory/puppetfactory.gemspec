@@ -3,7 +3,7 @@ require 'date'
 
 Gem::Specification.new do |s|
   s.name              = "puppetfactory"
-  s.version           = '0.3.0'
+  s.version           = '0.3.1'
   s.date              = Date.today.to_s
   s.summary           = "Stands up a graphical classroom manager with containerized puppet agents."
   s.homepage          = "http://www.puppetlabs.com/education"
@@ -25,6 +25,7 @@ Gem::Specification.new do |s|
   s.add_dependency      "puppetclassify", ">= 0.1.0"
   s.add_dependency      "docker-api"
   s.add_dependency      "httparty"
+  s.add_dependency      "rest-client"
 
   s.description       = <<-desc
   Puppetfactory creates a Puppet Enterprise infrastructure on the classroom server.
