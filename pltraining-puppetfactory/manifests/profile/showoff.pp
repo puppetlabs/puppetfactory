@@ -1,5 +1,6 @@
 class puppetfactory::profile::showoff (
   String $preso,
+  Optional[String] $password,
   Boolean $virtual = true,
 ) {
   $courses = [
@@ -25,6 +26,7 @@ class puppetfactory::profile::showoff (
   $github_host_key = "AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ=="
 
   include showoff
+  include puppetfactory::profile::pdf_stack
 
   file { "/home/${showoff::user}/.ssh/id_rsa":
     ensure  => file,
@@ -49,6 +51,16 @@ class puppetfactory::profile::showoff (
     user     => $showoff::user,
     source   => $repository,
     require  => Sshkey['github key'],
+    notify   => Exec['build_pdfs'],
+  }
+
+  exec { 'build_pdfs':
+    command     => "rake watermark target=_files/share password=${password}",
+    cwd         => "${showoff::root}/courseware/${preso}",
+    path        => '/bin:/usr/bin:/usr/local/bin',
+    environment => ['HOME=/root'],
+    require     => Class['puppetfactory::profile::pdf_stack', 'showoff'],
+    refreshonly => true,
   }
 
   showoff::presentation { $preso:
