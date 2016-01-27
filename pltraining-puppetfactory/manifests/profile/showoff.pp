@@ -1,6 +1,7 @@
 class puppetfactory::profile::showoff (
   Optional[String] $password,
 ) {
+  include stunnel
   require showoff
   require puppetfactory::profile::pdf_stack
 
@@ -25,8 +26,41 @@ class puppetfactory::profile::showoff (
     refreshonly => true,
   }
 
-  showoff::presentation { $preso:
-    path     => "${showoff::root}/courseware/",
-    require  => File["${showoff::root}/courseware"],
+  showoff::presentation { 'courseware':
+    path      => "${showoff::root}/courseware/",
+    subscribe => File["${showoff::root}/courseware"],
   }
+
+  file { '/etc/stunnel/showoff.pem':
+      ensure => 'file',
+      owner  => 'root',
+      group  => 'root',
+      mode   => '0600',
+      source  => 'puppet:///modules/puppetfactory/showoff.pem',
+      before  => Stunnel::Tun['showoff-ssl'],
+  }
+
+  stunnel::tun { 'showoff-ssl':
+    accept       => '9091',
+    connect      => 'localhost:9090',
+    options      => 'NO_SSLv2',
+    cert         => '/etc/stunnel/showoff.pem',
+    client       => false,
+  }
+
+  if $puppetfactory::manage_selinux {
+    # Source code in stunnel-showoff.te
+    file { '/usr/share/selinux/targeted/stunnel-showoff.pp':
+      ensure => file,
+      owner  => 'root',
+      group  => 'root',
+      mode   => '0644',
+      source => 'puppet:///modules/puppetfactory/selinux/stunnel-showoff.pp',
+    }
+
+    selmodule { 'stunnel-showoff':
+      ensure => present,
+    }
+  }
+
 }
