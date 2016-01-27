@@ -27,7 +27,6 @@ class puppetfactory::profile::showoff (
 
   showoff::presentation { $preso:
     path     => "${showoff::root}/courseware/",
-    require  => Vcsrepo["${showoff::root}/courseware"],
+    require  => File["${showoff::root}/courseware"],
   }
-
 }
