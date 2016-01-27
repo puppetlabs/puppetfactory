@@ -26,7 +26,6 @@ class puppetfactory::profile::fundamentals (
   }
 
   class { 'puppetfactory::profile::showoff':
-    preso    => 'fundamentals',
     password => $session_id,
   }
 
