@@ -32,7 +32,7 @@ class puppetfactory::wetty {
       owner  => 'root',
       group  => 'root',
       mode   => '0644',
-      source => 'puppet:///modules/puppetfactory/weblogin.pp',
+      source => 'puppet:///modules/puppetfactory/selinux/weblogin.pp',
     }
 
     selmodule { 'weblogin':
