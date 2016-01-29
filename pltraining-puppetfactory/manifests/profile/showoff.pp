@@ -10,12 +10,12 @@ class puppetfactory::profile::showoff (
   # the PDF files will be rebuilt via the dependent exec statement
   # This source path will be created via a courseware rake task.
   file { "${showoff::root}/courseware":
-    ensure   => directory,
-    owner    => $showoff::user,
-    mode     => '0644',
-    recurse  => true,
-    source   => $courseware_source,
-    notify   => Exec['build_pdfs'],
+    ensure  => directory,
+    owner   => $showoff::user,
+    mode    => '0644',
+    recurse => true,
+    source  => $courseware_source,
+    notify  => Exec['build_pdfs'],
   }
 
   exec { 'build_pdfs':
@@ -32,20 +32,20 @@ class puppetfactory::profile::showoff (
   }
 
   file { '/etc/stunnel/showoff.pem':
-      ensure => 'file',
-      owner  => 'root',
-      group  => 'root',
-      mode   => '0600',
-      source  => 'puppet:///modules/puppetfactory/showoff.pem',
-      before  => Stunnel::Tun['showoff-ssl'],
+    ensure => 'file',
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0600',
+    source => 'puppet:///modules/puppetfactory/showoff.pem',
+    before => Stunnel::Tun['showoff-ssl'],
   }
 
   stunnel::tun { 'showoff-ssl':
-    accept       => '9091',
-    connect      => 'localhost:9090',
-    options      => 'NO_SSLv2',
-    cert         => '/etc/stunnel/showoff.pem',
-    client       => false,
+    accept  => '9091',
+    connect => 'localhost:9090',
+    options => 'NO_SSLv2',
+    cert    => '/etc/stunnel/showoff.pem',
+    client  => false,
   }
 
   if $puppetfactory::manage_selinux {
