@@ -2,6 +2,14 @@
 
 * Gitlab support
 
+## Version 0.4.3
+
+Add missing arusso/stunnel dependency
+
+## Version 0.4.2
+
+Flesh out Showoff presentations with PDF generation and secure presentations.
+
 ## Version 0.4.1
 
 * Virtual Fundamentals profile
