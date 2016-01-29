@@ -1,11 +1,10 @@
 class puppetfactory::profile::showoff (
   Optional[String] $password,
+  String $courseware_source = '/home/centos/courseware',
 ) {
   include stunnel
   require showoff
   require puppetfactory::profile::pdf_stack
-
-  $courseware_source = '/root/courseware'
 
   # We use this resource so that any time an instructor uploads new content,
   # the PDF files will be rebuilt via the dependent exec statement
@@ -14,6 +13,7 @@ class puppetfactory::profile::showoff (
     ensure   => directory,
     owner    => $showoff::user,
     mode     => '0644',
+    recurse  => true,
     source   => $courseware_source,
     notify   => Exec['build_pdfs'],
   }
