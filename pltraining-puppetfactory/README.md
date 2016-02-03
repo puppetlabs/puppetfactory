@@ -28,9 +28,7 @@ for an SSH console login.
 
 ## Usage
 
-1. Start with a standard Puppetlabs Training VM
-1. Configure it as `puppetfactory.puppetlabs.vm` and install PE.
-*Note: There is also puppetfactory base VM build with PE preinstalled*
+1. Start with a standard Puppetlabs Training Master VM
 1. `puppet module install pltraining/puppetfactory`
 1. Classify the master only (not default) with `puppetfactory`.
 1. Load up [http://${ipaddress}](http://${ipaddress}) in a browser.
