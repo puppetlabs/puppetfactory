@@ -12,7 +12,10 @@ class puppetfactory::profile::showoff (
   file { "${showoff::root}/courseware":
     ensure  => directory,
     owner   => $showoff::user,
+    owner   => $showoff::user,
+    group   => 'root',
     mode    => '0644',
+    seluser => undef,
     recurse => true,
     source  => $courseware_source,
     notify  => Exec['build_pdfs'],
@@ -22,7 +25,9 @@ class puppetfactory::profile::showoff (
     command     => "rake watermark target=_files/share password=${password}",
     cwd         => "${showoff::root}/courseware/",
     path        => '/bin:/usr/bin:/usr/local/bin',
-    environment => ['HOME=/root'],
+    user        => $showoff::user,
+    group       => 'root',
+    environment => ["HOME=${showoff::root}"],
     refreshonly => true,
   }
 
