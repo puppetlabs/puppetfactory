@@ -33,7 +33,7 @@ class puppetfactory::profile::fundamentals (
     prefix           => true,
     map_environments => true,
     map_modulepath   => false,
-    dashboard        => "${showoff::root}/courseware/fundamentals/_files/tests",
+    dashboard        => "${showoff::root}/courseware/_files/tests",
     session_id       => $session_id,
     gitlab_enabled   => false,
   }
