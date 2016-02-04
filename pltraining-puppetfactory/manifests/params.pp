@@ -14,7 +14,6 @@ class puppetfactory::params {
   $cert_path  = 'certs'
   $user       = 'admin'
   $password   = 'admin'
-  $session_id = '12345'
 
   $confdir = '/etc/puppetlabs/puppet'
   $codedir = '/etc/puppetlabs/code'
