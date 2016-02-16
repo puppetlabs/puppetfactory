@@ -8,4 +8,8 @@ class puppetfactory::profile::parser (
     map_environments => false,
     session_id       => $session_id,
   }
+
+  class { 'puppetfactory::profile::showoff':
+    password => $session_id,
+  }
 }
