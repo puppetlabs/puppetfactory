@@ -9,4 +9,8 @@ class puppetfactory::profile::intro (
     container_name   => 'centosagent',
     session_id       => $session_id,
   }
+
+  class { 'puppetfactory::profile::showoff':
+    password => $session_id,
+  }
 }

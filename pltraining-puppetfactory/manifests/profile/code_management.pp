@@ -5,7 +5,7 @@ class puppetfactory::profile::code_management (
   class { 'puppetfactory':
     # Put students' puppetcode directories somewhere less distracting
     puppetcode => '/var/opt/puppetcode',
-    session_id       => $session_id,
+    session_id => $session_id,
   }
 
   class { 'r10k':
@@ -13,4 +13,8 @@ class puppetfactory::profile::code_management (
   }
   include r10k::mcollective
   include puppet_enterprise::profile::mcollective::peadmin
+
+  class { 'puppetfactory::profile::showoff':
+    password => $session_id,
+  }
 }
