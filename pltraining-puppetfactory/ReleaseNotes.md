@@ -1,3 +1,7 @@
+## Version 0.4.4
+
+* Added the Showoff stack to all class profiles
+
 ## Version 0.4.2
 
 * Gitlab support
