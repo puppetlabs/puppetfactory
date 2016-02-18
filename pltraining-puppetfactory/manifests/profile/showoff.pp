@@ -12,7 +12,6 @@ class puppetfactory::profile::showoff (
   file { "${showoff::root}/courseware":
     ensure  => directory,
     owner   => $showoff::user,
-    owner   => $showoff::user,
     group   => 'root',
     mode    => '0644',
     seluser => undef,
