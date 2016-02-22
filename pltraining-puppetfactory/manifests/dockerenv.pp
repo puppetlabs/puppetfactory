@@ -13,42 +13,46 @@ class puppetfactory::dockerenv {
     include puppetfactory::gitlab
   }
 
-  file { '/etc/docker/ubuntuagent/':
+  file { '/var/docker':
+    ensure => directory,
+  }
+
+  file { '/var/docker/ubuntuagent/':
     ensure  => directory,
     recurse => true,
     source  => 'puppet:///modules/puppetfactory/ubuntu/',
     require => Class['docker'],
   }
 
-  file { '/etc/docker/ubuntuagent/Dockerfile':
+  file { '/var/docker/ubuntuagent/Dockerfile':
     ensure  => present,
     content => template('puppetfactory/ubuntu.dockerfile.erb'),
-    require => File['/etc/docker/ubuntuagent/'],
+    require => File['/var/docker/ubuntuagent/'],
     notify => Docker::Image['ubuntuagent'],
   }
 
   docker::image { 'ubuntuagent':
-    docker_dir => '/etc/docker/ubuntuagent/',
-    require     => File['/etc/docker/ubuntuagent/Dockerfile'],
+    docker_dir => '/var/docker/ubuntuagent/',
+    require     => File['/var/docker/ubuntuagent/Dockerfile'],
   }
 
-  file { '/etc/docker/centosagent/':
+  file { '/var/docker/centosagent/':
     ensure  => directory,
     recurse => true,
     source  => 'puppet:///modules/puppetfactory/centos/',
     require => Class['docker'],
   }
 
-  file { '/etc/docker/centosagent/Dockerfile':
+  file { '/var/docker/centosagent/Dockerfile':
     ensure  => present,
     content => template('puppetfactory/centos.dockerfile.erb'),
-    require => File['/etc/docker/centosagent/'],
+    require => File['/var/docker/centosagent/'],
     notify => Docker::Image['centosagent'],
   }
 
   docker::image { 'centosagent':
-    docker_dir => '/etc/docker/centosagent/',
-    require     => File['/etc/docker/centosagent/Dockerfile'],
+    docker_dir => '/var/docker/centosagent/',
+    require     => File['/var/docker/centosagent/Dockerfile'],
   }
 
 
