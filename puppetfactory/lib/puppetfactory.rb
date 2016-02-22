@@ -491,6 +491,9 @@ class Puppetfactory < Sinatra::Base
     def remove_container(username)
       begin
         remove_init_scripts(username)
+        remove_node_group(username)
+        remove_certificate(username)
+        remove_environment(username)
 
         container = Docker::Container.get(username)
         output = container.delete(:force => true)
@@ -569,6 +572,30 @@ class Puppetfactory < Sinatra::Base
       end
 
       "Node group #{certname} removed"
+    end
+
+    def remove_certificate(username)
+      begin
+        %x{puppet cert clean #{username}.puppetlabs.vm}
+      rescue => e
+        raise "Error cleaning certificate #{username}.puppetlabs.vm: #{e.message}"
+      end
+      
+      "Certificate #{username}.puppetlabs.vm removed"
+    end
+    
+    def remove_environment(username)
+      begin
+        environment_path = "#{CODEDIR}/environments/#{username}"
+        %x{rm -rf #{environment_path}}
+        if File.exist?("#{environment_path}_production") then
+          %x{rm -rf #{environment_path}_production}
+        end
+      rescue => e
+        raise "Error removing environment #{username}: #{e.message}"
+      end
+      
+      "Environment #{username} removed"
     end
 
     def node_group_id(username)
