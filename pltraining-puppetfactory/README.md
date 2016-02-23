@@ -94,6 +94,14 @@ The containers also have valid init scripts so they can be start/stopped with:
 `service docker-#{username} start`
 `service docker-#{username} stop`
 
+## Notes
+
+puppetlabs/concat version < 2.0.0 is listed as a dependency because of a potential 
+conflict with puppetlabs/haproxy which is a dependency of pltraining/classroom.
+
+The puppetfactory module itself doesn't depend on puppetlabs/concat and it can be 
+upgraded or removed as needed.
+
 ## Acknowledgements
 
 Special thanks to Britt Gresham for the inspiration for this project:
