@@ -1,5 +1,3 @@
-<p>Welcome to the Puppet Labs Training Classroom.</p>
-
 <p>
   A simulated Puppet Enterprise infrastructure has been constructed on the
   classroom server. Each student has an environment providing a sandboxed
@@ -9,18 +7,32 @@
 </p>
 
 <p>
-  The sandbox provided for each student is a container based node.  This means
-  that most actions will work the same as in a full node. Because the container
-  does not have a full init system, service actions may not work as expected.
-  Each student's shell account on the master is redirected to the root account of
-  their personalized container. Students can interact with system resources such
-  as hosts, users, and packages. During the course, the instructor will describe
-  Puppet's Resource Abstraction Layer that makes this possible.  Each container
-  also has a port 80 redirected to a port on the master, so that students can
-  start a web server inside their sandbox environment.
+  Students have full <code>root</code> access on their container, meaning that all
+  Puppet commands and resources work as expected. Each container also exposes
+  port 80 as a high port proxied from the Master, meaning that students are able
+  to run a web server inside their sandbox environment. A link to this proxied
+  port is listed for each user on the <em>Users</em> tab.
 </p>
-<h3>Git Visualization Tool:</h3>
-  To visualize how git works click here to access the <a href="./gitviz/index.html" target="_blank">git visualization tool</a>
+
+<h3>Resources:</h3>
+<ul>
+  <li><a href="http://<%= request.host %>:9090" target="_showoff">Course Material Presentation</a>
+    <ul>
+      <li>Follow along with the instructor's slides, or navigate it independently.</li>
+    </ul>
+  </li>
+  <li><a href="https://<%= request.host %>" target="_console">Puppet Enterprise Console</a>
+    <ul>
+      <li>Log into the PE Console using the credentials of the user account you created.</li>
+    </ul>
+  </li>
+  <li><a href="./gitviz/index.html" target="_blank">Git Visualization Tool</a>
+    <ul>
+      <li>Git's commit graph can be hard to understand. This tool will help visualize what
+      happens behind the scenes as you type various <code>git</code> commands.</li>
+    </ul>
+  </li>
+</ul>
 
 <h3>Accessing your environment:</h3>
 

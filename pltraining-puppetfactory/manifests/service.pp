@@ -3,8 +3,8 @@ class puppetfactory::service {
     path => '/var/staging/'
   }
 
-  staging::file { 'puppetfactory-0.3.2.gem':
-    source  => 'puppet:///modules/puppetfactory/puppetfactory-0.3.2.gem'
+  staging::file { 'puppetfactory-0.3.3.gem':
+    source  => 'puppet:///modules/puppetfactory/puppetfactory-0.3.3.gem'
   }
 
   package { 'puppetclassify':
@@ -16,8 +16,8 @@ class puppetfactory::service {
   package { 'puppetfactory':
     ensure   => present,
     provider => gem,
-    source   => "${staging::path}/puppetfactory/puppetfactory-0.3.2.gem",
-    require  => Staging::File['puppetfactory-0.3.1.gem'],
+    source   => "${staging::path}/puppetfactory/puppetfactory-0.3.3.gem",
+    require  => Staging::File['puppetfactory-0.3.3.gem'],
     before   => Service['puppetfactory'],
   }
 

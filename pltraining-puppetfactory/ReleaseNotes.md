@@ -1,3 +1,7 @@
+## Version 0.4.6
+
+* Cleaned up home page slightly
+
 ## Version 0.4.5
 
 * Correct duplicate parameter in showoff profile.
