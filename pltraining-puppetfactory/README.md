@@ -27,10 +27,12 @@ for an SSH console login.
 ![Screenshot](screenshot.png)
 
 ## Usage
+Each course should have a profile associated with it.  If this is missing, just
+use the "default" profile.
 
 1. Start with a standard Puppetlabs Training Master VM
 1. `puppet module install pltraining/puppetfactory`
-1. Classify the master only (not default) with `puppetfactory`.
+1. Classify the _master only_ with `puppetfactory::profile::default`.
 1. Load up [http://${ipaddress}](http://${ipaddress}) in a browser.
 1. Write the URL on the board and start class.
 
@@ -91,6 +93,14 @@ To start a container that has been stopped (e.g. after a reboot):
 The containers also have valid init scripts so they can be start/stopped with:
 `service docker-#{username} start`
 `service docker-#{username} stop`
+
+## Notes
+
+puppetlabs/concat version < 2.0.0 is listed as a dependency because of a potential 
+conflict with puppetlabs/haproxy which is a dependency of pltraining/classroom.
+
+The puppetfactory module itself doesn't depend on puppetlabs/concat and it can be 
+upgraded or removed as needed.
 
 ## Acknowledgements
 
