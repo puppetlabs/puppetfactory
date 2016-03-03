@@ -1,3 +1,12 @@
+## Version 0.4.6
+
+* Cleaned up home page slightly
+
+## Version 0.4.5
+
+* Correct duplicate parameter in showoff profile.
+* Add hiera profile class.
+
 ## Version 0.4.4
 
 * Added the Showoff stack to all class profiles
