@@ -1,4 +1,4 @@
-class puppetfactory::profile::intro (
+class puppetfactory::profile::default (
   $session_id = $puppetfactory::params::session_id,
 ) inherits puppetfactory::params {
   class { 'puppetfactory':
