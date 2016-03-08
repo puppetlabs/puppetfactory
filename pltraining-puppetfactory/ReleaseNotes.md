@@ -1,5 +1,9 @@
 ## Version 0.4.6
 
+* Fix default class name
+
+## Version 0.4.6
+
 * Cleaned up home page slightly
 
 ## Version 0.4.5
