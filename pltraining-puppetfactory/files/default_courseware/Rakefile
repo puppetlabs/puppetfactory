@@ -1,0 +1,5 @@
+desc "Default presentation"
+task :watermark do
+  puts "Courseware files not installed."
+  puts "Run `rake prepare` and `rake present` from courseware"
+end
