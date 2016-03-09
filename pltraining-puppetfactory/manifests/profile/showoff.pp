@@ -9,7 +9,10 @@ class puppetfactory::profile::showoff (
   file { $courseware_source:
     ensure  => directory,
     recurse => true,
+    owner   => 'centos',
+    group   => 'centos',
     purge   => false,
+    replace => false,
     source  => 'puppet:///modules/puppetfactory/default_courseware',
     before  => File["${showoff::root}/courseware"],
   }
