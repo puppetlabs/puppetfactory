@@ -6,9 +6,17 @@ class puppetfactory::profile::showoff (
   require showoff
   require puppetfactory::profile::pdf_stack
 
+  file { $courseware_source:
+    ensure  => directory,
+    recurse => true,
+    purge   => false,
+    source  => 'puppet:///modules/puppetfactory/default_courseware',
+    before  => File["${showoff::root}/courseware"],
+  }
+
   # We use this resource so that any time an instructor uploads new content,
   # the PDF files will be rebuilt via the dependent exec statement
-  # This source path will be created via a courseware rake task.
+  # The files in the source path will be updated via a courseware rake task.
   file { "${showoff::root}/courseware":
     ensure  => directory,
     owner   => $showoff::user,
