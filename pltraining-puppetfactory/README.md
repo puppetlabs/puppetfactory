@@ -27,11 +27,11 @@ for an SSH console login.
 ![Screenshot](screenshot.png)
 
 ## Usage
-Each course should have a profile associated with it.  If this is missing, just
-use the "default" profile.
+Each course should have a profile associated with it. If this is missing, just
+use the "default" profile. The module should be installed into the global modulepath
 
 1. Start with a standard Puppetlabs Training Master VM
-1. `puppet module install pltraining/puppetfactory`
+1. `puppet module install pltraining/puppetfactory --modulepath /etc/puppetlabs/code/modules`
 1. Classify the _master only_ with `puppetfactory::profile::default`.
 1. Load up [http://${ipaddress}](http://${ipaddress}) in a browser.
 1. Write the URL on the board and start class.
