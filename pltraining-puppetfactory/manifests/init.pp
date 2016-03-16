@@ -107,6 +107,7 @@ class puppetfactory (
     password_authentication        => $allow_root,
     permit_root_login              => $allow_root,
     password_authentication_groups => ['puppetfactory'],
+    host_keys                      => ['/etc/ssh/ssh_host_rsa_key','/etc/ssh/ssh_host_ecdsa_key', '/etc/ssh/ssh_host_ed25519_key']
   }
 
 }
