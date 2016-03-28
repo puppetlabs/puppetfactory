@@ -65,6 +65,16 @@ class puppetfactory::profile::fundamentals (
     ensure => link,
     target => '/etc/puppetfactory/hooks/create/r10k_create_user.rb',
   }
+  
+  # Drop in symlinks so the instructor can use these
+  file { '/usr/local/bin/r10k_create_user.rb':
+    ensure => link,
+    target => '/etc/puppetfactory/hooks/create/r10k_create_user.rb',
+  }
+  file { '/usr/local/bin/r10k_delete_user.rb':
+    ensure => link,
+    target => '/etc/puppetfactory/hooks/delete/r10k_delete_user.rb',
+  }
 
   class {'r10k::webhook::config':
     enable_ssl        => false,
