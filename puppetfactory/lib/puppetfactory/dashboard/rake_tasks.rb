@@ -17,14 +17,14 @@ task :generate => [:spec] do
   output = {'timestamp' => Time.now}
   Dir.glob("output/json/*.json") do |file|
     name = File.basename(file, '.json')
-    data = JSON.parse(File.read(file))
+    data = JSON.parse(File.read(file)) rescue {}
     output[name] = {}
     output[name]['summary'] = data['summary']
   end
 
   Dir.glob("output/json/*/*.json") do |file|
     current, name = file.chomp('.json').split('/').last(2)
-    data = JSON.parse(File.read(file))
+    data = JSON.parse(File.read(file)) rescue {}
     output[name][current] = data['summary']
   end
 
