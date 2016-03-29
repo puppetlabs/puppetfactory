@@ -35,8 +35,8 @@ namespace :spec do
   targets = []
   Dir.glob('/etc/puppetlabs/code/environments/*').each do |dir|
     next unless File.directory?(dir)
+    next unless dir.end_with? '_production'
     target = File.basename(dir.sub('_production', ''))
-    next if target == 'production'
     targets << target
   end
   task :all_agents => targets
