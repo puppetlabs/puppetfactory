@@ -1,3 +1,11 @@
+## Version 0.4.8
+
+* cli commands for Fundamentals r10k manipulation
+* improved stability of dashboard
+* use 'training' user instead of 'centos'
+* wget installed inside containers
+* improved documentation
+
 ## Version 0.4.6
 
 * Fix default class name
