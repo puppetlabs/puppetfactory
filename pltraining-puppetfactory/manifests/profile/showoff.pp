@@ -1,6 +1,6 @@
 class puppetfactory::profile::showoff (
   Optional[String] $password,
-  String $courseware_source = '/home/centos/courseware',
+  String $courseware_source = '/home/training/courseware',
 ) {
   include stunnel
   require showoff
@@ -9,8 +9,8 @@ class puppetfactory::profile::showoff (
   file { $courseware_source:
     ensure  => directory,
     recurse => true,
-    owner   => 'centos',
-    group   => 'centos',
+    owner   => 'training',
+    group   => 'training',
     purge   => false,
     replace => false,
     source  => 'puppet:///modules/puppetfactory/default_courseware',
