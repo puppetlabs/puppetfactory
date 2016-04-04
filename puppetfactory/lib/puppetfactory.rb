@@ -396,7 +396,7 @@ class Puppetfactory < Sinatra::Base
           "/home/#{username}/puppet:#{CONFDIR}",
           "/sys/fs/cgroup:/sys/fs/cgroup:ro"
         ]
-        
+
         # Create environment dir so that nodegroup works
         environment = "#{ENVIRONMENTS}/#{environment_name(username)}"
         FileUtils.mkdir_p "#{environment}"
@@ -511,7 +511,7 @@ class Puppetfactory < Sinatra::Base
 
     def massage_container_state(state)
       return {'Description' => 'No container.'} if state.nil?
-      
+
       if state['OOMKilled']
         state['Description'] = 'Halted because host machine is out of memory.'
       elsif state['Restarting']
@@ -585,10 +585,10 @@ class Puppetfactory < Sinatra::Base
       rescue => e
         raise "Error cleaning certificate #{username}.puppetlabs.vm: #{e.message}"
       end
-      
+
       "Certificate #{username}.puppetlabs.vm removed"
     end
-    
+
     def remove_environment(username)
       begin
         environment_path = "#{CODEDIR}/environments/#{username}"
@@ -599,7 +599,7 @@ class Puppetfactory < Sinatra::Base
       rescue => e
         raise "Error removing environment #{username}: #{e.message}"
       end
-      
+
       "Environment #{username} removed"
     end
 
@@ -666,18 +666,18 @@ class Puppetfactory < Sinatra::Base
 
     def update_dashboard_results(path)
       return false if @@test_running
+      @@test_running = true
 
       Dir.chdir(path) do
-        @@test_running = true
         case @@current_test
         when 'all', 'summary'
           `rake generate`
         else
           `rake generate current_test=#{@@current_test}`
         end
-        @@test_running = false
       end
 
+      @@test_running = false
       true
     end
 
