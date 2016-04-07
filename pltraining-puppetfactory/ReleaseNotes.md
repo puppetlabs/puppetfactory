@@ -1,3 +1,7 @@
+## Version 0.4.9
+
+* Narrowed race condition in spec tests
+
 ## Version 0.4.8
 
 * cli commands for Fundamentals r10k manipulation
