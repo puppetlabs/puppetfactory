@@ -1,31 +1,10 @@
-#! /bin/sh
-# /etc/init.d/docker-<%= username %>
-#
-# chkconfig: 35 10 95
-# description: Docker container for user <%= username %>
-### BEGIN INIT INFO
-# Provides: docker-<%= username %>
-# Required-Start: $network docker
-# Default-Stop: 0 1 2 6
-# Default-Start: 3 5
-# Short-Description: Default docker container for user <%= username %>
-# Description: Default docker container for user <%= username %>
-### END INIT INFO#
+[Unit]
+Description=docker-<%= username %>
 
-# Start and stop docker containers for user
-case "$1" in
-  start)
-    echo "Starting docker container <%= username %>"
-    docker start <%= username %>
-    ;;
-  stop)
-    echo "Stopping docker container <%= username %>"
-    docker stop <%= username %>
-    ;;
-  *)
-  echo "Usage: /etc/init.d/docker-<%= username %> {start|stop}"
-    exit 1
-    ;;
-esac
+[Service]
+Type=forking
+ExecStart=/bin/docker start <%= username %>
+ExecStop=/bin/docker stop <%= username %>
 
-exit 0
+[Install]
+WantedBy=default.target
