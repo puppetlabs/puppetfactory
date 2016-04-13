@@ -2,8 +2,7 @@
 Description=docker-<%= username %>
 
 [Service]
-Type=forking
-ExecStart=/bin/docker start <%= username %>
+ExecStart=/bin/docker start -a <%= username %>
 ExecStop=/bin/docker stop <%= username %>
 
 [Install]

@@ -21,11 +21,11 @@ class puppetfactory::service {
     before   => Service['puppetfactory'],
   }
 
-  file { '/etc/init.d/puppetfactory':
+  file { '/etc/systemd/system/puppetfactory.service':
     ensure  => file,
     owner   => 'root',
     group   => 'root',
-    mode    => '0755',
+    mode    => '0664',
     content => template('puppetfactory/puppetfactory.init.erb'),
     before  => Service['puppetfactory'],
   }
