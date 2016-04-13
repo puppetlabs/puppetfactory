@@ -528,16 +528,17 @@ class Puppetfactory < Sinatra::Base
 
     def init_scripts(username)
       templates = "#{File.dirname(__FILE__)}/../templates"
-      File.open("/etc/init.d/docker-#{username}","w") do |f|
+      service_file = "/etc/systemd/system/docker-#{username}.service"
+      File.open(service_file,"w") do |f|
         f.write ERB.new(File.read("#{templates}/init_scripts.erb")).result(binding)
       end
-      File.chmod(0755, "/etc/init.d/docker-#{username}")
+      File.chmod(0644, service_file)
       `chkconfig docker-#{username} on`
     end
 
     def remove_init_scripts(username)
       `chkconfig docker-#{username} off`
-      FileUtils.rm("/etc/init.d/docker-#{username}")
+      FileUtils.rm(service_file)
     end
 
     def classify(username, groups=[''])
