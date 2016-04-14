@@ -207,6 +207,10 @@ class Puppetfactory < Sinatra::Base
     create(params[:username], params[:password])
   end
 
+  put '/api/users/:username' do
+    repair_container(params[:username])
+  end
+
   delete '/api/users/:username' do
     delete(params[:username])
   end
@@ -507,6 +511,19 @@ class Puppetfactory < Sinatra::Base
       end
 
       "Container #{username} removed"
+    end
+
+    def repair_container(username)
+      begin
+        remove_certificate(username)
+
+        container = Docker::Container.get(username)
+        container.delete(:force => true)
+
+        create_container(username)
+      rescue => e
+        raise "Error reparing container #{username}: #{e.message}"
+      end
     end
 
     def massage_container_state(state)
