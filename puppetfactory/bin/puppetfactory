@@ -18,6 +18,8 @@ You can also pass arguments to invoke CLI commands.
       * Create a new PuppetFactory user with an optional password
   * remove | delete <username>
       * Delete a PuppetFactory user
+  * repair | reprovision <username>
+      * Reprovision a PuppetFactory user container
 
 This will send commands to the PuppetFactory server specified in
 /etc/puppetfactory.yaml, defaulting to localhost if unspecified.
@@ -73,6 +75,9 @@ else
 
   when 'remove', 'delete'
     puppetfactory.delete(user)
+
+  when 'repair', 'reprovision'
+    puppetfactory.repair(user)
 
   else
     puts "Unknown command: #{command}"

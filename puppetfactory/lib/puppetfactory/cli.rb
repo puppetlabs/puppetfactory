@@ -67,6 +67,18 @@ class Puppetfactory
       end
     end
 
+    def repair(user)
+      begin
+        response = HTTParty.put("#{@server}/api/users/#{user}")
+        raise "No such user" unless response.code == 200
+
+        puts "User #{user} repaired."
+      rescue => e
+        puts "API error repair user #{user}: #{e.message}"
+        puts e.backtrace if @debug
+      end
+    end
+
     def test()
       require 'pry'
       binding.pry
