@@ -13,9 +13,9 @@ class puppetfactory::wetty {
     require => Exec['npm -g install npm'],
   }
 
-  file { '/etc/init.d/wetty':
+  file { '/etc/systemd/system/wetty.service':
     ensure => 'present',
-    mode   => '0755',
+    mode   => '0644',
     source => 'puppet:///modules/puppetfactory/wetty.conf',
   }
   service { 'wetty':
