@@ -1,4 +1,4 @@
-## Version 0.4.10
+## Unreleased
 
 * Added 'redeploy' command to redeploy environment
 
