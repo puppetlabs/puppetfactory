@@ -22,7 +22,7 @@ class puppetfactory::wetty {
     ensure    => 'running',
     enable    => true,
     require   => Exec['npm -g install wetty'],
-    subscribe => File['/etc/systemd/systemd/wetty.service'],
+    subscribe => File['/etc/systemd/system/wetty.service'],
   }
 
   if $puppetfactory::manage_selinux {
