@@ -208,7 +208,12 @@ class Puppetfactory < Sinatra::Base
   end
 
   put '/api/users/:username' do
-    repair_container(params[:username])
+    if params[:action] == 'repair'
+      repair_container(params[:username])
+    end
+    if params[:action] == 'redeploy'
+      redeploy_environment(params[:username])
+    end
   end
 
   delete '/api/users/:username' do
@@ -524,6 +529,23 @@ class Puppetfactory < Sinatra::Base
       rescue => e
         raise "Error reparing container #{username}: #{e.message}"
       end
+    end
+
+    def redeploy_environment(username)
+      begin
+        if username == 'production'
+          raise "Can't redeploy production environment"
+        end
+        remove_environment(username)
+        deploy_environment(username)
+
+      rescue => e
+        raise "Error redeploying environment #{username}: #{e.message}"
+      end
+    end
+
+    def deploy_environment(username)
+      %x( r10k deploy environment #{username}_production )
     end
 
     def massage_container_state(state)
