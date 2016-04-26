@@ -1,3 +1,7 @@
+## Version 0.4.10
+
+* Added 'redeploy' command to redeploy environment
+
 ## Version 0.4.9
 
 * Narrowed race condition in spec tests

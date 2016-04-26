@@ -69,12 +69,31 @@ class Puppetfactory
 
     def repair(user)
       begin
-        response = HTTParty.put("#{@server}/api/users/#{user}")
+        response = HTTParty.put("#{@server}/api/users/#{user}",
+                                { body: {
+                                    username: user,
+                                    action: "repair"}
+                                })
         raise "No such user" unless response.code == 200
 
         puts "User #{user} repaired."
       rescue => e
         puts "API error repair user #{user}: #{e.message}"
+        puts e.backtrace if @debug
+      end
+    end
+    def redeploy(user)
+      begin
+        response = HTTParty.put("#{@server}/api/users/#{user}",
+                                { body: {
+                                    username: user,
+                                    action: "redeploy"}
+                                })
+        raise "No such user" unless response.code == 200
+
+        puts "User #{user} repaired."
+      rescue => e
+        puts "API error redeploying environment #{user}: #{e.message}"
         puts e.backtrace if @debug
       end
     end

@@ -20,6 +20,8 @@ You can also pass arguments to invoke CLI commands.
       * Delete a PuppetFactory user
   * repair | reprovision <username>
       * Reprovision a PuppetFactory user container
+  * redeploy <username>
+      * Delete and redeploy a user's environment
 
 This will send commands to the PuppetFactory server specified in
 /etc/puppetfactory.yaml, defaulting to localhost if unspecified.
@@ -78,6 +80,8 @@ else
 
   when 'repair', 'reprovision'
     puppetfactory.repair(user)
+  when 'redeploy'
+    puppetfactory.redeploy(user)
 
   else
     puts "Unknown command: #{command}"

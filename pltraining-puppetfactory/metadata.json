@@ -8,15 +8,15 @@
   "requirements": [
     {
       "name": "pe",
-      "version_requirement": "3.7.x"
+      "version_requirement": "2016.x"
     },
     {
       "name": "puppet",
-      "version_requirement": "3.x"
+      "version_requirement": "4.x"
     }
   ],
   "name": "pltraining-puppetfactory",
-  "version": "0.4.9",
+  "version": "0.4.10",
   "author": "pltraining",
   "summary": "Manages Puppet Labs training classroom environments",
   "license": "Apache 2.0",
