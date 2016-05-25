@@ -8,6 +8,15 @@ class puppetfactory::profile::pi (
     mode  => '0644',
   }
 
+  rbac_user { 'deployer':
+    ensure       => 'present',
+    name         => 'deployer',
+    dipslay_name => 'Code Manager deployment user',
+    email        => 'deployer@master.puppetlabs.vm',
+    password     => 'puppetlabs',
+    roles        => [ 'Administrators' ],
+  }
+
   ensure_packages(['gcc','zlib', 'zlib-devel'], {
     before => Package['puppetfactory']
   })
