@@ -2,7 +2,7 @@ class puppetfactory::profile::puppetize (
   $session_id = $puppetfactory::params::session_id,
 ) inherits puppetfactory::params {
 
-  if $::fqdn = 'master.puppetlabs.vm' {
+  if $::fqdn == 'master.puppetlabs.vm' {
     # Classroom Master
     File {
       owner => 'root',
@@ -62,7 +62,7 @@ class puppetfactory::profile::puppetize (
       }
 
     } else {
-      if $::osfamily = 'windows' {
+      if $::osfamily == 'windows' {
         # Windows Agents
         include chocolatey
       } else {
