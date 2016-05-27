@@ -46,6 +46,7 @@ DOCKER_IP       = OPTIONS['DOCKER_IP'] || `facter ipaddress_docker0`.strip
 
 MAP_ENVIRONMENTS = OPTIONS['MAP_ENVIRONMENTS'] || false
 MAP_MODULEPATH   = OPTIONS['MAP_MODULEPATH']   || MAP_ENVIRONMENTS # maintain backwards compatibility
+READONLY_ENVIRONMENT = OPTIONS['READONLY_ENVIRONMENT'] || false
 
 DASHBOARD          = OPTIONS['DASHBOARD'].nil? ? '/etc/puppetfactory/dashboard' : OPTIONS['DASHBOARD']
 DASHBOARD_INTERVAL = OPTIONS['DASHBOARD_INTERVAL'] || 5 * 60 # test interval in seconds
@@ -436,7 +437,11 @@ class Puppetfactory < Sinatra::Base
         end
 
         if MAP_MODULEPATH then
-          binds.push("#{environment}:/root/puppetcode")
+          if READONLY_ENVIRONMENT then
+            binds.push("#{environment}:/root/puppetcode:ro")
+          else
+            binds.push("#{environment}:/root/puppetcode")
+          end
         end
 
 
