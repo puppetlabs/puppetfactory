@@ -40,12 +40,13 @@ class puppetfactory::profile::puppetize (
       }
 
       class { 'puppetfactory':
-        prefix           => false,
-        map_environments => true,
-        map_modulepath   => true,
-        dashboard        => "${showoff::root}/courseware/_files/tests",
-        session_id       => $session_id,
-        gitlab_enabled   => false,
+        prefix               => false,
+        map_environments     => true,
+        map_modulepath       => true,
+        readonly_environment => true,
+        dashboard            => "${showoff::root}/courseware/_files/tests",
+        session_id           => $session_id,
+        gitlab_enabled       => false,
       }
 
       class { 'puppetfactory::facts':
