@@ -42,7 +42,7 @@ class puppetfactory::profile::puppetize (
       class { 'puppetfactory':
         prefix           => false,
         map_environments => true,
-        map_modulepath   => false,
+        map_modulepath   => true,
         dashboard        => "${showoff::root}/courseware/_files/tests",
         session_id       => $session_id,
         gitlab_enabled   => false,
@@ -67,6 +67,9 @@ class puppetfactory::profile::puppetize (
         include chocolatey
       } else {
         # Linux Agents
+        class { 'puppetfactory::facts':
+          coursename => 'puppetizing',
+        }
       }
       
     }
