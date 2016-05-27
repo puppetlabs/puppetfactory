@@ -46,6 +46,7 @@ DOCKER_IP       = OPTIONS['DOCKER_IP'] || `facter ipaddress_docker0`.strip
 
 MAP_ENVIRONMENTS = OPTIONS['MAP_ENVIRONMENTS'] || false
 MAP_MODULEPATH   = OPTIONS['MAP_MODULEPATH']   || MAP_ENVIRONMENTS # maintain backwards compatibility
+READONLY_ENVIRONMENT = OPTIONS['READONLY_ENVIRONMENT'] || false
 
 DASHBOARD          = OPTIONS['DASHBOARD'].nil? ? '/etc/puppetfactory/dashboard' : OPTIONS['DASHBOARD']
 DASHBOARD_INTERVAL = OPTIONS['DASHBOARD_INTERVAL'] || 5 * 60 # test interval in seconds
@@ -394,6 +395,7 @@ class Puppetfactory < Sinatra::Base
         @username = username
         puppetcode = PUPPETCODE
         map_environments = MAP_ENVIRONMENTS
+        env_user = PE ? 'pe-puppet':username
 
         templates = "#{File.dirname(__FILE__)}/../templates"
 
@@ -427,15 +429,21 @@ class Puppetfactory < Sinatra::Base
             FileUtils.cp_r("#{ENVIRONMENTS}/production/modules/userprefs", "#{environment}/modules/")
           else puts "Module userprefs not found in global or production modulepath"
           end
+        
 
           # make sure the user and pe-puppet can access all the needful
-          FileUtils.chown_R(username, 'pe-puppet', environment)
+          FileUtils.chown_R(env_user, 'pe-puppet', environment)
           FileUtils.chmod(0750, environment)
         end
 
         if MAP_MODULEPATH then
-          binds.push("#{environment}:/root/puppetcode")
+          if READONLY_ENVIRONMENT then
+            binds.push("#{environment}:/root/puppetcode:ro")
+          else
+            binds.push("#{environment}:/root/puppetcode")
+          end
         end
+
 
         # Create shared folder to map and create puppet.conf
         FileUtils.mkdir_p "/home/#{username}/puppet"
