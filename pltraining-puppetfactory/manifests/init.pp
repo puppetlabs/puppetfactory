@@ -33,7 +33,7 @@ class puppetfactory (
   $prefix              = $puppetfactory::params::prefix,
   $map_environments    = $puppetfactory::params::map_environments,
   $map_modulepath      = $puppetfactory::params::map_environments, # maintain backwards compatibility and simplicity
-  $readonly_environment = $puppetfactory::params::readonly_environment
+  $readonly_environment = $puppetfactory::params::readonly_environment,
 
   $gitlab_enabled      = $puppetfactory::params::gitlab_enabled,
 ) inherits puppetfactory::params {
