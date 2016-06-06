@@ -265,7 +265,12 @@ class Puppetfactory < Sinatra::Base
 
     def sandbox_url(username)
       port = user_port(username)
-      "http://#{request.host}/port/#{port}"
+      if request.port == 80
+        output = "http://#{request.host}/port/#{port}"
+      else
+        output = "http://#{request.host}:#{request.port}/port/#{port}"
+      end
+      output
     end
 
     def user_port(username)
