@@ -443,9 +443,9 @@ class Puppetfactory < Sinatra::Base
 
         if MAP_MODULEPATH then
           if READONLY_ENVIRONMENT then
-            binds.push("#{environment}:/root/puppetcode:ro")
+            binds.push("#{environment}:#{puppetcode}:ro")
           else
-            binds.push("#{environment}:/root/puppetcode")
+            binds.push("#{environment}:#{puppetcode}")
           end
         end
 
