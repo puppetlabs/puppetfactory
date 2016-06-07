@@ -1,4 +1,12 @@
-## Unreleased
+## Version 0.4.12
+
+* Allow alternate path for puppetcode directory in container
+
+## Version 0.4.11
+
+* Support for readonly puppetcode directory so that students can't break code manager
+
+## Version 0.4.10
 
 * Added 'redeploy' command to redeploy environment
 
