@@ -1,4 +1,3 @@
-
 ## site.pp ##
 
 # This file (/etc/puppetlabs/puppet/manifests/site.pp) is the main entry point
@@ -12,24 +11,8 @@
 
 ## Active Configurations ##
 
-# PRIMARY FILEBUCKET
-# This configures puppet agent and puppet inspect to back up file contents when
-# they run. The Puppet Enterprise console needs this to display file contents
-# and differences.
-
-# Define filebucket 'main':
-filebucket { 'main':
-  server => '<%= servername %>',
-  path   => false,
-}
-
-# Make filebucket 'main' the default backup location for all File resources:
-File { backup => 'main' }
-
-# Make Puppet shut up about allow_virtual
-Package {
-  allow_virtual => false,
-}
+# Disable filebucket by default for all File resources:
+File { backup => false }
 
 # DEFAULT NODE
 # Node definitions in this file are merged with node data from the console. See
@@ -41,11 +24,17 @@ Package {
 # will be included in every node's catalog, *in addition* to any classes
 # specified in the console for that node.
 
+# Make Puppet shut up about allow_virtual
+Package {
+  allow_virtual => false,
+}
+
 node default {
   # This is where you can declare classes for all nodes.
   # Example:
   #   class { 'my_class': }
   <% if MAP_ENVIRONMENTS %>
+  unless $::osfamily == 'windows' {
     file { '<%= CODEDIR %>/environments/production/modules':
       ensure => link,
       force  => true,
@@ -56,5 +45,6 @@ node default {
       force  => true,
       target => '<%= PUPPETCODE %>/manifests',
     }
+  }
   <% end %>
 }
