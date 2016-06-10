@@ -38,6 +38,7 @@
     {"name":"pltraining/showoff",                "version_requirement":">= 0.0.1"},
     {"name":"stahnma/epel",                      "version_requirement":">= 1.0.2"},
     {"name":"zack/r10k"},
-    {"name":"nanliu/staging"}
+    {"name":"nanliu/staging"},
+    {"name":"binford2k/wreckit"}
   ]
 }
