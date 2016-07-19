@@ -21,7 +21,7 @@ You can also pass arguments to invoke CLI commands.
   * repair | reprovision <username>
       * Reprovision a PuppetFactory user container
   * redeploy <username>
-      * Delete and redeploy a user's environment
+      * Delete a user's environment from disk and redeploy it with r10k
 
 This will send commands to the PuppetFactory server specified in
 /etc/puppetfactory.yaml, defaulting to localhost if unspecified.
