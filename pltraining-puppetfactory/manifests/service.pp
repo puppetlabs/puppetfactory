@@ -7,12 +7,6 @@ class puppetfactory::service {
     source  => 'puppet:///modules/puppetfactory/puppetfactory-0.3.11.gem'
   }
 
-  package { 'puppetclassify':
-    ensure   => present,
-    provider => gem,
-    before   => Package['puppetfactory'],
-  }
-
   package { 'puppetfactory':
     ensure   => present,
     provider => gem,
