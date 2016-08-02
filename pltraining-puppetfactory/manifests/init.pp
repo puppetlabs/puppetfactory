@@ -40,9 +40,12 @@ class puppetfactory (
 
   include puppetfactory::proxy
   include puppetfactory::service
-  include puppetfactory::wetty
   include puppetfactory::dockerenv
   include epel
+
+  class abalone {
+    port => '4200',
+  }
 
   $gitserver = $gitlab_enabled ? {
     true    => 'http://localhost:8888',

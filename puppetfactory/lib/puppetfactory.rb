@@ -165,7 +165,7 @@ class Puppetfactory < Sinatra::Base
     create(params[:username], params[:password])
   end
 
-  get '/wetty' do
+  get '/abalone' do
     redirect "http://#{request.host}:4200"
   end
 
