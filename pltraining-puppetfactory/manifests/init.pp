@@ -43,7 +43,7 @@ class puppetfactory (
   include puppetfactory::dockerenv
   include epel
 
-  class abalone {
+  class { 'abalone':
     port => '4200',
   }
 
