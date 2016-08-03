@@ -14,6 +14,7 @@ require 'time'
 require 'puppetclassify'
 require 'docker'
 require 'rest-client'
+require 'open3'
 
 OPTIONS = YAML.load_file('/etc/puppetfactory.yaml') rescue {}
 
@@ -274,8 +275,8 @@ class Puppetfactory < Sinatra::Base
     end
 
     def user_port(username)
-      output = "3" + `id -u #{username}`.chomp
-      $? == 0 ? output : nil
+      output, err = Open3.capture2('id', '-u', username)
+      err.success? ? "3#{output.chomp}" : nil
     end
 
     def create(username, password = 'puppetlabs')
@@ -355,39 +356,43 @@ class Puppetfactory < Sinatra::Base
     def add_system_user(username, password)
       # ssh login user
       crypted = password.crypt("$5$a1")
-      output = `adduser #{username} -p '#{crypted}' -G pe-puppet,puppetfactory,#{DOCKER_GROUP} -m 2>&1`
+      success = system('adduser', username, '-p', crypted, '-G', "pe-puppet,puppetfactory,#{DOCKER_GROUP}", '-m')
 
-      raise "Could not create system user #{username}: #{output}" unless $? == 0
+      raise "Could not create system user #{username}: #{output}" unless success
       "System user #{username} created successfully"
     end
 
     def remove_system_user(username)
-      output = `userdel -fr #{username}`
+      success = system('userdel', '-fr', username)
 
-      raise "Could not remove system user #{username}: #{output}" unless $? == 0
+      raise "Could not remove system user #{username}: #{output}" unless success
       "System user #{username} removed successfully"
     end
 
     def add_console_user(username,password)
       # pe console user
-      attributes = "display_name=#{username} roles=Operators email=#{username}@puppetlabs.vm password=#{password}"
-      output     = `#{PUPPET} resource rbac_user #{username} ensure=present #{attributes} 2>&1`
+      success = system(PUPPET, 'resource', 'rbac_user', username,
+                               'ensure=present',
+                               "display_name=#{username}",
+                               "roles=Operators",
+                               "email=#{username}@puppetlabs.vm",
+                               "password=#{password}")
 
-      raise "Could not create PE Console user #{username}: #{output}" unless $? == 0
+      raise "Could not create PE Console user #{username}: #{output}" unless success
       "Console user #{username} created successfully"
     end
 
     def remove_console_user(username)
-      output = `#{PUPPET} resource rbac_user #{username} ensure=absent 2>&1`
+      success = system(PUPPET, 'resource', 'rbac_user', username, 'ensure=absent')
 
-      raise "Could not remove PE Console user #{username}: #{output}" unless $? == 0
+      raise "Could not remove PE Console user #{username}: #{output}" unless success
       "Console user #{username} removed successfully"
     end
 
     def console_user_status(username)
-      output = `#{PUPPET} resource rbac_user #{username} 2>&1`
+      output, status = Open3.capture2(PUPPET, 'resource', 'rbac_user', username)
 
-      raise "Could not query Puppet user #{username}: #{output}" unless $? == 0
+      raise "Could not query Puppet user #{username}: #{output}" unless status.success?
       output =~ /present/
     end
 
@@ -434,7 +439,7 @@ class Puppetfactory < Sinatra::Base
             FileUtils.cp_r("#{ENVIRONMENTS}/production/modules/userprefs", "#{environment}/modules/")
           else puts "Module userprefs not found in global or production modulepath"
           end
-        
+
 
           # make sure the user and pe-puppet can access all the needful
           FileUtils.chown_R(env_user, 'pe-puppet', environment)
@@ -558,7 +563,7 @@ class Puppetfactory < Sinatra::Base
     end
 
     def deploy_environment(username)
-      %x( r10k deploy environment #{username}_production )
+      system('r10k', 'deploy', 'environment', "#{username}_production")
     end
 
     def massage_container_state(state)
@@ -585,11 +590,11 @@ class Puppetfactory < Sinatra::Base
         f.write ERB.new(File.read("#{templates}/init_scripts.erb")).result(binding)
       end
       File.chmod(0644, service_file)
-      `chkconfig docker-#{username} on`
+      system('chkconfig', "docker-#{username}", 'on')
     end
 
     def remove_init_scripts(username)
-      `chkconfig docker-#{username} off`
+      system('chkconfig', "docker-#{username}", 'off')
       FileUtils.rm(service_file)
     end
 
@@ -634,7 +639,7 @@ class Puppetfactory < Sinatra::Base
 
     def remove_certificate(username)
       begin
-        %x{puppet cert clean #{username}.puppetlabs.vm}
+        system('puppet', 'cert', 'clean', "#{username}.puppetlabs.vm")
       rescue => e
         raise "Error cleaning certificate #{username}.puppetlabs.vm: #{e.message}"
       end
@@ -645,10 +650,8 @@ class Puppetfactory < Sinatra::Base
     def remove_environment(username)
       begin
         environment_path = "#{CODEDIR}/environments/#{username}"
-        %x{rm -rf #{environment_path}}
-        if File.exist?("#{environment_path}_production") then
-          %x{rm -rf #{environment_path}_production}
-        end
+        FileUtils.rm_rf(environment_path)
+        FileUtils.rm_rf("#{environment_path}_production")
       rescue => e
         raise "Error removing environment #{username}: #{e.message}"
       end
@@ -687,7 +690,10 @@ class Puppetfactory < Sinatra::Base
         next unless File.executable?(hook)
 
         begin
-          $logger.info `#{hook} #{username}`
+          output, status = Open3.capture2(hook, username)
+          raise "Error running hook: #{hook}" unless status.success?
+          $logger.info output
+
         rescue => e
           $logger.warn "Error running hook: #{hook}"
           $logger.debug e.message
@@ -724,9 +730,9 @@ class Puppetfactory < Sinatra::Base
       Dir.chdir(path) do
         case @@current_test
         when 'all', 'summary'
-          `rake generate`
+          system('rake', 'generate')
         else
-          `rake generate current_test=#{@@current_test}`
+          system('rake', 'generate', "current_test=#{@@current_test}")
         end
       end
 
