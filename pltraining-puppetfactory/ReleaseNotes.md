@@ -1,3 +1,12 @@
+## Version 0.4.14
+
+* Prevent shell injection on the backend
+* Remove puppetclassify dependency, should be managed elsewhere
+
+## Version 0.4.13
+
+* Unpin concat module
+
 ## Version 0.4.12
 
 * Allow alternate path for puppetcode directory in container
