@@ -1,3 +1,7 @@
+## Version 0.4.15
+
+* Support for privileged containers
+
 ## Version 0.4.14
 
 * Prevent shell injection on the backend
