@@ -44,6 +44,7 @@ HOOKS_PATH   =  OPTIONS['HOOKS_PATH'] || '/etc/puppetfactory/hooks'
 MASTER_HOSTNAME = OPTIONS['PUPPETMASTER'] || `hostname`.strip
 DOCKER_GROUP    = OPTIONS['DOCKER_GROUP'] || 'docker'
 DOCKER_IP       = OPTIONS['DOCKER_IP'] || `facter ipaddress_docker0`.strip
+PRIVILEGED      = OPTIONS['PRIVILEGED'] || false
 
 MAP_ENVIRONMENTS = OPTIONS['MAP_ENVIRONMENTS'] || false
 MAP_MODULEPATH   = OPTIONS['MAP_MODULEPATH']   || MAP_ENVIRONMENTS # maintain backwards compatibility
@@ -481,7 +482,7 @@ class Puppetfactory < Sinatra::Base
           "Hostname" => "#{username}",
           "Image" => "#{CONTAINER_NAME}",
           "HostConfig" => {
-            "Privileged" => false,
+            "Privileged" => PRIVILEGED,
             "Binds" => binds,
             "ExtraHosts" => [
               "#{MASTER_HOSTNAME} puppet:#{DOCKER_IP}"

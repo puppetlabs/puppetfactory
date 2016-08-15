@@ -36,6 +36,7 @@ class puppetfactory (
   $readonly_environment = $puppetfactory::params::readonly_environment,
 
   $gitlab_enabled      = $puppetfactory::params::gitlab_enabled,
+  $privileged          = $puppetfactory::params::privileged,
 ) inherits puppetfactory::params {
 
   include puppetfactory::proxy
