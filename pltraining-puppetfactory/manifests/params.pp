@@ -38,4 +38,6 @@ class puppetfactory::params {
   $map_environments = false
   $gitlab_enabled   = false
   $readonly_environment = false
+
+  $privileged = false
 }
