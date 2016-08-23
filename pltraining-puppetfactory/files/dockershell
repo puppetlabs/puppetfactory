@@ -1,0 +1,4 @@
+#! /bin/ruby
+require 'etc'
+username = Etc.getpwuid(Process.euid).name
+exec("docker exec -it #{username} su -")

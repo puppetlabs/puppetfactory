@@ -357,7 +357,7 @@ class Puppetfactory < Sinatra::Base
     def add_system_user(username, password)
       # ssh login user
       crypted = password.crypt("$5$a1")
-      success = system('adduser', username, '-p', crypted, '-G', "pe-puppet,puppetfactory,#{DOCKER_GROUP}", '-m')
+      success = system('adduser', username, '-p', crypted, '-G', "pe-puppet,puppetfactory,#{DOCKER_GROUP}", '--shell', '/usr/bin/dockershell')
 
       raise "Could not create system user #{username}: #{output}" unless success
       "System user #{username} created successfully"
@@ -498,15 +498,8 @@ class Puppetfactory < Sinatra::Base
           "Name" => "#{username}"
         )
 
-        # Set container name to username
+        # Set container name to username so dockershell can connect to it
         container.rename(username)
-
-        # Set default login to attach to container
-        File.open("/home/#{username}/.bashrc", 'w') do |bashrc|
-          bashrc.puts "docker exec -it #{container.id} su -"
-          bashrc.puts "exit 0"
-        end
-
 
         # Start container and copy puppet.conf in place
         container.start
