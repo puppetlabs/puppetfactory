@@ -70,6 +70,16 @@ class puppetfactory (
     content => template('puppetfactory/puppetfactory.yaml.erb'),
     notify  => Service['puppetfactory'],
   }
+  
+  $hooks = ['/etc/puppetfactory/',
+            '/etc/puppetfactory/hooks/',
+            '/etc/puppetfactory/hooks/create',
+            '/etc/puppetfactory/hooks/delete',
+           ]
+
+  file { $hooks:
+    ensure => directory,
+  }
 
   file_line { 'remove tty requirement':
     path  => '/etc/sudoers',
