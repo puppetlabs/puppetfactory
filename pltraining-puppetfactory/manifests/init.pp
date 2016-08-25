@@ -59,12 +59,6 @@ class puppetfactory (
     }
   }
 
-  file { "${codedir}/environments/production/environment.conf":
-    ensure  => file,
-    content => "environment_timeout = 0\n",
-    replace => false,
-  }
-
   file { '/etc/puppetfactory.yaml':
     ensure  => present,
     content => template('puppetfactory/puppetfactory.yaml.erb'),
