@@ -524,7 +524,6 @@ class Puppetfactory < Sinatra::Base
     def remove_container(username)
       begin
         remove_init_scripts(username)
-        remove_node_group(username)
         remove_certificate(username)
         remove_environment(username)
 
@@ -595,6 +594,7 @@ class Puppetfactory < Sinatra::Base
     end
 
     def remove_init_scripts(username)
+      service_file = "/etc/systemd/system/docker-#{username}.service"
       system('chkconfig', "docker-#{username}", 'off')
       FileUtils.rm(service_file)
     end
