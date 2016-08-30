@@ -59,9 +59,9 @@ class puppetfactory (
     }
   }
 
-  file { '/etc/puppetfactory.yaml':
+  file { '/etc/puppetfactory/config.yaml':
     ensure  => present,
-    content => template('puppetfactory/puppetfactory.yaml.erb'),
+    content => template('puppetfactory/config.yaml.erb'),
     notify  => Service['puppetfactory'],
   }
   

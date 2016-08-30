@@ -16,7 +16,11 @@ require 'docker'
 require 'rest-client'
 require 'open3'
 
-OPTIONS = YAML.load_file('/etc/puppetfactory.yaml') rescue {}
+if File.exist? '/etc/puppetfactory/config.yaml'
+  OPTIONS = YAML.load_file('/etc/puppetfactory/config.yaml') rescue {}
+else
+  OPTIONS = YAML.load_file('/etc/puppetfactory.yaml') rescue {}
+end
 
 PUPPET    =  OPTIONS['PUPPET'] || '/opt/puppet/bin/puppet'
 RAKE      =  OPTIONS['RAKE'] || '/opt/puppet/bin/rake'
@@ -44,7 +48,7 @@ HOOKS_PATH   =  OPTIONS['HOOKS_PATH'] || '/etc/puppetfactory/hooks'
 MASTER_HOSTNAME = OPTIONS['PUPPETMASTER'] || `hostname`.strip
 DOCKER_GROUP    = OPTIONS['DOCKER_GROUP'] || 'docker'
 DOCKER_IP       = OPTIONS['DOCKER_IP'] || `facter ipaddress_docker0`.strip
-PRIVILEGED      = OPTIONS['PRIVILEGED'] || false
+PRIVILEGED      = OPTIONS['PRIVILEGED'] || true
 
 MAP_ENVIRONMENTS = OPTIONS['MAP_ENVIRONMENTS'] || false
 MAP_MODULEPATH   = OPTIONS['MAP_MODULEPATH']   || MAP_ENVIRONMENTS # maintain backwards compatibility
