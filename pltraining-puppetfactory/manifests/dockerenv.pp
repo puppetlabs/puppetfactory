@@ -65,4 +65,19 @@ class puppetfactory::dockerenv {
   group { $puppetfactory::docker_group:
     ensure => present,
   }
+
+  # set up the shell expected by Puppetfactory
+  file { '/usr/bin/dockershell':
+    ensure => file,
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0755',
+    source => 'puppet:///modules/puppetfactory/dockershell',
+  }
+
+  file_line { 'dockershell':
+    ensure => present,
+    path   => '/etc/shells',
+    line   => '/usr/bin/dockershell',
+  }
 }
