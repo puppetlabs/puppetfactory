@@ -39,5 +39,5 @@ class puppetfactory::params {
   $gitlab_enabled   = false
   $readonly_environment = false
 
-  $privileged = false
+  $privileged = true
 }
