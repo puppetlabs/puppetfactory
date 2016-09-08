@@ -86,6 +86,7 @@ class Puppetfactory::Plugins::R10k < Puppetfactory::Plugins
     output, status = Open3.capture2e('r10k', 'deploy', 'environment', environment)
     unless status.success?
       $logger.error "Failed to deploy environment #{environment} for #{username}"
+      $logger.error output
       return false
     end
 

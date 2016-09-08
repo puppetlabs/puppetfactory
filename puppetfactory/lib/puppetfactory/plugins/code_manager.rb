@@ -8,6 +8,7 @@ class Puppetfactory::Plugins::CodeManager < Puppetfactory::Plugins
   def initialize(options)
     super(options)
 
+    @puppet       = options[:puppet]
     @gitserver    = options[:gitserver]
     @repomodel    = options[:repomodel]
     @controlrepo  = options[:controlrepo]
@@ -129,6 +130,7 @@ class Puppetfactory::Plugins::CodeManager < Puppetfactory::Plugins
     output, status = Open3.capture2e(@puppet, 'code', 'deploy', environment, '--wait')
     unless status.success?
       $logger.error "Failed to deploy environment #{environment} for #{username}"
+      $logger.error output
       return false
     end
 

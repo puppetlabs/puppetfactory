@@ -29,6 +29,9 @@
 <% if settings.plugins.include? :Dashboard -%>
     <tr><th class="header">Spec Tests:</th>  <td><a href="/dashboard/details/<%= @current[:username] %>" target="_results">results</a> <small>(may not always be available)</small></td></tr>
 <% end -%>
+<% if action_enabled? :deploy -%>
+    <tr class="actions"><td colspan=2><i class="fa"></i><input type="button" id="deploy" data-user="<%= @current[:username] %>" value="Deploy Environment"></td></tr>
+<% end -%>
   </table>
 <% end %>
   <h2>All Users</h2>
