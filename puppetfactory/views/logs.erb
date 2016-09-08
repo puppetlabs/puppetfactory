@@ -1,0 +1,26 @@
+<div id="logs">
+  <h3><%= @logfile %></h3>
+  <div class="data"></div>
+</div>
+
+<script type="text/javascript">
+  function loadLogs() {
+    $("#logs .data").load("logs/data", function() {
+
+      // use timeout instead of an interval so that in case of network error
+      // we don't end up with a queue of requests stacked up.
+      setTimeout(loadLogs, 5000);
+    });
+  }
+
+  $(document).ready(function() {
+    loadLogs();
+  });
+</script>
+
+<style>
+  #logs .data {
+    font-family: monospace;
+    white-space: pre-wrap;
+  }
+</style>

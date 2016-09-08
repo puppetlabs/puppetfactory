@@ -3,10 +3,16 @@
 require 'rubygems'
 require 'puppetfactory'
 require 'optparse'
+require 'yaml'
 
 NAME = File.basename($PROGRAM_NAME)
 
-options = {}
+if File.exist? '/etc/puppetfactory/config.yaml'
+  options = YAML.load_file('/etc/puppetfactory/config.yaml') rescue {}
+else
+  options = YAML.load_file('/etc/puppetfactory.yaml') rescue {}
+end
+
 optparse = OptionParser.new { |opts|
   opts.banner = "Usage : #{NAME} [command] [target]
 
@@ -22,9 +28,11 @@ You can also pass arguments to invoke CLI commands.
       * Reprovision a PuppetFactory user container
   * redeploy <username>
       * Delete a user's environment from disk and redeploy it with r10k
+  * configprint
+      * Display the value of all Puppetfactory options.
 
 This will send commands to the PuppetFactory server specified in
-/etc/puppetfactory.yaml, defaulting to localhost if unspecified.
+/etc/puppetfactory/config.yaml, defaulting to localhost if unspecified.
 "
 
   opts.on("-s SERVER", "--server SERVER", "Remote PuppetFactory server.") do |arg|
@@ -44,24 +52,76 @@ This will send commands to the PuppetFactory server specified in
 }
 optparse.parse!
 
+options[:puppet]       ||= '/opt/puppet/bin/puppet'
+options[:confdir]      ||= '/etc/puppetlabs/puppet'
+options[:codedir]      ||= '/etc/puppetlabs/code'
+options[:environments] ||= "#{options[:codedir]}/environments"
+
+options[:root]         ||= File.expand_path(File.join(File.dirname(__FILE__), '..'))
+options[:logfile]      ||= '/var/log/puppetfactory'
+options[:templatedir]  ||= "#{File.dirname(__FILE__)}/../templates"
+
+options[:port]         ||= 8000
+options[:bind]         ||= '0.0.0.0'
+
+options[:user]         ||= 'admin'
+options[:password]     ||= 'admin'
+options[:session]      ||= '12345'
+
+options[:master]       ||= `hostname`.strip
+options[:usersuffix]   ||= 'puppetfactory.vm'
+options[:usergroups]   ||= []
+
+options[:puppetcode]   ||= '/var/opt/puppetcode'
+options[:modulepath]   ||= :none
+
+options[:gitserver]    ||= 'https://github.com'
+options[:gituser]      ||= 'puppetlabs'
+options[:controlrepo]  ||= 'control-repo.git'
+options[:repomodel]    ||= :single
+
+options[:plugins]      ||= [:ShellUser, :Logs]
+
+def validate(options, option, values)
+  unless values.include? options[option]
+    raise "#{option} must be one of #{values.inspect}"
+  end
+end
+
+validate(options, :modulepath, [:readwrite, :readonly, :none])
+validate(options, :repomodel, [:single, :peruser])
+
+Puppetfactory::Helpers.configure(options)
+
+# why do I have to do this? This page implies I shouldn't.
+# https://github.com/sinatra/sinatra#logging
+$logger = Logger::new(options[:logfile])
+$logger.level     = options[:debug] ? Logger::DEBUG : Logger::INFO
+$logger.formatter = proc { |severity,datetime,progname,msg| "[#{datetime}] #{severity}: #{msg}\n" }
+
 # if no arguments, start up the server
 if ARGV.size == 0
-  opts = {
-          :Port               => 8000,
-          :Host               => '0.0.0.0',
-          :Logger             => WEBrick::Log::new(LOGFILE, WEBrick::Log::INFO),
-          :ServerType         => WEBrick::Daemon,
-          :DocumentRoot       => DOCROOT,
-          :SSLEnable          => false,
-  #         :SSLVerifyClient    => OpenSSL::SSL::VERIFY_NONE,
-  #         :SSLCertificate     => OpenSSL::X509::Certificate.new(  File.open(File.join(CERT_PATH, 'server.crt')).read),
-  #         :SSLPrivateKey      => OpenSSL::PKey::RSA.new(          File.open(File.join(CERT_PATH, 'server.key')).read),
-  #         :SSLCertName        => [ [ "CN",WEBrick::Utils::getservername ] ]
-  }
+ Puppetfactory.run! options
 
-  Rack::Handler::WEBrick.run(Puppetfactory, opts) do |server|
-          [:INT, :TERM].each { |sig| trap(sig) { server.stop } }
-  end
+#   opts = {
+#           :Port               => 8000,
+#           :Host               => '0.0.0.0',
+#           :Logger             => WEBrick::Log::new(options[:logfile], WEBrick::Log::INFO),
+#           :ServerType         => options[:debug] ? WEBrick::SimpleServer : WEBrick::Daemon,
+#           :DocumentRoot       => options[:docroot],
+#           :SSLEnable          => false,
+#   #         :SSLVerifyClient    => OpenSSL::SSL::VERIFY_NONE,
+#   #         :SSLCertificate     => OpenSSL::X509::Certificate.new(  File.open(File.join(CERT_PATH, 'server.crt')).read),
+#   #         :SSLPrivateKey      => OpenSSL::PKey::RSA.new(          File.open(File.join(CERT_PATH, 'server.key')).read),
+#   #         :SSLCertName        => [ [ "CN",WEBrick::Utils::getservername ] ]
+#   }.merge(options)
+#
+#   Rack::Handler::WEBrick.run(Puppetfactory, opts) do |server|
+#     require 'pry'
+#     binding.pry
+#
+#           [:INT, :TERM].each { |sig| trap(sig) { server.stop } }
+#   end
 else
   require 'puppetfactory/cli'
 
@@ -82,6 +142,8 @@ else
     puppetfactory.repair(user)
   when 'redeploy'
     puppetfactory.redeploy(user)
+  when 'configprint'
+    puts options.to_yaml
 
   else
     puts "Unknown command: #{command}"

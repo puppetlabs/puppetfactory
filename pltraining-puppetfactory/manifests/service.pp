@@ -1,17 +1,7 @@
 class puppetfactory::service {
-  class{ 'staging':
-    path => '/var/staging/'
-  }
-
-  staging::file { 'puppetfactory-0.3.13.gem':
-    source  => 'puppet:///modules/puppetfactory/puppetfactory-0.3.13.gem'
-  }
-
   package { 'puppetfactory':
     ensure   => present,
     provider => gem,
-    source   => "${staging::path}/puppetfactory/puppetfactory-0.3.13.gem",
-    require  => Staging::File['puppetfactory-0.3.13.gem'],
     before   => Service['puppetfactory'],
   }
 
@@ -20,7 +10,7 @@ class puppetfactory::service {
     owner   => 'root',
     group   => 'root',
     mode    => '0664',
-    content => template('puppetfactory/puppetfactory.init.erb'),
+    source  => 'puppet:///modules/puppetfactory/puppetfactory.service',
     before  => Service['puppetfactory'],
   }
 

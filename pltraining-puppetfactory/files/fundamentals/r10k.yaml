@@ -1,7 +1,0 @@
----
-cachedir: '/opt/puppetlabs/server/data/r10k'
-sources:
-  main:
-    remote: 'https://github.com/puppetlabs-education/classroom-control-vf.git'
-    basedir: '/etc/puppetlabs/code/environments'
-    prefix: false

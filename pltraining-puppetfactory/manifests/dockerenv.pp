@@ -1,22 +1,24 @@
 class puppetfactory::dockerenv {
   assert_private('This class should not be called directly')
-
-  $puppetmaster = $puppetfactory::puppetmaster
-
   include docker
 
-  if $puppetfactory::pe {
-    include pe_repo::platform::ubuntu_1404_amd64
-  }
-
-  if $puppetfactory::gitlab_enabled {
-    include puppetfactory::gitlab
-  }
+  $puppetmaster = $puppetfactory::master
 
   file { '/var/docker':
     ensure => directory,
   }
 
+  file { '/var/run/docker.sock':
+    group   => $puppetfactory::docker_group,
+    mode    => '0664',
+    require => [Class['docker'],Group['docker']],
+  }
+
+  group { $puppetfactory::docker_group:
+    ensure => present,
+  }
+
+  # Ubuntu agent image
   file { '/var/docker/ubuntuagent/':
     ensure  => directory,
     recurse => true,
@@ -36,6 +38,7 @@ class puppetfactory::dockerenv {
     require     => File['/var/docker/ubuntuagent/Dockerfile'],
   }
 
+  # CentOS agent image
   file { '/var/docker/centosagent/':
     ensure  => directory,
     recurse => true,
@@ -55,29 +58,4 @@ class puppetfactory::dockerenv {
     require     => File['/var/docker/centosagent/Dockerfile'],
   }
 
-
-  file { '/var/run/docker.sock':
-    group   => $puppetfactory::docker_group,
-    mode    => '0664',
-    require => [Class['docker'],Group['docker']],
-  }
-
-  group { $puppetfactory::docker_group:
-    ensure => present,
-  }
-
-  # set up the shell expected by Puppetfactory
-  file { '/usr/bin/dockershell':
-    ensure => file,
-    owner  => 'root',
-    group  => 'root',
-    mode   => '0755',
-    source => 'puppet:///modules/puppetfactory/dockershell',
-  }
-
-  file_line { 'dockershell':
-    ensure => present,
-    path   => '/etc/shells',
-    line   => '/usr/bin/dockershell',
-  }
 }

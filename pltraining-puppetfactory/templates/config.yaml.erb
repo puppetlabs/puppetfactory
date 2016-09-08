@@ -1,39 +1,37 @@
 ---
-AUTH_INFO:
-  ca_certificate_path: <%= @ca_certificate_path %>
-  certificate_path: <%= @certificate_path %>
-  private_key_path: <%= @private_key_path %>
-
-PUPPETMASTER: <%= @puppetmaster %>
-CLASSIFIER_URL: <%= @classifier_url %>
-
-PUPPET: <%= @puppet %>
-RAKE: <%= @rake %>
-
-DOCROOT: <%= @docroot %>
-LOGFILE: <%= @logfile %>
-CERT_PATH: <%= @cert_path %>
-USER: <%= @user %>
-PASSWORD: "<%= @password %>"
-SESSION: "<%= @session_id %>"
-
-CONTAINER_NAME: <%= @container_name %>
-
-CONFDIR: <%= @confdir %>
-CODEDIR: <%= @codedir %>
-
-USERSUFFIX: <%= @usersuffix %>
-PUPPETCODE: <%= @puppetcode %>
-
-DOCKER_GROUP: <%= @docker_group %>
-
-DASHBOARD: <%= @dashboard %>
-
-PE: <%= @pe %>
-PREFIX: <%= @prefix %>
-MAP_ENVIRONMENTS: <%= @map_environments %>
-MAP_MODULEPATH: <%= @map_modulepath %>
-READONLY_ENVIRONMENT: <%= @readonly_environment %>
-
-GITLAB: <%= @gitlab_enabled %>
-PRIVILEGED: <%= @privileged %>
+<% if @plugins -%>
+:plugins:
+<% @plugins.each do |plugin| -%>
+  - :<%= plugin %>
+<% end -%>
+<% end -%>
+<% if @usergroups -%>
+:usergroups:
+<% @usergroups.each do |group| -%>
+  - <%= group %>
+<% end -%>
+<% end -%>
+<% if @auth_info -%>
+:auth_info:
+<% @auth_info.each do |key, value| -%>
+  :<%= key %>: <%= value %>
+<% end -%>
+<% end -%>
+<% if @repomodel -%>
+:repomodel: :<%= @repomodel %>
+<% end -%>
+<% if @modulepath -%>
+:modulepath: :<%= @modulepath %>
+<% end -%>
+<% if @real_gitserver -%>
+:gitserver: <%= @real_gitserver %>
+<% end -%>
+<% ['puppet', 'confdir', 'codedir', 'environments', 'root', 'logfile',
+    'templatedir', 'port', 'bind', 'user', 'password', 'session', 'master',
+    'usersuffix', 'autosign', 'puppetcode', 'gituser', 'controlrepo', 'prefix',
+    'classifier', 'dashboard_path', 'dashboard_interval', 'container',
+    'docker_group', 'docker_ip', 'privileged', 'hooks_path' ].each do |param| -%>
+<% value = instance_variable_get("@#{param}") -%>
+<% next unless value -%>
+:<%= param %>: <%= value %>
+<% end -%>

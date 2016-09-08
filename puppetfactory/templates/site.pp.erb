@@ -33,17 +33,17 @@ node default {
   # This is where you can declare classes for all nodes.
   # Example:
   #   class { 'my_class': }
-  <% if MAP_ENVIRONMENTS %>
+  <% unless @modulepath == :none %>
   unless $::osfamily == 'windows' {
-    file { '<%= CODEDIR %>/environments/production/modules':
+    file { '<%= @codedir %>/environments/production/modules':
       ensure => link,
       force  => true,
-      target => '<%= PUPPETCODE %>/modules',
+      target => '<%= @puppetcode %>/modules',
     }
-    file { '<%= CODEDIR %>/environments/production/manifests':
+    file { '<%= @codedir %>/environments/production/manifests':
       ensure => link,
       force  => true,
-      target => '<%= PUPPETCODE %>/manifests',
+      target => '<%= @puppetcode %>/manifests',
     }
   }
   <% end %>

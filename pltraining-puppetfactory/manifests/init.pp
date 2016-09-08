@@ -1,62 +1,89 @@
 class puppetfactory (
-  $ca_certificate_path = $puppetfactory::params::ca_certificate_path,
-  $certificate_path    = $puppetfactory::params::certificate_path,
-  $private_key_path    = $puppetfactory::params::private_key_path,
+  Boolean $manage_gitlab  = $puppetfactory::params::manage_gitlab,
+  Boolean $manage_selinux = $puppetfactory::params::manage_selinux,
+  Boolean $autosign       = $puppetfactory::params::autosign,
+  String  $docker_group   = $puppetfactory::params::docker_group,   # why are some of these items configurable?
 
-  $puppetmaster        = $puppetfactory::params::puppetmaster,
-  $classifier_url      = $puppetfactory::params::classifier_url,
+  String  $confdir        = $settings::confdir,
+  String  $codedir        = $settings::codedir,
+  String  $environments   = $settings::environmentpath,
 
-  $puppet              = $puppetfactory::params::puppet,
-  $rake                = $puppetfactory::params::rake,
+  Optional[Array]   $plugins            = undef,
+  Optional[String]  $puppet             = undef,
+  Optional[String]  $root               = undef,
+  Optional[String]  $logfile            = undef,
+  Optional[String]  $templatedir        = undef,
+  Optional[Integer] $port               = undef,
+  Optional[String]  $bind               = undef,
+  Optional[String]  $user               = undef,
+  Optional[String]  $password           = undef,
+  Optional[String]  $session            = undef,
+  Optional[String]  $master             = undef,
+  Optional[String]  $usersuffix         = undef,
+  Optional[Array]   $usergroups         = undef,
+  Optional[String]  $puppetcode         = undef,
+  Optional[String]  $gitserver          = undef,
+  Optional[String]  $gituser            = undef,
+  Optional[String]  $controlrepo        = undef,
+  Optional[Boolean] $prefix             = undef,
+  Optional[String]  $classifier         = undef,
+  Optional[Hash]    $auth_info          = undef,
+  Optional[String]  $dashboard_path     = undef,
+  Optional[Integer] $dashboard_interval = undef,
+  Optional[String]  $container          = undef,
+  Optional[String]  $docker_ip          = undef,
+  Optional[Boolean] $privileged         = undef,
+  Optional[String]  $hooks_path         = undef,
 
-  $docroot             = $puppetfactory::params::docroot,
-  $logfile             = $puppetfactory::params::logfile,
-  $cert_path           = $puppetfactory::params::cert_path,
-  $user                = $puppetfactory::params::user,
-  $password            = $puppetfactory::params::password,
-  $session_id          = $puppetfactory::params::session_id,
+  Optional[Enum['single', 'peruser']] $repomodel              = undef,
+  Optional[Enum['readwrite', 'readonly', 'none']] $modulepath = undef,
 
-  $confdir             = $puppetfactory::params::confdir,
-  $codedir             = $puppetfactory::params::codedir,
-
-  $usersuffix          = $puppetfactory::params::usersuffix,
-  $puppetcode          = $puppetfactory::params::puppetcode,
-
-  $container_name      = $puppetfactory::params::container_name,
-  $docker_group        = $puppetfactory::params::docker_group,
-
-  $dashboard           = $puppetfactory::params::dashboard,
-
-  $manage_selinux      = $puppetfactory::params::manage_selinux,
-
-  $pe                  = $puppetfactory::params::pe,
-  $prefix              = $puppetfactory::params::prefix,
-  $map_environments    = $puppetfactory::params::map_environments,
-  $map_modulepath      = $puppetfactory::params::map_environments, # maintain backwards compatibility and simplicity
-  $readonly_environment = $puppetfactory::params::readonly_environment,
-
-  $gitlab_enabled      = $puppetfactory::params::gitlab_enabled,
-  $privileged          = $puppetfactory::params::privileged,
 ) inherits puppetfactory::params {
+  # TODO: port these to use puppet-tea and puppet-ip
+  if $bind           { validate_ip_address($bind)              }
+  if $docker_ip      { validate_ip_address($docker_ip)         }
+
+  if $puppet         { validate_absolute_path($puppet)         }
+  if $confdir        { validate_absolute_path($confdir)        }
+  if $codedir        { validate_absolute_path($codedir)        }
+  if $environments   { validate_absolute_path($environments)   }
+  if $root           { validate_absolute_path($root)           }
+  if $logfile        { validate_absolute_path($logfile)        }
+  if $templatedir    { validate_absolute_path($templatedir)    }
+  if $puppetcode     { validate_absolute_path($puppetcode)     }
+  if $dashboard_path { validate_absolute_path($dashboard_path) }
+  if $hooks_path     { validate_absolute_path($hooks_path)     }
 
   include puppetfactory::proxy
   include puppetfactory::service
   include puppetfactory::dockerenv
   include epel
 
+  if $manage_gitlab {
+    include puppetfactory::gitlab
+    $real_gitserver = pick($gitserver, 'http://localhost:8888')
+  }
+  else {
+    $real_gitserver = pick($gitserver, 'https://github.com')
+  }
+
   class { 'abalone':
     port => '4200',
   }
 
-  $gitserver = $gitlab_enabled ? {
-    true    => 'http://localhost:8888',
-    default => 'https://github.com',
+  # TODO: should this be gated on the container name or some such? Do we care?
+  # if we're on a PE master, set up so we can serve ubuntu nodes
+  if $::pe_server_version {
+    include pe_repo::platform::ubuntu_1404_amd64
   }
 
-  unless $pe {
-    file { ["${codedir}/environments","${codedir}/environments/production"]:,
-      ensure => directory,
-    }
+  file_line { 'puppetfactory autosign':
+    ensure => $autosign ? {
+        true  => present,
+        false => absent,
+      },
+    path   => "${confdir}/autosign.conf",
+    line   => '*',
   }
 
   file { '/etc/puppetfactory/config.yaml':
@@ -64,7 +91,13 @@ class puppetfactory (
     content => template('puppetfactory/config.yaml.erb'),
     notify  => Service['puppetfactory'],
   }
-  
+
+  file_line { 'Puppetfactory login shell':
+    ensure => present,
+    path   => '/etc/shells',
+    line   => '/usr/local/bin/pfsh',
+  }
+
   $hooks = ['/etc/puppetfactory/',
             '/etc/puppetfactory/hooks/',
             '/etc/puppetfactory/hooks/create',
@@ -75,28 +108,21 @@ class puppetfactory (
     ensure => directory,
   }
 
+  group { 'puppetfactory':
+    ensure => present,
+  }
+
+  # TODO: should the rest of this be in some profile class?
   file_line { 'remove tty requirement':
     path  => '/etc/sudoers',
     line  => '#Defaults    requiretty',
     match => '^\s*Defaults    requiretty',
   }
 
-  file_line { 'specifiy PUPPETCODE environment var':
-    # NOTE: this will only take effect after a reboot
-    path   => '/etc/environment',
-    line   => "PUPPETCODE=${puppetcode}",
-    match  => '^\s*PUPPETCODE.*',
-    before => Package['puppetfactory'],
-  }
-
   # sloppy, get this gone
   user { 'vagrant':
     ensure     => absent,
     managehome => true,
-  }
-
-  group { 'puppetfactory':
-    ensure => present,
   }
 
   file { '/etc/issue.net':

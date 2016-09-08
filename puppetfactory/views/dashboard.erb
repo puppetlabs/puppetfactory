@@ -1,6 +1,6 @@
 <div id="dashboard">
   <span id="notifications">
-    Last updated <%= approximate_time_difference(@test_data['timestamp']) %>
+    Last updated <%= Puppetfactory::Helpers.approximate_time_difference(@test_data['timestamp']) %>
     (<a href="#" id="show-explanation">Why don't the tests add up?</a>)
   </span>
   <div id="tools">
@@ -16,7 +16,7 @@
   <div class="content">
   <% @test_data.each do |user, userdata| %>
   <% next if user == 'timestamp' %>
-  <% total, passed, percent = test_completion(userdata['summary']) %>
+  <% total, passed, percent = Puppetfactory::Plugins::Dashboard.test_completion(userdata['summary']) %>
   <% details="/dashboard/details/#{user}/summary" %>
     <div class="user">
       <label><%= user %></label>
@@ -27,7 +27,7 @@
 
       <% userdata.each do |result, data| %>
         <% next if result == 'summary' %>
-        <% total, passed, percent = test_completion(data) %>
+        <% total, passed, percent = Puppetfactory::Plugins::Dashboard.test_completion(data) %>
         <% details="/dashboard/details/#{user}/#{result}" %>
       <div class="progressbar gutter <%= result %> <%= user %>">
         <span class="label"><%= passed %> of <%= total %> tests passing</span>
