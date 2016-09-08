@@ -35,11 +35,8 @@
     {"name":"puppetlabs/stdlib",                 "version_requirement":">= 4.5.1"},
     {"name":"pltraining/userprefs",              "version_requirement":">= 1.0.15"},
     {"name":"pltraining/rbac",                   "version_requirement":">= 0.0.2"},
-    {"name":"pltraining/showoff",                "version_requirement":">= 0.0.1"},
     {"name":"stahnma/epel",                      "version_requirement":">= 1.0.2"},
     {"name":"zack/r10k"},
-    {"name":"nanliu/staging"},
-    {"name":"binford2k/wreckit"},
     {"name":"binford2k/abalone"}
   ]
 }

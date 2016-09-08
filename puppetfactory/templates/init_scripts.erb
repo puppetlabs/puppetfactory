@@ -4,6 +4,7 @@ Description=docker-<%= username %>
 [Service]
 ExecStart=/bin/docker start -a <%= username %>
 ExecStop=/bin/docker stop <%= username %>
+Restart=on-failure
 
 [Install]
 WantedBy=default.target

@@ -1,0 +1,31 @@
+#! /usr/bin/env ruby
+
+require 'rubygems'
+require 'yaml'
+require 'puppetfactory'
+
+if File.exist? '/etc/puppetfactory/config.yaml'
+  options = YAML.load_file('/etc/puppetfactory/config.yaml') rescue {}
+else
+  options = YAML.load_file('/etc/puppetfactory.yaml') rescue {}
+end
+
+options[:plugins] ||= [:LoginShell]
+options[:logfile] ||= STDOUT
+options[:session] ||= '12345'
+
+$logger = Logger.new(options[:logfile])
+
+plugins = options[:plugins].map do |plugin|
+  require "puppetfactory/plugins/#{plugin.snake_case}"
+  Puppetfactory::Plugins::const_get(plugin).new(options)
+end
+
+resp = plugins.select { |plugin| plugin.respond_to? :login }
+raise "The login action is not exposed by any plugins" if resp.size == 0
+raise "The login action is exposed by multiple loaded plugins! (#{resp.map {|p| p.class }})" unless resp.size == 1
+
+print 'Please enter the session ID: '
+raise 'Incorrect session ID' unless STDIN.gets.strip == options[:session]
+
+resp.first.send(:login)

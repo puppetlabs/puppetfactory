@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.authors           = ["Ben Ford","Josh Samuelson"]
   s.has_rdoc          = false
   s.require_path      = "lib"
-  s.executables       = %w( puppetfactory )
+  s.executables       = ["pfsh", "puppetfactory"]
 
   s.files             = %w( README.md LICENSE )
   s.files            += Dir.glob("lib/**/*")
@@ -26,6 +26,7 @@ Gem::Specification.new do |s|
   s.add_dependency      "docker-api"
   s.add_dependency      "httparty"
   s.add_dependency      "rest-client"
+  s.add_dependency      "hocon"
 
   s.description       = <<-desc
   Puppetfactory creates a Puppet Enterprise infrastructure on the classroom server.

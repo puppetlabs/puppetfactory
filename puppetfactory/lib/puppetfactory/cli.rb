@@ -6,18 +6,14 @@ require 'httparty'
 class Puppetfactory
   class Cli
     def initialize(options = {})
-      config = YAML.load_file('/etc/puppetfactory.yaml') rescue nil
-
       if options[:server]
         @server = options[:server]
-      elsif config['SERVER']
-        @server = config['SERVER']
       else
         @server = 'localhost'
       end
-      @server = "http://#{@server}" unless @server.start_with? 'http'
-
-      @debug = options[:debug]
+      @server = "http://#{@server}:#{options[:port]}" unless @server.start_with? 'http'
+      @master = options[:master]
+      @debug  = options[:debug]
     end
 
     def list()
@@ -29,7 +25,7 @@ class Puppetfactory
         JSON.parse(response.body).each do |user, params|
           container = params['container_status']['Dead'] ? 'X' : '+' rescue '?'
           nodegroup = params['node_group_url'].nil?      ? 'X' : '+'
-          printf("%-14s  %-25s        %-25s     %1s          %1s\n", user, params['url'], params['certname'], container, nodegroup)
+          printf("%-14s  https://%s%10s        %-25s     %1s          %1s\n", user, @master, params['url'], params['certname'], container, nodegroup)
         end
       rescue => e
         puts "API error listing users: #{e.message}"
@@ -48,6 +44,9 @@ class Puppetfactory
         response = HTTParty.post("#{@server}/api/users", params)
         raise "PuppetFactory error: #{response.body}" unless response.code == 200
 
+        data = JSON.parse(response.body)
+        raise data['message'] unless data['status'] == 'success'
+
         puts "User #{user} created."
       rescue => e
         puts "API error creating user #{user}: #{e.message}"
@@ -58,7 +57,10 @@ class Puppetfactory
     def delete(user)
       begin
         response = HTTParty.delete("#{@server}/api/users/#{user}")
-        raise "No such user" unless response.code == 200
+        raise "Puppetfactory error: #{response.body}" unless response.code == 200
+
+        data = JSON.parse(response.body)
+        raise data['message'] unless data['status'] == 'success'
 
         puts "User #{user} deleted."
       rescue => e
@@ -74,7 +76,10 @@ class Puppetfactory
                                     username: user,
                                     action: "repair"}
                                 })
-        raise "No such user" unless response.code == 200
+        raise "Puppetfactory error: #{response.body}" unless response.code == 200
+
+        data = JSON.parse(response.body)
+        raise data['message'] unless data['status'] == 'success'
 
         puts "User #{user} repaired."
       rescue => e
@@ -89,7 +94,10 @@ class Puppetfactory
                                     username: user,
                                     action: "redeploy"}
                                 })
-        raise "No such user" unless response.code == 200
+        raise "Puppetfactory error: #{response.body}" unless response.code == 200
+
+        data = JSON.parse(response.body)
+        raise data['message'] unless data['status'] == 'success'
 
         puts "User #{user} repaired."
       rescue => e

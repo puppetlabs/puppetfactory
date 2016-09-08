@@ -1,0 +1,10 @@
+[Unit]
+Description=PuppetFactory service
+
+[Service]
+ExecStart=/usr/local/bin/puppetfactory
+Restart=on-failure
+KillSignal=SIGINT
+
+[Install]
+WantedBy=multi-user.target
