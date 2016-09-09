@@ -9,6 +9,16 @@ class String
        dup.tap { |s| s.snake_case! }
      end
   end
+
+  if not String.method_defined? :trim
+    def trim(size)
+      if self.size > size
+        "#{self[0...(size - 1)]}…"
+      else
+        self
+      end
+    end
+  end
 end
 
 class Symbol
