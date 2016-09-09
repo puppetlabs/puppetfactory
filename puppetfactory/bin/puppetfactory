@@ -52,7 +52,7 @@ This will send commands to the PuppetFactory server specified in
 }
 optparse.parse!
 
-options[:puppet]       ||= '/opt/puppet/bin/puppet'
+options[:puppet]       ||= '/opt/puppetlabs/bin/puppet'
 options[:confdir]      ||= '/etc/puppetlabs/puppet'
 options[:codedir]      ||= '/etc/puppetlabs/code'
 options[:environments] ||= "#{options[:codedir]}/environments"

@@ -128,24 +128,29 @@ class Puppetfactory < Sinatra::Base
   end
 
   # perform an action on a given user
-  put '/api/users/:username' do
+  put '/api/users/:username' do |username|
     case params[:action]
     when 'deploy'
-      plugins(:deploy, params[:username])
+      resp = plugins(:deploy, username)
 
     when 'redeploy'
-      plugins(:redeploy, params[:username])
+      resp = plugins(:redeploy, username)
 
     when 'repair'
-      plugins(:repair, params[:username])
+      resp = plugins(:repair, username)
 
     when 'select'
       session[:username] = username
+      resp = [true]
 
     else
       raise "Unknown user action: #{params[:action]}."
     end
-    {"status" => "ok"}.to_json
+    if resp.select { |response| response == false }.size == 0
+      {"status" => "success"}.to_json
+    else
+      {"status" => "failure"}.to_json
+    end
   end
 
   # delete a user
@@ -202,6 +207,11 @@ class Puppetfactory < Sinatra::Base
       resp = @loaded_plugins.select { |plugin| plugin.respond_to? action }
       raise "The #{action} action is not exposed by any plugins" if resp.size == 0
       raise "The #{action} action is exposed by multiple loaded plugins! (#{resp.map {|p| p.class }})" unless resp.size == 1
+    end
+
+    def action_enabled?(action)
+      resp = @loaded_plugins.select { |plugin| plugin.respond_to? action }
+      resp.size != 0
     end
 
     # Take an array of hashes and squash them into a single hash.

@@ -101,4 +101,33 @@ $(document).ready(function(){
     }
 
   });
+
+  $('#deploy').click(function(){
+    var button   = $(this);
+    var activity = button.siblings('i');
+    var username = button.attr("data-user");
+
+    activity.addClass('fa-spinner fa-spin');
+    button.attr("disabled", true);
+    $.ajax({
+      url: '/api/users/'+username,
+      type: 'PUT',
+      data: "action=deploy",
+      success: function(response) {
+        var results = jQuery.parseJSON(response);
+
+        activity.removeClass('fa-spinner fa-spin');
+        button.attr("disabled", false);
+
+        if(results.status != 'success') {
+          alert("Deploy failed. See logs for details.");
+        }
+      },
+      error: function(response) {
+        activity.removeClass('fa-spinner fa-spin');
+        alert("Deploy failed:\n" + response.responseText);
+      }
+    });
+  });
+
 });
