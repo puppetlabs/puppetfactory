@@ -27,6 +27,7 @@ Gem::Specification.new do |s|
   s.add_dependency      "httparty"
   s.add_dependency      "rest-client"
   s.add_dependency      "hocon"
+  s.add_dependency      "octokit"
 
   s.description       = <<-desc
   Puppetfactory creates a Puppet Enterprise infrastructure on the classroom server.

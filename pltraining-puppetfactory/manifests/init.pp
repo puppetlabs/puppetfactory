@@ -24,6 +24,7 @@ class puppetfactory (
   Optional[String]  $puppetcode         = undef,
   Optional[String]  $gitserver          = undef,
   Optional[String]  $gituser            = undef,
+  Optional[String]  $githubtoken        = undef,
   Optional[String]  $controlrepo        = undef,
   Optional[Boolean] $prefix             = undef,
   Optional[String]  $classifier         = undef,

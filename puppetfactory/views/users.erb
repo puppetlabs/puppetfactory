@@ -26,6 +26,9 @@
 <% if @current[:node_group_url] -%>
     <tr><th class="header">Node Group:</th>  <td><a href="<%= @current[:node_group_url] %>" target="_console">Console login</a></td></tr>
 <% end -%>
+<% if @current[:controlrepo] -%>
+    <tr><th class="header">Control Repo:</th>  <td><a href="<%= @current[:controlrepo] %>" target="_console"><%= @current[:controlrepo] %></a></td></tr>
+<% end -%>
 <% if settings.plugins.include? :Dashboard -%>
     <tr><th class="header">Spec Tests:</th>  <td><a href="/dashboard/details/<%= @current[:username] %>" target="_results">results</a> <small>(may not always be available)</small></td></tr>
 <% end -%>
