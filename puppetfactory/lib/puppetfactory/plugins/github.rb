@@ -31,6 +31,9 @@ class Puppetfactory::Plugins::Github < Puppetfactory::Plugins
       @client.create_ref(repo, "heads/#{username}", sha)
       $logger.info "Created Github user branch for #{username}"
 
+      @client.add_collaborator(repo, username)
+      $logger.info "Added #{username} as a collaborator to #{repo}."
+
     rescue => e
       $logger.error "Error creating Github user branch for #{username}"
       $logger.error e.message
@@ -47,6 +50,9 @@ class Puppetfactory::Plugins::Github < Puppetfactory::Plugins
     begin
       @client.delete_branch("#{@gituser}/#{@controlrepo}", username)
       $logger.info "Deleted Github user branch for #{username}"
+
+      @client.remove_collaborator(repo, username)
+      $logger.info "Removed #{username} as a collaborator on #{repo}."
 
     rescue => e
       $logger.error "Error deleting Github user branch for #{username}"
