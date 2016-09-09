@@ -6,7 +6,7 @@ Gem::Specification.new do |s|
   s.version           = '0.4.0'
   s.date              = Date.today.to_s
   s.summary           = "Stands up a graphical classroom manager with containerized puppet agents."
-  s.homepage          = "http://www.puppetlabs.com/education"
+  s.homepage          = "https://github.com/puppetlabs/puppetfactory"
   s.email             = "ben.ford@puppetlabs.com"
   s.authors           = ["Ben Ford","Josh Samuelson"]
   s.license           = 'Apache-2.0'
