@@ -22,7 +22,7 @@ class Puppetfactory::Helpers
   def self.approximate_time_difference(timestamp)
     return 'never' if timestamp.nil?
 
-    start = Time.parse(timestamp)
+    start = timestamp.class == String ? Time.parse(timestamp) : timestamp
     delta = (Time.now - start)
 
     if delta > 60

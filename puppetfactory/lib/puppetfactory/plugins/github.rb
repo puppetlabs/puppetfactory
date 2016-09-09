@@ -10,19 +10,22 @@ class Puppetfactory::Plugins::Github < Puppetfactory::Plugins
     @gituser     = options[:gituser]
     @controlrepo = options[:controlrepo]
     @repomodel   = options[:repomodel]
+    @githubtoken = options[:githubtoken]
 
     # chomp so we can support repo names with or without the .git
     @controlrepo.chomp!('.git')
 
-    if options[:githubtoken]
-      @client = Octokit::Client.new(:access_token => options[:githubtoken])
+    if @githubtoken
+      @client = Octokit::Client.new(:access_token => @githubtoken)
       @client.user.login
+    else
+      @client = Octokit::Client.new()
     end
   end
 
   def create(username, password)
     # can only do anything on our own repo, and only if we're authorized!
-    return true unless @client and @repomodel == :single
+    return true unless @githubtoken and @repomodel == :single
 
     begin
       # can only do anything on our own repo!
@@ -45,7 +48,7 @@ class Puppetfactory::Plugins::Github < Puppetfactory::Plugins
 
   def delete(username)
     # can only do anything on our own repo, and only if we're authorized!
-    return true unless @client and @repomodel == :single
+    return true unless @githubtoken and @repomodel == :single
 
     begin
       @client.delete_branch("#{@gituser}/#{@controlrepo}", username)
@@ -65,14 +68,35 @@ class Puppetfactory::Plugins::Github < Puppetfactory::Plugins
 
   def userinfo(username, extended = false)
     if @repomodel == :single
-      controlrepo = "#{@gitserver}/#{@gituser}/#{@controlrepo}/tree/#{username}"
+      repo = "#{@gituser}/#{@controlrepo}"
+      url  = "#{@gitserver}/#{@gituser}/#{@controlrepo}/tree/#{username}"
     else
-      controlrepo = "#{@gitserver}/#{username}/#{@controlrepo}"
+      repo = "#{@username}/#{@controlrepo}"
+      url  = "#{@gitserver}/#{username}/#{@controlrepo}"
     end
-    {
-      :username    => username,
-      :controlrepo => controlrepo,
+
+    userinfo = {
+      :username     => username,
+      :controlrepo  => url,
     }
+    userinfo[:latestcommit] = latest_commit(repo, username) if extended
+    userinfo
   end
 
+  private
+  def latest_commit(repo, username)
+    begin
+      commit = @client.commits(repo, :author => username).first
+      return if commit.nil?
+
+      {
+        :url     => commit[:html_url],
+        :message => commit[:commit][:message].trim(62),
+        :time    => Puppetfactory::Helpers.approximate_time_difference(commit[:commit][:author][:date]),
+      }
+    rescue => e
+      $logger.error "Cannot get commits for #{repo}."
+      $logger.error e.message
+    end
+  end
 end
