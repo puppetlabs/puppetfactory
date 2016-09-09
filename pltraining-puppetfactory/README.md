@@ -131,6 +131,18 @@ List of current plugins:
       * `:privileged`
           * Whether containers should start in privileged mode.
           * Currently required for `systemd`.
+* `:Github`
+    * Adds user branches and permissions to the control repo when running with a single repo.
+    * Displays a link to the user's control repo or branch.
+    * Adds a link to the user's last commit.
+    * Configure with:
+      * `:githubtoken`
+          * A Github application token with admin rights on the control repo.
+          * Not needed for displaying links unless the control repo is private.
+          * Keep in mind that the token gives **full API access**. Treat it as a
+            password. If you pass it as a class parameter, you probably want
+            to put it in Hiera instead of in the PE Console, since other users
+            can view parameter values and reports.
 * `:Gitlab`
     * Manages Gitlab accounts for users.
     * Expects a default Gitlab container to be running.
