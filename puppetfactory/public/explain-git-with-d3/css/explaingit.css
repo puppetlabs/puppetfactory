@@ -1,14 +1,14 @@
 /* styles */
-body {
-    min-width: 1200px;
-}
-
 h1,h2,h3,h4,h5,h6 {
   padding-bottom: 0.5em;
 }
 
 p {
   padding-bottom: 1em;
+}
+
+.container {
+  padding: 0;
 }
 
 #menuwrapper {
