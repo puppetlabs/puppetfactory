@@ -146,6 +146,9 @@ List of current plugins:
 * `:Gitlab`
     * Manages Gitlab accounts for users.
     * Expects a default Gitlab container to be running.
+* `:Gitviz`
+    * Adds a tab displaying a customized git visualization.
+    * Adapted from https://github.com/onlywei/explain-git-with-d3
 * `:Hooks`
     * Run hook scripts on user creation and deletion.
     * Configure with:
