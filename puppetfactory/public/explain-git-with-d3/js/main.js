@@ -45,12 +45,19 @@ if (!Array.prototype.indexOf) {
 
 require.config({
     paths: {
-        'd3': 'vendor/d3.min'
+        'd3': 'vendor/d3.min',
+        "jquery": "vendor/jquery.min",
+        "jquery-ui": "vendor/jquery-ui.min",
+        "jquery.dialogextend": "vendor/jquery.dialogextend.min"
     },
     shim: {
         'd3': {
             exports: 'd3'
+        },
+        'jquery-ui': ['jquery'],
+        'jquery.dialogextend': {
+            deps: ['jquery', 'jquery-ui'],
+            exports: '$'
         }
     }
 });
-

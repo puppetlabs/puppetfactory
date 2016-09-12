@@ -191,3 +191,8 @@ table#users td.select {
 #dashboard .completed a:hover {
   border-bottom: 2px solid black;
 }
+
+#gitviz {
+  width: 100%;
+  min-height: 600px;
+}

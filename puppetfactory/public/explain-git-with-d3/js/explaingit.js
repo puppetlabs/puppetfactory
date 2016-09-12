@@ -10,10 +10,31 @@ define(['historyview', 'controlbox', 'd3'], function (HistoryView, ControlBox, d
             containerId = name + '-Container',
             container = d3.select('#' + containerId),
             playground = container.select('.playground-container'),
+            scenario = container.select('.scenario'),
             historyView, originView = null,
             controlBox;
 
         container.style('display', 'block');
+
+        if (jQuery().dialog) {
+          $(".ui-dialog-minimized").dialogExtend("restore");
+          $(".ui-dialog-content:visible").dialog("close");
+          $(scenario).dialog({
+            title: "Introduction: " + name,
+            width: '500px',
+              close: function() {
+                  $(this).dialog("destroy");
+              }
+          })
+          .dialogExtend({
+            "closable" : false,
+            "maximizable" : false,
+            "minimizable" : true,
+            "collapsable" : false,
+            "dblclick" : "minimize",
+            "minimizeLocation" : "right"
+          });
+        }
 
         args.name = name;
         args.height = 525;
