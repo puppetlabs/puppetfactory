@@ -3,10 +3,18 @@ body {
     min-width: 1200px;
 }
 
+h1,h2,h3,h4,h5,h6 {
+  padding-bottom: 0.5em;
+}
+
+p {
+  padding-bottom: 1em;
+}
+
 #menuwrapper {
     position: fixed;
     width: 100%;
-    min-height: 9px;
+    min-height: 16px;
     border-bottom: 1px solid #888;
     margin: 0;
     background-color: #dfdfdf;
@@ -17,6 +25,11 @@ body {
 
 #menubar {
     background: #dfdfdf url(../images/grippy-close.png) no-repeat bottom center;
+}
+
+#introduction,
+.scenario {
+  display: none;
 }
 
 .intro {
@@ -43,7 +56,6 @@ a.openswitch.selected {
 }
 
 .concept-area {
-    padding-bottom: 20px;
     min-height: 525px;
 }
 
