@@ -1,3 +1,7 @@
+## Version 0.4.16
+
+* Removed `chocolatey/chocolatey` dependency.
+
 ## Version 0.4.15
 
 * Support for privileged containers
