@@ -18,7 +18,7 @@
     <tr><th class="header">Username:</th>    <td><%= @current[:username] %></td></tr>
     <tr><th class="header">Certname:</th>    <td><%= @current[:certname] %></td></tr>
 <% if @current[:port] -%>
-    <tr><th class="header">Sandbox URL:</th> <td><a href="/port/<%= @current[:port] %>/"><%= @current[:url] %></a></td></tr>
+    <tr><th class="header">Webserver URL:</th> <td><a href="/port/<%= @current[:port] %>/"><%= @current[:url] %></a></td></tr>
 <% end -%>
 <% if @current[:container_status] -%>
     <tr><th class="header">Container:</th>   <td><%= @current[:container_status]['Description'] %></td></tr>
@@ -49,7 +49,7 @@
     <tr class="header">
       <th>Username</th>
       <th>Certname</th>
-      <% if @users.first[1][:port] %><th>Sandbox URL</th><% end %>
+      <% if @users.first[1][:port] %><th>Webserver URL</th><% end %>
       <th>&nbsp;</th>
     </tr>
     <% if @users %>
