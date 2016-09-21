@@ -37,7 +37,7 @@ class Puppetfactory::Plugins::UserEnvironment < Puppetfactory::Plugins
       end
 
       # make sure the user and pe-puppet can access all the needful
-      FileUtils.chown_R(env_user, 'pe-puppet', environment)
+      FileUtils.chown_R(username, 'pe-puppet', environment)
       FileUtils.chmod(0750, environment)
 
     rescue => e

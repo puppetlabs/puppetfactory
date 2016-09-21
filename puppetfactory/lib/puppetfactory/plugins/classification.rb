@@ -68,7 +68,7 @@ class Puppetfactory::Plugins::Classification < Puppetfactory::Plugins
     {
       :username       => username,
       :node_group_id  => ngid,
-      :node_group_url => "https://#{@master}/#/node_groups/groups/#{ngid}",
+      :node_group_url => "#/node_groups/groups/#{ngid}",
     }
   end
 

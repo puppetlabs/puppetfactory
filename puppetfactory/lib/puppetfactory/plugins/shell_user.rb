@@ -7,7 +7,7 @@ class Puppetfactory::Plugins::ShellUser < Puppetfactory::Plugins
     super(options)
 
     @weight      = 1
-    @suffix      = options[:usersuffix]
+    @usersuffix  = options[:usersuffix]
     @puppet      = options[:puppet]
     @master      = options[:master]
     @templatedir = options[:templatedir]
@@ -61,8 +61,8 @@ class Puppetfactory::Plugins::ShellUser < Puppetfactory::Plugins
     # build the basic user object, can be added to by other plugins
     {
       :username => username,
-      :console  => "#{username}@#{@suffix}",
-      :certname => "#{username}.#{@suffix}",
+      :console  => "#{username}@#{@usersuffix}",
+      :certname => "#{username}.#{@usersuffix}",
     }
   end
 
