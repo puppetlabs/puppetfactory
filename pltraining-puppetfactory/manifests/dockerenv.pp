@@ -2,7 +2,7 @@ class puppetfactory::dockerenv {
   assert_private('This class should not be called directly')
   include docker
 
-  $puppetmaster = $puppetfactory::master
+  $puppetmaster = pick($puppetfactory::master, $servername)
 
   file { '/var/docker':
     ensure => directory,
