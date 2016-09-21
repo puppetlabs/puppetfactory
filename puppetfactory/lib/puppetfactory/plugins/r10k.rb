@@ -22,6 +22,8 @@ class Puppetfactory::Plugins::R10k < Puppetfactory::Plugins
   end
 
   def create(username, password)
+    return unless @repomodel == :peruser
+
     begin
       environment = "#{@environments}/#{Puppetfactory::Helpers.environment_name(username)}"
       FileUtils.mkdir_p environment
@@ -36,7 +38,7 @@ class Puppetfactory::Plugins::R10k < Puppetfactory::Plugins
         r10k['sources'][username] = {
           'remote'  => sprintf(@pattern, username),
           'basedir' => @environments,
-          'prefix'  => (@repomodel == :peruser),
+          'prefix'  => true,
         }
 
         # Ruby 1.8.7, why don't you just go away now
@@ -53,6 +55,8 @@ class Puppetfactory::Plugins::R10k < Puppetfactory::Plugins
   end
 
   def delete(username)
+    return unless @repomodel == :peruser
+
     begin
       environment = "#{@environments}/#{Puppetfactory::Helpers.environment_name(username)}"
       FileUtils.rm_rf environment
@@ -69,7 +73,7 @@ class Puppetfactory::Plugins::R10k < Puppetfactory::Plugins
 
         # Ruby 1.8.7, why don't you just go away now
         File.open(@r10k_config, 'w') { |f| f.write(r10k.to_yaml) }
-        $logger.info "Created r10k source for #{username}"
+        $logger.info "Removed r10k source for #{username}"
       end
     rescue => e
       $logger.error "Cannot remove r10k source for #{username}"

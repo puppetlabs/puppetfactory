@@ -24,7 +24,7 @@ class Puppetfactory::Plugins::ConsoleUser < Puppetfactory::Plugins
                               "email=#{username}@#{@suffix}",
                               "password=#{password}")
 
-    unless status.success
+    unless status.success?
       $logger.error "Could not create PE Console user #{username}: #{output}"
       return false
     end
@@ -47,7 +47,7 @@ class Puppetfactory::Plugins::ConsoleUser < Puppetfactory::Plugins
   def userinfo(username, extended = false)
     return unless extended
 
-    output, status = Open3.capture2e(PUPPET, 'resource', 'rbac_user', username)
+    output, status = Open3.capture2e(@puppet, 'resource', 'rbac_user', username)
     unless status.success?
       $logger.error "Could not query Puppet user #{username}: #{output}"
       return false

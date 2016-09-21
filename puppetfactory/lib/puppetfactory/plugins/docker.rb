@@ -16,6 +16,7 @@ class Puppetfactory::Plugins::Docker < Puppetfactory::Plugins
     @environments = options[:environments]
     @puppetcode   = options[:puppetcode]
     @master       = options[:master]
+    @usersuffix   = options[:usersuffix]
     @modulepath   = options[:modulepath]
     @templatedir  = options[:templatedir]
     @container    = options[:container_name] || 'centosagent'
@@ -50,7 +51,7 @@ class Puppetfactory::Plugins::Docker < Puppetfactory::Plugins
           "/usr/lib/systemd/systemd"
         ],
         "Tty" => true,
-        "Domainname" => "puppetlabs.vm",
+        "Domainname" => @usersuffix,
         "Env" => [
           "RUNLEVEL=3",
           "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
