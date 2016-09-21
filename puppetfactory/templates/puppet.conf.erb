@@ -1,5 +1,5 @@
 [main]
-    certname = <%= username %>.puppetlabs.vm
+    certname = <%= username %>.<%= @usersuffix %>
     server = <%= @master %>
     basemodulepath = /root/puppetcode/modules:/etc/puppetlabs/code/modules
 
