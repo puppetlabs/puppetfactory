@@ -26,8 +26,11 @@
 <% if @real_gitserver -%>
 :gitserver: <%= @real_gitserver %>
 <% end -%>
+<% if @session -%>
+:session: "<%= @session %>"
+<% end -%>
 <% ['puppet', 'confdir', 'codedir', 'environments', 'root', 'logfile',
-    'templatedir', 'port', 'bind', 'user', 'password', 'session', 'master',
+    'templatedir', 'port', 'bind', 'user', 'password', 'master',
     'usersuffix', 'autosign', 'puppetcode', 'gituser', 'githubtoken', 'controlrepo',
     'prefix', 'classifier', 'dashboard_path', 'dashboard_interval', 'container',
     'docker_group', 'docker_ip', 'privileged', 'hooks_path' ].each do |param| -%>
