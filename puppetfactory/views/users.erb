@@ -24,7 +24,7 @@
     <tr><th class="header">Container:</th>   <td><%= @current[:container_status]['Description'] %></td></tr>
 <% end -%>
 <% if @current[:node_group_url] -%>
-    <tr><th class="header">Node Group:</th>  <td><a href="<%= @current[:node_group_url] %>" target="_console">Console login</a></td></tr>
+    <tr><th class="header">Node Group:</th>  <td><a href="https://<%= request.host %>/<%= @current[:node_group_url] %>" target="_console">Console login</a></td></tr>
 <% end -%>
 <% if @current[:controlrepo] -%>
     <tr><th class="header">Control Repo:</th>  <td><a href="<%= @current[:controlrepo] %>" target="_repository"><%= @current[:controlrepo] %></a></td></tr>
