@@ -132,7 +132,7 @@ class puppetfactory (
   }
 
   # Keep ssh sessions alive and allow puppetfactory users to log in with passwords
-  # disable root login on EC2 but enable every else
+  # disable root login on EC2 but enable everywhere else
   $allow_root = $ec2_metadata ? {
     undef   => 'yes',
     default => 'no',
