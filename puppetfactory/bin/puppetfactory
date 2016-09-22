@@ -55,6 +55,7 @@ optparse.parse!
 options[:puppet]       ||= '/opt/puppetlabs/bin/puppet'
 options[:confdir]      ||= '/etc/puppetlabs/puppet'
 options[:codedir]      ||= '/etc/puppetlabs/code'
+options[:stagedir]     ||= '/etc/puppetlabs/code-staging'
 options[:environments] ||= "#{options[:codedir]}/environments"
 
 options[:root]         ||= File.expand_path(File.join(File.dirname(__FILE__), '..'))
