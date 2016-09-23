@@ -38,37 +38,40 @@ class Puppetfactory::Plugins::CodeManager < Puppetfactory::Plugins
     begin
       environment = "#{@environments}/#{Puppetfactory::Helpers.environment_name(username)}"
       FileUtils.mkdir_p environment
-      FileUtils.chown('pe-puppet', 'pe-puppet', environment)
+      FileUtils.chown(username, 'pe-puppet', environment)
       FileUtils.chmod(0750, environment)
 
-      File.open(@sources) do |file|
-        # make sure we don't have any concurrency issues
-        file.flock(File::LOCK_EX)
+      # We don't need to add sources unless we're using a repo per student.
+      if @repomodel == :peruser
+        File.open(@sources) do |file|
+          # make sure we don't have any concurrency issues
+          file.flock(File::LOCK_EX)
 
-        # We need to duplicate the sources list in the MEEP config for recovery options
-        # I'd like to add it to code-manager.conf too and avoid the delay of running
-        # puppet, but that's a race condition that we cannot accept.
-        File.open(@meep) do |anotherfile|
-          anotherfile.flock(File::LOCK_EX)
+          # We need to duplicate the sources list in the MEEP config for recovery options
+          # I'd like to add it to code-manager.conf too and avoid the delay of running
+          # puppet, but that's a race condition that we cannot accept.
+          File.open(@meep) do |anotherfile|
+            anotherfile.flock(File::LOCK_EX)
 
-          source = {
-            'remote'  => sprintf(@pattern, username),
-            'prefix'  => (@repomodel == :peruser),
-          }
+            source = {
+              'remote'  => sprintf(@pattern, username),
+              'prefix'  => (@repomodel == :peruser),
+            }
 
-          sources = YAML.load_file(@sources)
-          meep    = Hocon::Parser::ConfigDocumentFactory.parse_file(@meep)
+            sources = YAML.load_file(@sources)
+            meep    = Hocon::Parser::ConfigDocumentFactory.parse_file(@meep)
 
-          sources['puppet_enterprise::master::code_manager::sources'][username] = source
-          meep = meep.set_config_value(
-                      "\"puppet_enterprise::master::code_manager::sources\".#{username}",
-                      Hocon::ConfigValueFactory.from_any_ref(source)
-                    )
+            sources['puppet_enterprise::master::code_manager::sources'][username] = source
+            meep = meep.set_config_value(
+                        "\"puppet_enterprise::master::code_manager::sources\".#{username}",
+                        Hocon::ConfigValueFactory.from_any_ref(source)
+                      )
 
-          # Ruby 1.8.7, why don't you just go away now
-          File.open(@sources, 'w') { |f| f.write(sources.to_yaml) }
-          File.open(@meep, 'w')    { |f| f.write(meep.render)     }
-          $logger.info "Created Code Manager source for #{username}"
+            # Ruby 1.8.7, why don't you just go away now
+            File.open(@sources, 'w') { |f| f.write(sources.to_yaml) }
+            File.open(@meep, 'w')    { |f| f.write(meep.render)     }
+            $logger.info "Created Code Manager source for #{username}"
+          end
         end
       end
     rescue => e
