@@ -22,28 +22,29 @@ class Puppetfactory::Plugins::R10k < Puppetfactory::Plugins
   end
 
   def create(username, password)
-    return unless @repomodel == :peruser
-
     begin
       environment = "#{@environments}/#{Puppetfactory::Helpers.environment_name(username)}"
       FileUtils.mkdir_p environment
       FileUtils.chown_R(username, 'pe-puppet', environment)
       FileUtils.chmod(0750, environment)
 
-      File.open(@r10k_config) do |file|
-        # make sure we don't have any concurrency issues
-        file.flock(File::LOCK_EX)
+      # We don't need to add sources unless we're using a repo per student.
+      if @repomodel == :peruser
+        File.open(@r10k_config) do |file|
+          # make sure we don't have any concurrency issues
+          file.flock(File::LOCK_EX)
 
-        r10k = YAML.load_file(@r10k_config)
-        r10k['sources'][username] = {
-          'remote'  => sprintf(@pattern, username),
-          'basedir' => @environments,
-          'prefix'  => true,
-        }
+          r10k = YAML.load_file(@r10k_config)
+          r10k['sources'][username] = {
+            'remote'  => sprintf(@pattern, username),
+            'basedir' => @environments,
+            'prefix'  => true,
+          }
 
-        # Ruby 1.8.7, why don't you just go away now
-        File.open(@r10k_config, 'w') { |f| f.write(r10k.to_yaml) }
-        $logger.info "Created r10k source for #{username}"
+          # Ruby 1.8.7, why don't you just go away now
+          File.open(@r10k_config, 'w') { |f| f.write(r10k.to_yaml) }
+          $logger.info "Created r10k source for #{username}"
+        end
       end
     rescue => e
       $logger.error "Cannot create r10k source for #{username}"
