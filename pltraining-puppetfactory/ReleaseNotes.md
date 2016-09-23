@@ -1,3 +1,9 @@
+## Version 0.5.0
+
+* Live puppet code-editing disabled. 
+* Use code-staging to edit code, and then push-button deploy!
+* Improved 404 and 50x error pages
+
 ## Version 0.4.16
 
 * Removed `chocolatey/chocolatey` dependency.
