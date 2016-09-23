@@ -49,7 +49,7 @@
     <tr class="header">
       <th>Username</th>
       <th>Certname</th>
-      <% if @users.first[1][:port] %><th>Webserver URL</th><% end %>
+      <% if @users.first and @users.first[1][:port] %><th>Webserver URL</th><% end %>
       <th>&nbsp;</th>
     </tr>
     <% if @users %>

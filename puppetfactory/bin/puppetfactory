@@ -7,6 +7,10 @@ require 'yaml'
 
 NAME = File.basename($PROGRAM_NAME)
 
+# sanitize the environment for the tools that expect it
+ENV['HOME'] = '/root'
+ENV['PATH'] = '/opt/puppetlabs/bin:/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin'
+
 if File.exist? '/etc/puppetfactory/config.yaml'
   options = YAML.load_file('/etc/puppetfactory/config.yaml') rescue {}
 else
@@ -55,6 +59,7 @@ optparse.parse!
 options[:puppet]       ||= '/opt/puppetlabs/bin/puppet'
 options[:confdir]      ||= '/etc/puppetlabs/puppet'
 options[:codedir]      ||= '/etc/puppetlabs/code'
+options[:stagedir]     ||= '/etc/puppetlabs/code-staging'
 options[:environments] ||= "#{options[:codedir]}/environments"
 
 options[:root]         ||= File.expand_path(File.join(File.dirname(__FILE__), '..'))

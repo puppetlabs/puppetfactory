@@ -7,16 +7,16 @@ class Puppetfactory::Plugins::UserEnvironment < Puppetfactory::Plugins
     super(options)
 
     @codedir      = options[:codedir]
-    @confdir      = options[:confdir]
+    @stagedir     = options[:stagedir]
     @puppetcode   = options[:puppetcode]
     @templatedir  = options[:templatedir]
     @environments = options[:environments]
-    @modulepath   = options[:modulepath]
     @repomodel    = options[:repomodel]
+    @codestage   = "#{@stagedir}/environments"
   end
 
   def create(username, password)
-    environment = "#{@environments}/#{Puppetfactory::Helpers.environment_name(username)}"
+    environment = "#{@codestage}/#{Puppetfactory::Helpers.environment_name(username)}"
 
     begin
       # configure environment
@@ -40,6 +40,8 @@ class Puppetfactory::Plugins::UserEnvironment < Puppetfactory::Plugins
       FileUtils.chown_R(username, 'pe-puppet', environment)
       FileUtils.chmod(0750, environment)
 
+      deploy(username)
+
     rescue => e
       $logger.error "Error creating user environment for #{username}"
       $logger.error e.message
@@ -58,7 +60,9 @@ class Puppetfactory::Plugins::UserEnvironment < Puppetfactory::Plugins
   end
 
   def deploy(username)
-    create(username, nil)
+    environment = Puppetfactory::Helpers.environment_name(username)
+
+    FileUtils.cp_r("#{@codestage}/#{environment}/.", "#{@environments}/#{environment}")
   end
 
   def redeploy(username)

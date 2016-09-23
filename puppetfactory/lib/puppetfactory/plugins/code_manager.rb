@@ -38,7 +38,7 @@ class Puppetfactory::Plugins::CodeManager < Puppetfactory::Plugins
     begin
       environment = "#{@environments}/#{Puppetfactory::Helpers.environment_name(username)}"
       FileUtils.mkdir_p environment
-      FileUtils.chown_R(username, 'pe-puppet', environment)
+      FileUtils.chown('pe-puppet', 'pe-puppet', environment)
       FileUtils.chmod(0750, environment)
 
       File.open(@sources) do |file|

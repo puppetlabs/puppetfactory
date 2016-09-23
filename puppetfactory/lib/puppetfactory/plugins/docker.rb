@@ -13,7 +13,8 @@ class Puppetfactory::Plugins::Docker < Puppetfactory::Plugins
     @weight = 5
 
     @confdir      = options[:confdir]
-    @environments = options[:environments]
+    @stagedir     = options[:stagedir]
+    @environments = "#{@stagedir}/environments"
     @puppetcode   = options[:puppetcode]
     @master       = options[:master]
     @usersuffix   = options[:usersuffix]
@@ -152,7 +153,7 @@ class Puppetfactory::Plugins::Docker < Puppetfactory::Plugins
   # TODO: We need a better way of doing this, since we're not guaranteed to always have system users.
   #       See plugins/shell_user.rb for the other side of this coupling.
   def user_port(username)
-    Etc.getpwnam(username).uid + 3000
+    Etc.getpwnam(username).uid + 3000 rescue nil
   end
 
   def massage_container_state(state)
