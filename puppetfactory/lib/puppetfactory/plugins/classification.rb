@@ -62,8 +62,14 @@ class Puppetfactory::Plugins::Classification < Puppetfactory::Plugins
 
   def userinfo(username, extended = false)
     return unless extended
-
-    ngid = @puppetclassify.groups.get_group_id("#{username}.#{@suffix}")
+    certname = "#{username}.#{@suffix}"
+    
+    begin
+      ngid = @puppetclassify.groups.get_group_id(certname)
+    rescue => e
+      $logger.warn "Error retrieving node group #{certname}: #{e.message}"
+      return nil
+    end
 
     {
       :username       => username,
