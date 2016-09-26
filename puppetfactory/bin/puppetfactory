@@ -73,7 +73,7 @@ options[:user]         ||= 'admin'
 options[:password]     ||= 'admin'
 options[:session]      ||= '12345'
 
-options[:master]       ||= `hostname`.strip
+options[:master]       ||= `hostname -f`.strip
 options[:usersuffix]   ||= 'puppetfactory.vm'
 options[:usergroups]   ||= []
 
