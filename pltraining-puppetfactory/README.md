@@ -86,7 +86,7 @@ Code management options:
     * The username owning the control repo.
     * The name of the control repo
 * `:repomodel`
-    * Whether the students will maintain prefixed forks of the control repo or work in branches.
+    * Whether the students will work in branches or maintain prefixed forks of the control repo.
     * Valid options: `:single`, `:peruser`
 
 
