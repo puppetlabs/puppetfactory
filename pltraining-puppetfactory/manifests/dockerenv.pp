@@ -8,6 +8,12 @@ class puppetfactory::dockerenv {
     ensure => directory,
   }
 
+  sysctl {'net.ipv4.ip_forward':
+    ensure    => present,
+    value     => '1',
+    permanent => 'yes',
+  }
+
   file { '/var/run/docker.sock':
     group   => $puppetfactory::docker_group,
     mode    => '0664',
