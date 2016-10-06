@@ -19,7 +19,7 @@ class Puppetfactory::Plugins::ShellUser < Puppetfactory::Plugins
   end
 
   def create(username, password)
-    unless username =~ /^[a-z_][a-z0-9_]{4,30}$/
+    unless username =~ /^[a-z_][a-z0-9_]{2,30}$/
       $logger.error "Invalid username. '#{username}' does not match regex /^[a-z_][a-z0-9_]{4,30}$/"
       raise "Invalid username #{username}."
     end
