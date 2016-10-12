@@ -23,7 +23,7 @@ class Puppetfactory::Plugins::Docker < Puppetfactory::Plugins
     @container    = options[:container_name] || 'centosagent'
     @group        = options[:docker_group]   || 'docker'
     @docker_ip    = options[:docker_ip]      || `facter ipaddress_docker0`.strip
-    @privileged   = options[:privileged]     || true
+    @privileged   = options[:privileged]     || false
   end
 
   def create(username, password)
@@ -67,6 +67,13 @@ class Puppetfactory::Plugins::Docker < Puppetfactory::Plugins
         "Image" => "#{@container}",
         "HostConfig" => {
           "Privileged" => @privileged,
+          "SecurityOpt" => [
+            "seccomp=unconfined"
+          ],
+          "Tmpfs" => {
+            "/run" => "",
+            "/tmp" => ""
+          },
           "Binds" => binds,
           "ExtraHosts" => [
             "#{@master} puppet:#{@docker_ip}"

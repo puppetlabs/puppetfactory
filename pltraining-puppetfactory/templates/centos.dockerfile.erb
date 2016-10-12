@@ -1,6 +1,6 @@
 # Builds a basic Centos7 container with pe-agent installed at first login.
 # This image is for training purposes and is not intended for production environments.
-FROM maci0/systemd
+FROM centos:7
 MAINTAINER Josh Samuelson <js@puppetlabs.com>
 ENV HOME /root/
 ENV TERM xterm
@@ -13,3 +13,4 @@ ADD vimrc /root/.vimrc
 RUN echo 'if ! hash puppet; then curl -k https://<%= @puppetmaster %>:8140/packages/current/install.bash | sudo bash; puppet apply -e "include course_selector"; fi' >> /root/.bashrc
 RUN mkdir -p /etc/puppetlabs/code/modules
 RUN git clone https://github.com/puppetlabs/pltraining-course_selector /etc/puppetlabs/code/modules/course_selector
+CMD ["/sbin/init"]
