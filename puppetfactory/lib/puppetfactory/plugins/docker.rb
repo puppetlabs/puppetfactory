@@ -67,6 +67,13 @@ class Puppetfactory::Plugins::Docker < Puppetfactory::Plugins
         "Image" => "#{@container}",
         "HostConfig" => {
           "Privileged" => @privileged,
+          "SecurityOpt" => [
+            "seccomp=unconfined"
+          ],
+          "Tmpfs" => {
+            "/run" => "",
+            "/tmp" => ""
+          },
           "Binds" => binds,
           "ExtraHosts" => [
             "#{@master} puppet:#{@docker_ip}"
