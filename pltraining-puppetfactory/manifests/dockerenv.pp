@@ -1,11 +1,24 @@
 class puppetfactory::dockerenv {
   assert_private('This class should not be called directly')
-  include docker
+  class { 'docker':
+    extra_parameters => '--default-ulimit nofile=1000000:1000000',
+  }
+  file {'/etc/security/limits.conf':
+    ensure => file,
+    source => 'puppet:///modules/puppetfactory/limits.conf',
+    before => Class['docker'],
+  }
 
   $puppetmaster = pick($puppetfactory::master, $servername)
 
   file { '/var/docker':
     ensure => directory,
+  }
+
+  sysctl {'net.ipv4.ip_forward':
+    ensure    => present,
+    value     => '1',
+    permanent => 'yes',
   }
 
   file { '/var/run/docker.sock':

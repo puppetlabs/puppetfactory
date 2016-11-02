@@ -1,3 +1,7 @@
+## Version 0.5.3
+
+* Tweaks for docker
+
 ## Version 0.4.16
 
 * Removed `chocolatey/chocolatey` dependency.
