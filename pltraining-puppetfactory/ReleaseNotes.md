@@ -1,3 +1,7 @@
+## Version 0.5.4
+
+* Only use code-staging if CodeManager plugin is installed
+
 ## Version 0.5.3
 
 * Tweaks for docker
