@@ -33,7 +33,7 @@
     'templatedir', 'port', 'bind', 'user', 'password', 'master',
     'usersuffix', 'autosign', 'puppetcode', 'gituser', 'githubtoken', 'controlrepo',
     'prefix', 'classifier', 'dashboard_path', 'dashboard_interval', 'container',
-    'docker_group', 'docker_ip', 'privileged', 'hooks_path' ].each do |param| -%>
+    'docker_group', 'docker_ip', 'privileged', 'hooks_path', 'stagedir' ].each do |param| -%>
 <% value = instance_variable_get("@#{param}") -%>
 <% next unless value -%>
 :<%= param %>: <%= value %>
