@@ -68,6 +68,12 @@ class puppetfactory (
     $real_gitserver = pick($gitserver, 'https://github.com')
   }
 
+  if 'CodeManager' in $plugins {
+    $stagedir = '/etc/puppetlabs/code-staging'
+  } else {
+    $stagedir = '/etc/puppetlabs/code'
+  }
+
   class { 'abalone':
     port => '4200',
   }
