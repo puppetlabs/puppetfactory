@@ -6,9 +6,13 @@ environmentpath = "/etc/puppetlabs/code/environments"
 
 if File.directory? "#{environmentpath}/#{username}_production"
   environment = "#{username}_production"
-else
+elsif File.directory? "#{environmentpath}/#{username}"
   environment = username
+else
+  raise "No environment exists for #{username}"
 end
+
+puts "   - Testing environment #{environment}"
 
 RSpec.configure do |c|
   c.environmentpath = environmentpath

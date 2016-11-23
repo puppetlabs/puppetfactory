@@ -36,9 +36,11 @@ namespace :spec do
   targets = []
   Dir.glob('/etc/puppetlabs/code/environments/*').each do |dir|
     next unless File.directory?(dir)
-    next unless dir.end_with? '_production'
-    target = File.basename(dir.sub('_production', ''))
-    targets << target
+
+    dir = File.basename(dir)
+    next if dir == 'production'
+
+    targets << dir.sub('_production', '')
   end
   task :all_agents => targets
 
@@ -47,10 +49,12 @@ namespace :spec do
     html    = "output/html/#{test}"
     json    = "output/json/#{test}"
     pattern = "spec/#{test}_spec.rb"
+    puts "Running the #{test} test suite..."
   else
     html    = "output/html"
     json    = "output/json"
     pattern = "spec/*_spec.rb"
+    puts "Running all test suites..."
   end
 
   FileUtils.mkdir_p html
@@ -59,6 +63,7 @@ namespace :spec do
   targets.each do |target|
     desc "Run Puppetfactory tests for #{target}"
     RSpec::Core::RakeTask.new(target.to_sym) do |t|
+      puts " * #{target}"
       ENV['TARGET_HOST'] = target
       t.verbose = false
       t.fail_on_error = false
