@@ -43,10 +43,15 @@ class Puppetfactory::Plugins::Dashboard < Puppetfactory::Plugins
     @server.get '/dashboard/update' do
       $logger.info "Triggering dashboard update."
 
-      if plugin(:Dashboard, :update_results)
-        {'status' => 'success'}.to_json
-      else
+      case plugin(:Dashboard, :update_results)
+      when :running
         {'status' => 'fail', 'message' => 'Already running'}.to_json
+      when :success
+        {'status' => 'success'}.to_json
+      when :fail
+        {'status' => 'fail', 'message' => "Tests failed to execute. Please see logs"}.to_json
+      else
+        {'status' => 'fail', 'message' => "Unknown status"}.to_json
       end
     end
 
@@ -67,20 +72,29 @@ class Puppetfactory::Plugins::Dashboard < Puppetfactory::Plugins
   end
 
   def update_results()
-    return false if @test_running
+    return :running if @test_running
     @test_running = true
+
+    output = nil
+    status = nil
 
     Dir.chdir(@path) do
       case @current_test
       when 'all', 'summary'
-        system('rake', 'generate')
+        output, status = Open3.capture2e('rake', 'generate')
       else
-        system('rake', 'generate', "current_test=#{@current_test}")
+        output, status = Open3.capture2e('rake', 'generate', "current_test=#{@current_test}")
       end
     end
 
+    if status.success?
+      $logger.info output
+    else
+      $logger.error output
+    end
+
     @test_running = false
-    true
+    return status.success? ? :success : :fail
   end
 
   def available_tests()
