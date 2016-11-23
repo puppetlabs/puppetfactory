@@ -4,8 +4,13 @@
 </div>
 
 <script type="text/javascript">
-  function loadLogs() {
+  function loadLogs(force) {
     $("#logs .data").load("logs/data", function() {
+      var elem = $(this)[0]
+      // track the bottom of the logs, unless we've scrolled away
+      if(force || (elem.scrollHeight - elem.scrollTop - elem.clientHeight < 100)) {
+        $(this).animate({scrollTop: elem.scrollHeight}, 500);
+      }
 
       // use timeout instead of an interval so that in case of network error
       // we don't end up with a queue of requests stacked up.
@@ -14,7 +19,7 @@
   }
 
   $(document).ready(function() {
-    loadLogs();
+    loadLogs(true);
   });
 </script>
 
@@ -22,5 +27,7 @@
   #logs .data {
     font-family: monospace;
     white-space: pre-wrap;
+    height: 500px;
+    overflow-y: scroll;
   }
 </style>
