@@ -1,14 +1,16 @@
 # Builds a basic Centos7 container with pe-agent installed at first login.
 # This image is for training purposes and is not intended for production environments.
 FROM centos:7
-MAINTAINER Josh Samuelson <js@puppetlabs.com>
+MAINTAINER Josh Samuelson <js@puppet.com>
 ENV HOME /root/
 ENV TERM xterm
-RUN yum -y install sudo tar dmidecode which logrotate cyrus-sasl libxslt cronie pciutils git rubygems vim tree csh zsh ntpdate postfix lynx wget openssl-libs
 RUN rm /etc/yum.repos.d/CentOS*
 ADD base_local.repo /etc/yum.repos.d/base_local.repo
 ADD epel_local.repo /etc/yum.repos.d/epel_local.repo
 ADD updates_local.repo /etc/yum.repos.d/updates_local.repo
+ADD /var/yum/mirror /var/yum/mirror
+RUN yum -y install sudo tar dmidecode which logrotate cyrus-sasl libxslt cronie pciutils git rubygems vim tree csh zsh ntpdate postfix lynx wget openssl-libs
+RUN rm -rf /var/yum/mirror
 ADD vimrc /root/.vimrc
 RUN echo 'if ! hash puppet; then curl -k https://<%= @puppetmaster %>:8140/packages/current/install.bash | sudo bash; puppet apply -e "include course_selector"; fi' >> /root/.bashrc
 RUN mkdir -p /etc/puppetlabs/code/modules
