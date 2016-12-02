@@ -62,7 +62,8 @@ class puppetfactory::dockerenv {
   # Mount the mirror directory because docker doesn't follow symlinks
   # mount --bind /var/yum/mirror mirror
   file {'/var/docker/centosagent/mirror':
-    ensure => directory
+    ensure => directory,
+    before => Mount['/var/docker/centosagent/mirror'],
   }
   mount {'/var/docker/centosagent/mirror':
     ensure  => mounted,
@@ -70,6 +71,7 @@ class puppetfactory::dockerenv {
     device  => '/var/yum/mirror',
     fstype  => 'xfs',
     options => 'bind',
+    before  => Docker::Image['centosagent']
   }
 
   file { '/var/docker/centosagent/Dockerfile':
