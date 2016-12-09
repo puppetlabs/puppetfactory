@@ -1,4 +1,5 @@
 require 'json'
+require 'restclient'
 require 'puppetfactory'
 
 class Puppetfactory::Plugins::UserEnvironment < Puppetfactory::Plugins
@@ -6,6 +7,8 @@ class Puppetfactory::Plugins::UserEnvironment < Puppetfactory::Plugins
   def initialize(options)
     super(options)
 
+    @master       = options[:master]
+    @confdir      = options[:confdir]
     @codedir      = options[:codedir]
     @stagedir     = options[:stagedir]
     @puppetcode   = options[:puppetcode]
@@ -38,7 +41,7 @@ class Puppetfactory::Plugins::UserEnvironment < Puppetfactory::Plugins
 
       # make sure the user and pe-puppet can access all the needful
       FileUtils.chown_R(username, 'pe-puppet', environment)
-      FileUtils.chmod(0750, environment)
+      FileUtils.chmod_R(0750, environment)
 
       deploy(username)
 
@@ -52,17 +55,29 @@ class Puppetfactory::Plugins::UserEnvironment < Puppetfactory::Plugins
   end
 
   def delete(username)
-    environment = "#{@environments}/#{Puppetfactory::Helpers.environment_name(username)}"
-    FileUtils.rm_rf environment
-
-    # also delete any prefixed environments. Is this even a good idea?
-    FileUtils.rm_rf "#{@environments}/#{username}_*" if @repomodel == :peruser
+    FileUtils.rm_rf "#{@codestage}/#{Puppetfactory::Helpers.environment_name(username)}"
+    FileUtils.rm_rf "#{@environments}/#{Puppetfactory::Helpers.environment_name(username)}"
   end
 
   def deploy(username)
     environment = Puppetfactory::Helpers.environment_name(username)
 
-    FileUtils.cp_r("#{@codestage}/#{environment}/.", "#{@environments}/#{environment}")
+    begin
+      FileUtils.cp_r("#{@codestage}/#{environment}/*", "#{@environments}/#{environment}/")
+      FileUtils.chown_R('pe-puppet', 'pe-puppet', "#{@environments}/#{environment}")
+
+      RestClient::Resource.new(
+        "https://#{@master}:8140/puppet-admin-api/v1/environment-cache?environment=#{environment}",
+        :ssl_client_cert  =>  OpenSSL::X509::Certificate.new(File.read("#{@confdir}/ssl/certs/#{@master}.pem")),
+        :ssl_client_key   =>  OpenSSL::PKey::RSA.new(File.read("#{@confdir}/ssl/private_keys/#{@master}.pem")),
+        :ssl_ca_file      =>  "#{@confdir}/ssl/ca/ca_crt.pem",
+        :verify_ssl       =>  OpenSSL::SSL::VERIFY_PEER
+      ).delete
+    rescue => e
+      $logger.error "Deploying environment #{environment} failed: #{e.message}"
+      $logger.debug e.backtrace
+      raise "Error deploying environment #{environment}."
+    end
   end
 
   def redeploy(username)
