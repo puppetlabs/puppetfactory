@@ -1,3 +1,9 @@
+## Version 0.5.5
+
+* gitea support
+* Build containers using only local yum cache
+* Other bugfixes
+
 ## Version 0.5.4
 
 * Only use code-staging if CodeManager plugin is installed

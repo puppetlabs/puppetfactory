@@ -1,3 +1,8 @@
+# v0.5.3
+* gitea support
+* Improved dashboard code
+* Minor bugfixes
+
 # v0.5.2
 * Use full fqdn instead of just the hostname.
 * Rescue puppetclassify errors.
