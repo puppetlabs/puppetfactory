@@ -60,6 +60,8 @@ class Puppetfactory::Plugins::UserEnvironment < Puppetfactory::Plugins
   end
 
   def deploy(username)
+    # TODO: temporary hack to keep this from disrupting current deliveries.
+    return if @codestage == @environments
     environment = Puppetfactory::Helpers.environment_name(username)
 
     FileUtils.cp_r("#{@codestage}/#{environment}/.", "#{@environments}/#{environment}")
