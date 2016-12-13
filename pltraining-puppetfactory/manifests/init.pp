@@ -3,6 +3,7 @@ class puppetfactory (
   Boolean $manage_selinux = $puppetfactory::params::manage_selinux,
   Boolean $autosign       = $puppetfactory::params::autosign,
   String  $docker_group   = $puppetfactory::params::docker_group,   # why are some of these items configurable?
+  String  $stagedir       = $puppetfactory::params::stagedir,       # unfortunately $stagedir is not in $settings...
 
   String  $confdir        = $settings::confdir,
   String  $codedir        = $settings::codedir,
@@ -66,12 +67,6 @@ class puppetfactory (
   }
   else {
     $real_gitserver = pick($gitserver, 'https://github.com')
-  }
-
-  if 'CodeManager' in $plugins {
-    $stagedir = '/etc/puppetlabs/code-staging'
-  } else {
-    $stagedir = '/etc/puppetlabs/code'
   }
 
   class { 'abalone':
