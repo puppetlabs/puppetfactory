@@ -121,12 +121,6 @@ class puppetfactory (
     match => '^\s*Defaults    requiretty',
   }
 
-  # sloppy, get this gone
-  user { 'vagrant':
-    ensure     => absent,
-    managehome => true,
-  }
-
   file { '/etc/issue.net':
     ensure => file,
     source => 'puppet:///modules/puppetfactory/issue.net',
