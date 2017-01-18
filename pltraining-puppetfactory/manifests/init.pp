@@ -4,6 +4,7 @@ class puppetfactory (
   Boolean $autosign       = $puppetfactory::params::autosign,
   String  $docker_group   = $puppetfactory::params::docker_group,   # why are some of these items configurable?
   String  $stagedir       = $puppetfactory::params::stagedir,       # unfortunately $stagedir is not in $settings...
+  String  $default_class  = $puppetfactory::params::default_class,  # Puppet class to apply to student nodes
 
   String  $confdir        = $settings::confdir,
   String  $codedir        = $settings::codedir,
