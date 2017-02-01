@@ -23,10 +23,10 @@ class Puppetfactory::Plugins::Classification < Puppetfactory::Plugins
 
   def create(username, password)
     environment = Puppetfactory::Helpers.environment_name(username)
-    certname    = "#{username}.#{@suffix}"
+    certname = "#{username}.#{@suffix}"
 
     group_hash = {
-      'name'               => certname,
+      'name'               => "#{username}'s environment group",
       'environment'        => environment,
       'environment_trumps' => true,
       'parent'             => '00000000-0000-4000-8000-000000000000',
@@ -37,26 +37,25 @@ class Puppetfactory::Plugins::Classification < Puppetfactory::Plugins
     begin
       @puppetclassify.groups.create_group(group_hash)
     rescue => e
-      $logger.error "Could not create node group #{certname}: #{e.message}"
+      $logger.error "Could not create node group for #{username}: #{e.message}"
       return false
     end
 
-    $logger.info "Created node group #{certname} assigned to environment #{environment}"
+    $logger.info "Created node group for #{certname} assigned to environment #{environment}"
     true
   end
 
   def delete(username)
-    certname = "#{username}.#{@suffix}"
 
     begin
-      group_id = @puppetclassify.groups.get_group_id(certname)
+      group_id = @puppetclassify.groups.get_group_id("#{username}'s environment group")
       @puppetclassify.groups.delete_group(group_id)
     rescue => e
-      $logger.warn "Error removing node group #{certname}: #{e.message}"
+      $logger.warn "Error removing node group for #{username}: #{e.message}"
       return false
     end
 
-    $logger.info "Node group #{certname} removed"
+    $logger.info "Node group #{username} removed"
     true
   end
 
@@ -65,9 +64,9 @@ class Puppetfactory::Plugins::Classification < Puppetfactory::Plugins
     certname = "#{username}.#{@suffix}"
     
     begin
-      ngid = @puppetclassify.groups.get_group_id(certname)
+      ngid = @puppetclassify.groups.get_group_id("#{username}'s environment group")
     rescue => e
-      $logger.warn "Error retrieving node group #{certname}: #{e.message}"
+      $logger.warn "Error retrieving node group for #{certname}: #{e.message}"
       return nil
     end
 
