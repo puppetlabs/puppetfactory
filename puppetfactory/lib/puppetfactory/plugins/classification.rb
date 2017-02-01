@@ -51,7 +51,7 @@ class Puppetfactory::Plugins::Classification < Puppetfactory::Plugins
       group_id = @puppetclassify.groups.get_group_id("#{username}'s environment group")
       @puppetclassify.groups.delete_group(group_id)
     rescue => e
-      $logger.warn "Error removing node grou for #{username}: #{e.message}"
+      $logger.warn "Error removing node group for #{username}: #{e.message}"
       return false
     end
 
