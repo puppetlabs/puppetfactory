@@ -1,3 +1,11 @@
+## Version 0.5.6
+* Keep vagrant user since VMs now support vagrant
+* Fix docker weirdness around deleting yum cache
+* Setting for default puppet class to be applied to agents
+* Treeview plugin view
+* Set UsePAM to 'yes' for ssh server
+* Friendlier names for student environment groups
+
 ## Version 0.5.5
 
 * gitea support

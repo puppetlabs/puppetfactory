@@ -1,3 +1,8 @@
+# v0.5.5
+* Treeview plugin view
+* Set UsePAM to 'yes' for ssh server
+* Friendlier names for student environment groups
+
 # v0.5.4
 * gitea support
 * Improved dashboard code
