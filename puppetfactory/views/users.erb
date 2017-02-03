@@ -42,6 +42,12 @@
 <% if action_enabled? :deploy -%>
     <tr class="actions"><td colspan=2><i class="fa"></i><input type="button" id="deploy" data-user="<%= @current[:username] %>" value="Deploy Environment"></td></tr>
 <% end -%>
+<% if @current[:tree] -%>
+  <tr>
+    <th class="header">Environment Structure:</th>
+    <td><div id="tree"></div></td>
+  </tr>
+<% end -%>
   </table>
 <% end %>
   <h2>All Users</h2>
@@ -67,3 +73,10 @@
   </table>
 </div>
 <script type="text/javascript" src="js/usermanagement.js"></script>
+<% if @current and @current[:tree] %>
+<script type="text/javascript">
+  $(document).ready(function() {
+      $('#tree').jstree({ 'core': { 'data': <%= @current[:tree] %> } });
+  });
+</script>
+<% end %>

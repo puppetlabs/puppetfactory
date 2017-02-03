@@ -4,6 +4,7 @@ class puppetfactory (
   Boolean $autosign       = $puppetfactory::params::autosign,
   String  $docker_group   = $puppetfactory::params::docker_group,   # why are some of these items configurable?
   String  $stagedir       = $puppetfactory::params::stagedir,       # unfortunately $stagedir is not in $settings...
+  String  $default_class  = $puppetfactory::params::default_class,  # Puppet class to apply to student nodes
 
   String  $confdir        = $settings::confdir,
   String  $codedir        = $settings::codedir,
@@ -121,12 +122,6 @@ class puppetfactory (
     match => '^\s*Defaults    requiretty',
   }
 
-  # sloppy, get this gone
-  user { 'vagrant':
-    ensure     => absent,
-    managehome => true,
-  }
-
   file { '/etc/issue.net':
     ensure => file,
     source => 'puppet:///modules/puppetfactory/issue.net',
@@ -144,7 +139,8 @@ class puppetfactory (
     password_authentication        => $allow_root,
     permit_root_login              => $allow_root,
     password_authentication_groups => ['puppetfactory'],
-    host_keys                      => ['/etc/ssh/ssh_host_rsa_key','/etc/ssh/ssh_host_ecdsa_key', '/etc/ssh/ssh_host_ed25519_key']
+    use_pam                        => 'yes',
+    host_keys                      => ['/etc/ssh/ssh_host_rsa_key','/etc/ssh/ssh_host_ecdsa_key', '/etc/ssh/ssh_host_ed25519_key'],
   }
 
 }

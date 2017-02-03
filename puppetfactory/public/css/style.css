@@ -76,6 +76,7 @@ table#currentuser th.header {
   white-space: nowrap;
   text-align: right;
   padding-right: 1em;
+  vertical-align: top;
 }
 table#currentuser tr.actions {
   text-align: right;
