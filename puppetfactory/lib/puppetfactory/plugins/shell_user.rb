@@ -54,7 +54,7 @@ class Puppetfactory::Plugins::ShellUser < Puppetfactory::Plugins
 
   def users
     usernames = Dir.glob('/home/*').map { |path| File.basename path }
-    usernames.reject { |username| ['centos', 'training', 'showoff'].include? username }
+    usernames.reject { |username| ['centos', 'git', 'showoff', 'training', 'vagrant'].include? username }
   end
 
   def userinfo(username, extended = false)
