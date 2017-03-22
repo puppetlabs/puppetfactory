@@ -1,4 +1,8 @@
 class puppetfactory::dockerimages {
+
+  file { '/var/docker':
+    ensure => directory,
+  }
   # Ubuntu agent image
   file { '/var/docker/ubuntuagent/':
     ensure  => directory,
@@ -47,5 +51,10 @@ class puppetfactory::dockerimages {
     content => template('puppetfactory/centos.dockerfile.erb'),
     require => File['/var/docker/centosagent/'],
     notify => Docker::Image['centosagent'],
+  }
+
+  docker::image { 'centosagent':
+    docker_dir => '/var/docker/centosagent/',
+    require     => File['/var/docker/centosagent/Dockerfile'],
   }
 }

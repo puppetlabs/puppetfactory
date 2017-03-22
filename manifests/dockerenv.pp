@@ -13,9 +13,6 @@ class puppetfactory::dockerenv (
 
   $puppetmaster = pick($puppetfactory::master, $servername)
 
-  file { '/var/docker':
-    ensure => directory,
-  }
 
   sysctl {'net.ipv4.ip_forward':
     ensure    => present,
