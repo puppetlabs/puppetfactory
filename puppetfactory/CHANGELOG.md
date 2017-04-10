@@ -1,5 +1,6 @@
 # v0.5.6
 * Parameterized the gitea plugin for all virtual courses
+* Remove some non-student users from the user list
 
 # v0.5.5
 * Treeview plugin view
