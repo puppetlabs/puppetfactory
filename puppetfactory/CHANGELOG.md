@@ -1,3 +1,6 @@
+# v0.5.6
+* Parameterized the gitea plugin for all virtual courses
+
 # v0.5.5
 * Treeview plugin view
 * Set UsePAM to 'yes' for ssh server
