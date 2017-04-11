@@ -2,9 +2,13 @@ class puppetfactory::dockerenv (
   $default_class = $puppetfactory::default_class
 ){
   assert_private('This class should not be called directly')
-  class { 'docker':
+  
+  include docker
+
+  Class['docker'] {
     extra_parameters => '--default-ulimit nofile=1000000:1000000',
   }
+
   file {'/etc/security/limits.conf':
     ensure => file,
     source => 'puppet:///modules/puppetfactory/limits.conf',
