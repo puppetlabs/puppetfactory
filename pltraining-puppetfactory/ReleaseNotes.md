@@ -1,3 +1,7 @@
+## Version 0.5.7
+* Split dockerimages to a separate manifest
+* Improved gitea support
+
 ## Version 0.5.6
 * Keep vagrant user since VMs now support vagrant
 * Fix docker weirdness around deleting yum cache
