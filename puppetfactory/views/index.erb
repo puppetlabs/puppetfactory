@@ -1,7 +1,6 @@
 <html>
 <head>
     <title>Puppet Training Classroom Manager</title>
-    <link rel="stylesheet" type="text/css" href="css/jquery-ui.min.css" media="all" />
     <link rel="stylesheet" type="text/css" href="font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="jstree-3.3.3/themes/default/style.min.css" />
     <link rel="stylesheet" type="text/css" href="css/style.css" />
@@ -12,20 +11,27 @@
     <script type="text/javascript" src="jstree-3.3.3/jstree.min.js"></script>
 </head>
 <body>
-    <h1>Puppet Training Classroom Manager</h1>
-    <% unless privileged? %><a href="/login" id="login">Admin Login</a><% end %>
-    <div id="tabs">
+  <div id="tabs">
+    <header>
       <ul>
+        <img src="/images/Puppet-Logo-Amber-White-sm.png" alt="logo" id="nav-logo">
         <li><a href="#home">Home</a></li>
         <li><a href="/users">Users</a></li>
         <li><a class="cache" href="/shell">SSH Login</a></li>
         <% @tabs.each do |url, title| %>
           <li><a href="/<%= url %>"><%= title %></a></li>
         <% end %>
+        <li class="right">
+          <% unless privileged? %><a href="/login" id="login">Admin Login</a><% end %>
+        </li>
       </ul>
+    </header>
+    <article>
+      <h1>Puppet Training Classroom Manager</h1>
       <div id="home">
         <%= erb :home %>
       </div>
-    </div>
+    </article>
+  </div>
 </body>
 </html>

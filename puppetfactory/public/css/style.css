@@ -1,28 +1,125 @@
-table {
-  width: 100%;
-  border: 1px solid #ccc;
-  background: #efefef;
-  border-spacing: 0;
-  -moz-border-radius: 5px;
-  border-radius: 5px;
+body {
+  font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+  color: #222;
+  margin: 0;
+  padding: 0;
+  line-height: 1.6em;
 }
-tr.even {
-  background: #b3c6ae;
+
+header,
+footer {
+  position: fixed;
+  background-color: #222222;
+  color: #ffffff;
+  width: 100%;
+}
+
+a {
+  text-decoration: none;
+  color: #ffae1a;
+  border-bottom: 2px solid transparent;
+  transition-duration: .2s;
+}
+
+a:focus,
+li:focus,
+input:focus,
+button:focus {
+  outline: none;
+}
+
+header {
+  height: 4em;
+  top: 0;
+}
+
+header ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+header li {
+  float: left;
+  padding: 1.2em 2em;
+}
+
+header li a {
+  display: block;
+  color: #ffffff;
+}
+
+a:hover,
+header a:hover,
+.ui-tabs-active a,
+#login:hover {
+  color: #ffae1a;
+  border-color: #ffae1a;
+}
+
+input[type="button"],
+.ui-dialog button {
+  padding: .5em 1em;
+  border: none;
+  background-color: #ffae1a;
+  color: #ffffff;
+  font-size: 1em;
+  transition-duration: .2s;
+}
+input[type="button"]:hover {
+  opacity: .7;
+}
+
+article {
+  margin: 6em 4em 2em 4em;
 }
 
 li {
-  margin-bottom: 0.5em;
+  margin-bottom: .5em;
+}
+
+table {
+  width: 100%;
+  border-spacing: 0;
+}
+
+th, td {
+  padding-top: .5em;
+  padding-bottom: .5em;
+}
+
+tr:nth-child(2n+2) {
+  background: #dedede;
+}
+
+.right {
+  float: right;
+}
+
+.ui-dialog {
+  background-color: #ffffff;
+  padding: 1em 2em;
+  box-shadow: 0 0 2em #4e4e4e;
+}
+
+.ui-dialog-titlebar-close {
+  display: none;
+}
+
+#nav-logo {
+  float: left;
+  padding: 1em 2em;
+  height: 2em;
 }
 
 #login {
-  position: absolute;
-  top: 0.5em;
-  right: 0.5em;
-  font-size: 8pt;
-  opacity: 0;
+  color: transparent;
+  background-color: transparent;
 }
-#login:hover {
-  opacity: 1;
+
+#userslist,
+#shellwrapper {
+  display: none;
 }
 
 #usercontent {
@@ -30,80 +127,87 @@ li {
 }
 
 #newuserwrapper {
-  position: absolute;
-  top: 0;
-  right: 0;
-}
-
-#newuserwrapper.open {
-  border: 1px solid #cfcfcf;
-  padding: 0.5em;
-  background-color: rgba(0, 0, 0, 0.6);
+  margin-top: 2em;
 }
 
 #newuser {
   display: none;
-  width: 16em;
   margin-top: 0.5em;
+  padding: 1em;
 }
 
-#newuser table {
-  padding: 0.25em 0;
+#newuser div {
+  margin: .5em 0;
 }
 
-#newuser.processing table,
-#newuser.processing table input {
-  background: #565656;
-  color: #2a2929;
+#newuser.processing,
+#newuser.processing input {
+  background: #dedede;
+  color: #ffffff;
+  border: none;
 }
 
-#newuser.processing table {
+#newuser.processing {
   border-color: #565656;
 }
 
-#newuser td.label {
-  text-align: right;
-  font-size: small;
-  font-weight: lighter;
+#newuser label {
+  display: inline-block;
+  width: 6em;
 }
 
-#newuser table input.fail {
+#newuser input[type="text"],
+#newuser input[type="password"] {
+  font-family: 'Calibre-Regular', sans-serif;
+  font-size: 1em;
+  display: inline-block;
+  box-sizing: border-box;
+  width: 25%;
+  max-width: 100%;
+  padding: 8px 12px;
+  line-height: 1em;
+  border: 2px solid #dedede;
+  outline: none;
+}
+
+#newuser input.fail {
   background: #f88484;
 }
 
-table#currentuser th.header {
+#currentuser {
+  margin-bottom: 4em;
+}
+
+#currentuser th.header {
   width: 10%;
   white-space: nowrap;
   text-align: right;
   padding-right: 1em;
-  vertical-align: top;
 }
-table#currentuser tr.actions {
+#currentuser tr.actions {
   text-align: right;
 }
 
-table#users {
+#users {
   margin-top: 1em;
 }
 
-table#users th {
-  border-bottom: 2px solid #999;
+#users th {
+  border-bottom: 2px solid #4e4e4e;
 }
 
-table#users td {
-  border-right: 1px solid #ccc;
-  border-collapse: collapse;
-  padding: 0 0.5em;
+#users td {
   text-align: center;
 }
 
-table#users td.select {
+#users td.select {
   font-size: 0.8em;
 }
 
 #console {
   width: 100%;
   height: 24em;
+  resize: vertical;
 }
 
 #shell code {

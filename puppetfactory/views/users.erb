@@ -1,19 +1,7 @@
 <div id="usercontent">
-  <div id="newuserwrapper">
-    <input type="button" id="showuser" value="+ New User" />
-    <div id="newuser">
-      <table>
-        <tr><td class="label">Username:</td><td><input type="text" id="user" value="" /></td></tr>
-        <tr><td class="label">Password:</td><td><input type="password" id="password" value="" /></td></tr>
-        <tr><td class="label">Repeat:</td><td><input type="password" id="password2" value="" /></td></tr>
-        <tr><td class="label">Session ID:</td><td><input type="text" id="session" value="" /></td></tr>
-      </table>
-      <input type="button" id="hideuser" value="Cancel" />
-      <input type="button" id="save" value="Save" />
-    </div>
-  </div>
+
 <% if @current %>
-  <h2>Selected User</h2>
+  <h3>Selected User</h3>
   <table id="currentuser">
     <tr><th class="header">Username:</th>    <td><%= @current[:username] %></td></tr>
     <tr><th class="header">Certname:</th>    <td><%= @current[:certname] %></td></tr>
@@ -50,7 +38,7 @@
 <% end -%>
   </table>
 <% end %>
-  <h2>All Users</h2>
+  <h3>All Users</h3>
   <table id="users">
     <tr class="header">
       <th>Username</th>
@@ -72,6 +60,27 @@
     <% end %>
   </table>
 </div>
+
+<div id="newuserwrapper">
+  <input type="button" id="showuser" value="+ New User" />
+  <div id="newuser">
+    <div>
+      <label for="user">Username:</label><input type="text" id="user" value="" />
+    </div>
+    <div>
+      <label for="password">Password:</label><input type="password" id="password" value="" />
+    </div>
+    <div>
+      <label for="password2">Repeat:</label><input type="password" id="password2" value="" />
+    </div>
+    <div>
+      <label for="session">Session ID:</label><input type="text" id="session" value="" />
+    </div>
+    <input type="button" id="hideuser" value="Cancel" />
+    <input type="button" id="save" value="Save" />
+  </div>
+</div>
+
 <script type="text/javascript" src="js/usermanagement.js"></script>
 <% if @current and @current[:tree] %>
 <script type="text/javascript">
