@@ -29,6 +29,7 @@ class puppetfactory::dockerenv (
     ensure => present,
   }
 
-  include puppetfactory::dockerimages
+  include puppetfactory::centosimage
+  include puppetfactory::ubuntuimage
 }
 
