@@ -6,4 +6,4 @@ ENV HOME /root/
 ENV TERM xterm
 RUN apt-get update
 RUN apt-get --assume-yes install ruby ntp
-RUN echo 'if ! hash puppet; then curl -k https://<%= @puppetmaster %>:8140/packages/current/install.bash | sudo bash; fi' >> /root/.bashrc
+RUN echo 'if ! hash puppet; then curl -k https://<%= $puppetmaster %>:8140/packages/current/install.bash | sudo bash; fi' >> /root/.bashrc

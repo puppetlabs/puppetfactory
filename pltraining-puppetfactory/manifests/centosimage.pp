@@ -1,26 +1,9 @@
-class puppetfactory::dockerimages {
+class puppetfactory::centosimage (
+  $master_ip = $puppetmaster,
+) {
 
   file { '/var/docker':
     ensure => directory,
-  }
-  # Ubuntu agent image
-  file { '/var/docker/ubuntuagent/':
-    ensure  => directory,
-    recurse => true,
-    source  => 'puppet:///modules/puppetfactory/ubuntu/',
-    require => Class['docker'],
-  }
-
-  file { '/var/docker/ubuntuagent/Dockerfile':
-    ensure  => present,
-    content => template('puppetfactory/ubuntu.dockerfile.erb'),
-    require => File['/var/docker/ubuntuagent/'],
-    notify => Docker::Image['ubuntuagent'],
-  }
-
-  docker::image { 'ubuntuagent':
-    docker_dir => '/var/docker/ubuntuagent/',
-    require     => File['/var/docker/ubuntuagent/Dockerfile'],
   }
 
   # CentOS agent image
@@ -48,7 +31,9 @@ class puppetfactory::dockerimages {
 
   file { '/var/docker/centosagent/Dockerfile':
     ensure  => present,
-    content => template('puppetfactory/centos.dockerfile.erb'),
+    content => epp('puppetfactory/centos.dockerfile.epp',{
+        $puppetmaster => $master_ip,
+      }),
     require => File['/var/docker/centosagent/'],
     notify => Docker::Image['centosagent'],
   }

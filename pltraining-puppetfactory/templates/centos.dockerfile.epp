@@ -4,16 +4,13 @@ FROM centos:7
 MAINTAINER Josh Samuelson <js@puppet.com>
 ENV HOME /root/
 ENV TERM xterm
+RUN yum -y install sudo tar dmidecode which logrotate cyrus-sasl libxslt cronie pciutils git rubygems vim tree csh zsh ntpdate postfix lynx wget openssl-libs jq
 RUN rm /etc/yum.repos.d/CentOS*
 ADD base_local.repo /etc/yum.repos.d/base_local.repo
 ADD epel_local.repo /etc/yum.repos.d/epel_local.repo
 ADD updates_local.repo /etc/yum.repos.d/updates_local.repo
-ADD mirror /var/yum/mirror
-RUN yum -y install sudo tar dmidecode which logrotate cyrus-sasl libxslt cronie pciutils git rubygems vim tree csh zsh ntpdate postfix lynx wget openssl-libs jq
-RUN find /var/yum/mirror -d -exec rm -rf "{}" \;
 ADD vimrc /root/.vimrc
-RUN echo 'if ! hash puppet; then curl -k https://<%= @puppetmaster %>:8140/packages/current/install.bash | sudo bash; puppet apply -e "include <%= @default_class %>"; fi' >> /root/.bashrc
+RUN echo 'if ! hash puppet; then curl -k https://<%= $puppetmaster %>:8140/packages/current/install.bash | sudo bash; fi' >> /root/.bashrc
 RUN mkdir -p /etc/puppetlabs/code/modules
-RUN git clone https://github.com/puppetlabs/pltraining-course_selector /etc/puppetlabs/code/modules/course_selector
 EXPOSE 3306 80
 CMD ["/sbin/init"]
