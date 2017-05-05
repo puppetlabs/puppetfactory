@@ -1,4 +1,6 @@
-class puppetfactory::centosimage {
+class puppetfactory::centosimage (
+  $master_ip = $puppetmaster,
+) {
 
   file { '/var/docker':
     ensure => directory,
@@ -29,7 +31,9 @@ class puppetfactory::centosimage {
 
   file { '/var/docker/centosagent/Dockerfile':
     ensure  => present,
-    content => template('puppetfactory/centos.dockerfile.erb'),
+    content => epp('puppetfactory/centos.dockerfile.epp',{
+        $puppetmaster => $master_ip,
+      }),
     require => File['/var/docker/centosagent/'],
     notify => Docker::Image['centosagent'],
   }
