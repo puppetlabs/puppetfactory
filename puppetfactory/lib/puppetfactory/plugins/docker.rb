@@ -32,6 +32,7 @@ class Puppetfactory::Plugins::Docker < Puppetfactory::Plugins
 
       binds = [
         "/var/yum:/var/yum",
+        "/var/cache/rubygems:/var/cache/rubygems",
         "/home/#{username}/puppet:#{@confdir}",
         "/sys/fs/cgroup:/sys/fs/cgroup:ro"
       ]
