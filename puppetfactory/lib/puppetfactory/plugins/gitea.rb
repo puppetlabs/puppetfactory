@@ -44,9 +44,6 @@ class Puppetfactory::Plugins::Gitea < Puppetfactory::Plugins
 
   def create(username, password)
     begin
-      if password.length < 8
-        raise "Password must be at least 8 characters"
-      end
       `su git -c "cd && #{@gitea_path} admin create-user --name #{username} --password #{password} --email #{username}@#{@suffix}"`
       add_collaborator(@admin_username, @reponame, username, 'write')
       make_branch(username)
