@@ -1,3 +1,8 @@
+# v0.5.7
+* Split puppet module from gem and rearrange repo
+* Vendor jruby for offline
+* Improved styling
+
 # v0.5.6
 * Parameterized the gitea plugin for all virtual courses
 * Remove some non-student users from the user list
