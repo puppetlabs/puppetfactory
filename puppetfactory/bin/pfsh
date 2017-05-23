@@ -13,6 +13,7 @@ end
 options[:plugins] ||= [:LoginShell]
 options[:logfile] ||= STDOUT
 options[:session] ||= '12345'
+options[:master]  ||= `hostname -f`.strip
 
 $logger = Logger.new(options[:logfile])
 
