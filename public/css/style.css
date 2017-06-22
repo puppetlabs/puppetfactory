@@ -113,8 +113,10 @@ tr:nth-child(2n+2) {
 }
 
 #login {
+  float: right;
   color: transparent;
   background-color: transparent;
+  margin: 1.2em 2em;
 }
 
 #userslist,
