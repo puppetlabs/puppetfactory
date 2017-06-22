@@ -21,10 +21,8 @@
         <% @tabs.each do |url, title| %>
           <li><a href="/<%= url %>"><%= title %></a></li>
         <% end %>
-        <li class="right">
-          <% unless privileged? %><a href="/login" id="login">Admin Login</a><% end %>
-        </li>
       </ul>
+      <% unless privileged? %><a href="/login" id="login">Admin Login</a><% end %>
     </header>
     <article>
       <h1>Puppet Training Classroom Manager</h1>
