@@ -15,11 +15,13 @@
     <header>
       <ul>
         <img src="/images/Puppet-Logo-Amber-White-sm.png" alt="logo" id="nav-logo">
-        <li><a href="#home">Home</a></li>
-        <li><a href="/users">Users</a></li>
-        <li><a class="cache" href="/shell">SSH Login</a></li>
-        <% @tabs.each do |url, title| %>
-          <li><a href="/<%= url %>"><%= title %></a></li>
+        <% if @existinguser || privileged? %>
+          <li><a href="#home">Home</a></li>
+          <li><a href="/users">Users</a></li>
+          <li><a class="cache" href="/shell">SSH Login</a></li>
+          <% @tabs.each do |url, title| %>
+            <li><a href="/<%= url %>"><%= title %></a></li>
+          <% end %>
         <% end %>
       </ul>
       <% unless privileged? %><a href="/login" id="login">Admin Login</a><% end %>
@@ -27,7 +29,11 @@
     <article>
       <h1>Puppet Training Classroom Manager</h1>
       <div id="home">
+      <% if @existinguser || privileged? %>
         <%= erb :home %>
+      <% else %>
+        <%= erb :newuser %>
+      <% end -%>
       </div>
     </article>
   </div>

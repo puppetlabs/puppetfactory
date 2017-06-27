@@ -133,7 +133,6 @@ tr:nth-child(2n+2) {
 }
 
 #newuser {
-  display: none;
   margin-top: 0.5em;
   padding: 1em;
 }
@@ -160,8 +159,7 @@ tr:nth-child(2n+2) {
 
 #newuser input[type="text"],
 #newuser input[type="password"] {
-  font-family: 'Calibre-Regular', sans-serif;
-  font-size: 1em;
+  font-size: .8em;
   display: inline-block;
   box-sizing: border-box;
   width: 25%;
