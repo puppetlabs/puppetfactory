@@ -21,7 +21,7 @@ Gem::Specification.new do |s|
   s.files            += Dir.glob("public/**/*")
   s.files            += Dir.glob("templates/**/*")
 
-  s.add_dependency      "sinatra", ">= 1.3"
+  s.add_dependency      "sinatra", "= 1.4.8"
   s.add_dependency      "json_pure"
   s.add_dependency      "puppetclassify", ">= 0.1.0"
   s.add_dependency      "docker-api"
