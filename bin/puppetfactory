@@ -63,7 +63,7 @@ options[:stagedir]     ||= '/etc/puppetlabs/code-staging'
 options[:environments] ||= "#{options[:codedir]}/environments"
 
 options[:root]         ||= File.expand_path(File.join(File.dirname(__FILE__), '..'))
-options[:logfile]      ||= '/var/log/puppetfactory'
+options[:logfile]      ||= '/tmp/puppetfactory'
 options[:templatedir]  ||= "#{File.dirname(__FILE__)}/../templates"
 
 options[:port]         ||= 8000
