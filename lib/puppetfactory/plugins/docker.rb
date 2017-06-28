@@ -29,10 +29,12 @@ class Puppetfactory::Plugins::Docker < Puppetfactory::Plugins
   def create(username, password)
     begin
       environment = "#{@environments}/#{Puppetfactory::Helpers.environment_name(username)}"
-
       binds = [
         "/var/yum:/var/yum",
-        "/var/cache/rubygems:/var/cache/rubygems",
+        "/var/cache:/var/cache",
+        "/etc/pki/rpm-gpg:/etc/pki/rpm-gpg",
+        "/etc/yum.repos.d:/etc/yum.repos.d",
+        "/opt/puppetlabs/server:/opt/puppetlabs/server",
         "/home/#{username}/puppet:#{@confdir}",
         "/sys/fs/cgroup:/sys/fs/cgroup:ro"
       ]
