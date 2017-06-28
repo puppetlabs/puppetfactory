@@ -57,6 +57,7 @@ class Puppetfactory < Sinatra::Base
   # UI tab endpoints
   get '/' do
     @tabs = merge(plugins(:tabs, privileged?))
+    @existinguser = session.include? :username
 
     erb :index
   end

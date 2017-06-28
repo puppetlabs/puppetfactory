@@ -9,19 +9,6 @@ $(document).ready(function(){
     return true;
   };
 
-  function open() {
-    $('#showuser').hide();
-    $('#newuserwrapper').addClass("open");
-    $('#newuser').slideDown("fast");
-    $('#user').focus();
-  }
-
-  function close() {
-    $('#showuser').show();
-    $('#newuserwrapper').removeClass("open");
-    $('#newuser').hide();
-  }
-
   function start_processing() {
     $('#newuser input[type=button]').attr("disabled", true);
     $('#newuser').addClass("processing");
