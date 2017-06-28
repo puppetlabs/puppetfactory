@@ -3,12 +3,12 @@ require 'date'
 
 Gem::Specification.new do |s|
   s.name              = "puppetfactory"
-  s.version           = '0.5.7'
+  s.version           = '0.5.8'
   s.date              = Date.today.to_s
   s.summary           = "Stands up a graphical classroom manager with containerized puppet agents."
   s.homepage          = "https://github.com/puppetlabs/puppetfactory"
   s.email             = "ben.ford@puppetlabs.com"
-  s.authors           = ["Ben Ford","Josh Samuelson"]
+  s.authors           = ["Ben Ford","Josh Samuelson","Michael Marrero"]
   s.license           = 'Apache-2.0'
   s.has_rdoc          = false
   s.require_path      = "lib"

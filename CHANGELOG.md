@@ -1,3 +1,6 @@
+# v0.5.8
+* Map additional directories into container for local yum cache
+
 # v0.5.7
 * Split puppet module from gem and rearrange repo
 * Vendor jruby for offline
