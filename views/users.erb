@@ -61,27 +61,10 @@
   </table>
 </div>
 
-<div id="newuserwrapper">
-  <input type="button" id="showuser" value="+ New User" />
-  <div id="newuser">
-    <div>
-      <label for="user">Username:</label><input type="text" id="user" value="" />
-    </div>
-    <div>
-      <label for="password">Password:</label><input type="password" id="password" value="" />
-    </div>
-    <div>
-      <label for="password2">Repeat:</label><input type="password" id="password2" value="" />
-    </div>
-    <div>
-      <label for="session">Session ID:</label><input type="text" id="session" value="" />
-    </div>
-    <input type="button" id="hideuser" value="Cancel" />
-    <input type="button" id="save" value="Save" />
-  </div>
+<div class="wrapper">
+  <%= erb :newuser %>
 </div>
 
-<script type="text/javascript" src="js/usermanagement.js"></script>
 <% if @current and @current[:tree] %>
 <script type="text/javascript">
   $(document).ready(function() {
