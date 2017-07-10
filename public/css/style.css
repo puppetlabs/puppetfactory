@@ -128,28 +128,13 @@ tr:nth-child(2n+2) {
   position: relative;
 }
 
-#newuserwrapper {
-  margin-top: 2em;
-}
-
-#newuser {
-  margin-top: 0.5em;
-  padding: 1em;
-}
-
 #newuser div {
   margin: .5em 0;
 }
 
-#newuser.processing,
 #newuser.processing input {
   background: #dedede;
-  color: #ffffff;
-  border: none;
-}
-
-#newuser.processing {
-  border-color: #565656;
+  border: #4e4e4e;
 }
 
 #newuser label {
@@ -160,18 +145,16 @@ tr:nth-child(2n+2) {
 #newuser input[type="text"],
 #newuser input[type="password"] {
   font-size: .8em;
-  display: inline-block;
-  box-sizing: border-box;
   width: 25%;
   max-width: 100%;
   padding: 8px 12px;
-  line-height: 1em;
   border: 2px solid #dedede;
   outline: none;
 }
 
 #newuser input.fail {
-  background: #f88484;
+  background-color: #f88484;
+  border-color: #d63700;
 }
 
 #currentuser {
