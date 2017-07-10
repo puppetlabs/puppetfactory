@@ -1,17 +1,5 @@
-<div>
-  <p>A simulated Puppet Enterprise infrastructure has been constructed on the classroom server. Each student has an environment providing a sandboxed container for Puppet code and configuration. The classroom server is also running the unmodified Puppet Enterprise Console with an account for each student.</p>
-  <p>Students have full <code>root</code> access on their container, meaning that all Puppet commands and resources work as expected. Each container also exposes port 80 as a high port proxied from the Master, meaning that students are able to run a web server inside their sandbox environment. A link to this proxied port is listed for each user on the Users tab.</p>
-  <p><strong>Please create a new user account for class:</strong></p>
-  <ul>
-    <li>The username must match your GitHub username.  If you do not have a GitHub account, please go <a href="https://github.com">here</a> to sign up for a free one.</li>
-    <li>Usernames must be at least 3 lowercase alphanumeric characters and start with a letter.</li>
-    <li>The instructor will provide you with the session ID for this class.</li>
-  </ul>
-
-  <p>These accounts are solely for this class and are destroyed with the classroom environment.</p>
-</div>
-
 <div id="newuser">
+  <h3>Create a new user</h3>
   <div>
     <label for="user">Username:</label><input type="text" id="user" value="" />
   </div>
@@ -25,7 +13,9 @@
     <label for="session">Session ID:</label><input type="text" id="session" value="" />
     <p></p>
   </div>
-  <input type="button" id="save" value="Save" />
-  <input type="button" id="hideuser" value="Cancel" class="white"/>
+  <div>
+    <label for=""></label> <!-- literally just a space saver -->
+    <input type="button" id="save" value="Submit" />
+  </div>
 </div>
 <script type="text/javascript" src="js/usermanagement.js"></script>
