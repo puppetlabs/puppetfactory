@@ -96,6 +96,10 @@ tr:nth-child(2n+2) {
   float: right;
 }
 
+.wrapper {
+  margin: 4em 0;
+}
+
 .ui-dialog {
   background-color: #ffffff;
   padding: 1em 2em;
