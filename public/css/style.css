@@ -16,7 +16,7 @@ footer {
 
 a {
   text-decoration: none;
-  color: #ffae1a;
+  color: #3880ff;
   border-bottom: 2px solid transparent;
   transition-duration: .2s;
 }
@@ -49,7 +49,10 @@ header li a {
   color: #ffffff;
 }
 
-a:hover,
+a:hover {
+  border-color: #3880ff;
+}
+
 header a:hover,
 .ui-tabs-active a,
 #login:hover {
