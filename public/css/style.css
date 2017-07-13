@@ -14,6 +14,10 @@ footer {
   width: 100%;
 }
 
+article {
+  margin: 6em 4em 2em 4em;
+}
+
 a {
   text-decoration: none;
   color: #3880ff;
@@ -26,6 +30,12 @@ li:focus,
 input:focus,
 button:focus {
   outline: none;
+}
+
+code {
+  background-color: #ddd;
+  border-bottom: 2px dotted #aaa;
+  padding: 0.25em;
 }
 
 header {
@@ -71,10 +81,6 @@ input[type="button"],
 }
 input[type="button"]:hover {
   opacity: .7;
-}
-
-article {
-  margin: 6em 4em 2em 4em;
 }
 
 li {
@@ -126,13 +132,8 @@ tr:nth-child(2n+2) {
   margin: 1.2em 2em;
 }
 
-#userslist,
-#shellwrapper {
+#userslist {
   display: none;
-}
-
-#usercontent {
-  position: relative;
 }
 
 #newuser div {
@@ -190,20 +191,10 @@ tr:nth-child(2n+2) {
   text-align: center;
 }
 
-#users td.select {
-  font-size: 0.8em;
-}
-
 #console {
   width: 100%;
   height: 24em;
   resize: vertical;
-}
-
-#shell code {
-  background-color: #ddd;
-  border-bottom: 2px dotted #aaa;
-  padding: 0.25em;
 }
 
 #alternate,
@@ -216,16 +207,11 @@ tr:nth-child(2n+2) {
   margin-left: 0.5em;
 }
 
-#dashboard {
-
-}
-
-#dashboard #notifications {
-  font-size: 0.5em;
+#notifications {
   color: #666;
 }
 
-#dashboard #notifications.fail {
+#notifications.fail {
   font-weight: bold;
   background-color: red;
   border: 1px solid black;
@@ -233,18 +219,13 @@ tr:nth-child(2n+2) {
   padding: 0.25em 0.5em;
 }
 
-#dashboard #tools {
+#tools {
   float: right;
   top: 1em;
-  font-size: 0.8em;
   margin-bottom: 0.5em;
 }
 
-#dashboard #tools * {
-  font-size: 0.8em;
-}
-
-#dashboard #tools * .ui-button-text {
+#tools * .ui-button-text {
   padding-top: 0.25em;
   padding-bottom: 0.25em;
 }
@@ -261,7 +242,6 @@ tr:nth-child(2n+2) {
   background-color: #ffdddd;
   border-radius: 0.25em;
   box-shadow: 0 2px 3px rgba(0, 0, 0, 0.25) inset;
-  font-size: 0.8em;
 }
 
 #dashboard .gutter .label {
@@ -279,12 +259,17 @@ tr:nth-child(2n+2) {
 }
 
 #dashboard .completed a {
-  font-size: 0.5em;
   text-decoration: none;
 }
 
 #dashboard .completed a:hover {
   border-bottom: 2px solid black;
+}
+
+#logs .data {
+  font-family: monospace;
+  font-size: 1.2em;
+  white-space: pre-wrap;
 }
 
 #gitviz {
