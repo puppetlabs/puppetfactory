@@ -24,7 +24,11 @@
           <% end %>
         <% end %>
       </ul>
-      <% unless privileged? %><a href="/login" id="login">Admin Login</a><% end %>
+      <% if privileged? %>
+        <a href="/admin-logout" id="admin-logout">Logout</a>
+      <% else %>
+        <a href="/admin-login" id="admin-login">Admin Login</a>
+      <% end %>
     </header>
     <article>
       <h1>PuppetFactory</h1>

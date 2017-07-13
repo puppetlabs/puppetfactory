@@ -85,8 +85,13 @@ class Puppetfactory < Sinatra::Base
   end
 
   # admin login
-  get '/login' do
+  get '/admin-login' do
     protected!
+    redirect '/'
+  end
+
+  get '/admin-logout' do
+    remove_privileges!
     redirect '/'
   end
 
@@ -292,9 +297,13 @@ class Puppetfactory < Sinatra::Base
         session[:privileges] = 'admin'
         true
       else
-        session.delete :privileges
+        remove_privileges!
         false
       end
+    end
+
+    def remove_privileges!
+      session.delete :privileges
     end
 
   end

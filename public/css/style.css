@@ -55,7 +55,7 @@ a:hover {
 
 header a:hover,
 .ui-tabs-active a,
-#login:hover {
+#admin-login:hover {
   color: #ffae1a;
   border-color: #ffae1a;
 }
@@ -119,11 +119,11 @@ tr:nth-child(2n+2) {
   height: 2em;
 }
 
-#login {
+#admin-login,
+#admin-logout {
   float: right;
-  color: transparent;
-  background-color: transparent;
   margin: 1.2em 2em;
+  color: #ffffff;
 }
 
 #userslist,
