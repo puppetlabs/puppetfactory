@@ -136,10 +136,6 @@ tr:nth-child(2n+2) {
   display: none;
 }
 
-#usercontent {
-  position: relative;
-}
-
 #newuser div {
   margin: .5em 0;
 }
