@@ -270,6 +270,12 @@ tr:nth-child(2n+2) {
   border-bottom: 2px solid black;
 }
 
+#logs .data {
+  font-family: monospace;
+  font-size: 1.2em;
+  white-space: pre-wrap;
+}
+
 #gitviz {
   width: 100%;
   min-height: 600px;
