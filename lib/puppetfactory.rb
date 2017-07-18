@@ -62,10 +62,6 @@ class Puppetfactory < Sinatra::Base
     erb :index
   end
 
-  get '/home' do
-    erb :home
-  end
-
   get '/users' do
     @users   = load_users()
     @current = merge(plugins(:userinfo, session[:username], true)) if session.include? :username
