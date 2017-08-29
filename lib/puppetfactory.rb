@@ -26,7 +26,11 @@ class Puppetfactory < Sinatra::Base
 
   configure :production, :development do
     enable :logging
-    enable :sessions
+    use Rack::Session::Cookie, 
+      :key => 'puppetfactory.session',
+      :path => '/',
+      :expire_after => 2592000, # In seconds
+      :secret => 'some_secret'
   end
 
   def initialize(app=nil)
