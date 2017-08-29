@@ -15,7 +15,7 @@
     <header>
       <ul>
         <img src="/images/Puppet-Logo-Amber-White-sm.png" alt="logo" id="nav-logo">
-        <% if @existinguser || privileged? %>
+        <% if @current || privileged? %>
           <li><a href="#home" class="cache">Shell</a></li>
           <li><a href="/users">Users</a></li>
           <% @tabs.each do |url, title| %>
@@ -32,11 +32,18 @@
     <article>
       <h1>PuppetFactory</h1>
       <div id="home">
-      <% if @existinguser || privileged? %>
-        <%= erb :shell %>
-      <% else %>
-        <%= erb :newuser %>
-      <% end -%>
+        <div class="flexrow">
+          <div class="flex-7 flex-left">
+            <%= erb :shell %>
+          </div>
+          <div class="flex-3 flex-right">
+          <% if @current %>
+            <%= erb :currentuser %>
+          <% else %>
+            <%= erb :newuser %>
+          <% end -%>
+          </div>
+        </div>
       </div>
     </article>
   </div>

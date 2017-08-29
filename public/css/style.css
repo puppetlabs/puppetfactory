@@ -101,13 +101,13 @@ tr:nth-child(2n+2) {
   background: #dedede;
 }
 
-.right {
-  float: right;
-}
+.flexrow { display: flex; }
 
-.wrapper {
-  margin: 4em 0;
-}
+.flex-7 { flex: 7; }
+.flex-3 { flex: 3; }
+
+.flex-right { margin-left:  1em; }
+.flex-left  { margin-right: 1em; }
 
 .ui-dialog {
   background-color: #ffffff;
@@ -170,13 +170,8 @@ tr:nth-child(2n+2) {
 }
 
 #currentuser th.header {
-  width: 10%;
-  white-space: nowrap;
   text-align: right;
   padding-right: 1em;
-}
-#currentuser tr.actions {
-  text-align: right;
 }
 
 #users {
