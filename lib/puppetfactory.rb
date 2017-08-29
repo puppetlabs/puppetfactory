@@ -33,6 +33,11 @@ class Puppetfactory < Sinatra::Base
       :secret       => 'some_secret'
   end
 
+  before do
+    # IE is cache happy. Let's make that go away.
+    cache_control :no_cache, :max_age => 0
+  end
+  
   def initialize(app=nil)
     super(app)
 
