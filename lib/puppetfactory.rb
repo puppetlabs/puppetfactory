@@ -100,6 +100,7 @@ class Puppetfactory < Sinatra::Base
   get '/new/:username' do |username|
     protected!
     create(username)
+    redirect '/'
   end
 
   post '/new' do
