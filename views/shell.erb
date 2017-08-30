@@ -1,13 +1,11 @@
 <div id="shell">
+  <iframe id="console" src="/shell/login/"></iframe>
   <p>
-    <input type="button" id="show-alternate" value="Other ways to log in" />
     Shell accounts have been created for each student for editing code and
     running Puppet interactively. Log in using the user account and credentials
     you created.
   </p>
-  <p>
-    <iframe id="console" src="/shell/login/"></iframe>
-  </p>
+  <p><a href="#" id="show-alternate">Alternate Login Methods</a></p>
   <div id="alternate" title="Alternate Login Methods">
     <p>
       If you prefer, you may also use any standard SSH client using the username
@@ -32,11 +30,3 @@
     </ul>
   </div>
 </div>
-
-<h3>Resources:</h3>
-<ul>
-  <li><a href="http://<%= request.host %>:9090" target="_showoff">Course Material Presentation</a> - Follow along with the instructor's slides, or navigate it independently.</li>
-  <li><a href="https://<%= request.host %>" target="_console">Puppet Enterprise Console</a> - Log into the PE Console using the credentials of the user account you created.</li>
-</ul>
-
-<script type="text/javascript" src="js/loginscripts.js"></script>
