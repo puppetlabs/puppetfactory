@@ -26,7 +26,7 @@ class Puppetfactory < Sinatra::Base
 
   configure :production, :development do
     enable :logging
-    use Rack::Session::Cookie, 
+    use Rack::Session::Cookie,
       :key          => 'puppetfactory.session',
       :path         => '/',
       :expire_after => 2592000, # In seconds
@@ -66,7 +66,7 @@ class Puppetfactory < Sinatra::Base
   # UI tab endpoints
   get '/' do
     @tabs = merge(plugins(:tabs, privileged?))
-    @existinguser = session.include? :username
+    @current = merge(plugins(:userinfo, session[:username], true)) if session.include? :username
 
     erb :index
   end
@@ -87,6 +87,7 @@ class Puppetfactory < Sinatra::Base
   get '/users/active/:username' do |username|
     session[:username] = username
     {"status" => "ok"}.to_json
+    redirect '/'
   end
 
   # admin login

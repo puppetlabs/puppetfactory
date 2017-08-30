@@ -43,19 +43,20 @@ header {
   top: 0;
 }
 
+header ul,
+header li,
+header a {
+  display: inline-block;
+}
+
 header ul {
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-header li {
-  float: left;
-  padding: 1.2em 2em;
-}
-
-header li a {
-  display: block;
+header a {
+  margin: 1.2em 2em;
   color: #ffffff;
 }
 
@@ -101,13 +102,13 @@ tr:nth-child(2n+2) {
   background: #dedede;
 }
 
-.right {
-  float: right;
-}
+.flexrow { display: flex; }
 
-.wrapper {
-  margin: 4em 0;
-}
+.flex-7 { flex: 7; }
+.flex-3 { flex: 3; }
+
+.flex-right { margin-left:  1em; }
+.flex-left  { margin-right: 1em; }
 
 .ui-dialog {
   background-color: #ffffff;
@@ -153,7 +154,7 @@ tr:nth-child(2n+2) {
 #newuser input[type="text"],
 #newuser input[type="password"] {
   font-size: .8em;
-  width: 25%;
+  width: 100%;
   max-width: 100%;
   padding: 8px 12px;
   border: 2px solid #dedede;
@@ -165,18 +166,17 @@ tr:nth-child(2n+2) {
   border-color: #d63700;
 }
 
+#currentuser-wrapper h3 {
+  margin-top: 0;
+}
+
 #currentuser {
   margin-bottom: 4em;
 }
 
 #currentuser th.header {
-  width: 10%;
-  white-space: nowrap;
   text-align: right;
   padding-right: 1em;
-}
-#currentuser tr.actions {
-  text-align: right;
 }
 
 #users {
@@ -193,18 +193,12 @@ tr:nth-child(2n+2) {
 
 #console {
   width: 100%;
-  height: 24em;
-  resize: vertical;
+  height: 36em;
 }
 
 #alternate,
 #explanation {
   display: none;
-}
-
-#show-alternate {
-  float: right;
-  margin-left: 0.5em;
 }
 
 #notifications {
