@@ -85,7 +85,7 @@ options[:gituser]      ||= 'puppetlabs'
 options[:controlrepo]  ||= 'control-repo.git'
 options[:repomodel]    ||= :single
 
-options[:plugins]      ||= [:ShellUser, :Logs]
+options[:plugins]      ||= [:ShellUser, :Logs, :LoginShell]
 
 def validate(options, option, values)
   unless values.include? options[option]
