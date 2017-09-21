@@ -26,6 +26,13 @@
       <li>Log into the PE Console using the credentials of the user account you created.</li>
     </ul>
   </li>
+<% if settings.plugins.include? :Gitea -%>
+  <li><a href="http://<%= request.host %>:3000" target="_gitea">Git Repository Server</a>
+    <ul>
+      <li>Log into the Gitea server using the credentials of the user account you created.</li>
+    </ul>
+  </li>
+<% end -%>
 </ul>
 
 <h3>Accessing your environment:</h3>
