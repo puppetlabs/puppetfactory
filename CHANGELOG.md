@@ -1,3 +1,9 @@
+# v0.5.9
+* Add link to Gitea when enabled
+* Correct caching issue with IE preventing users from deploying code
+* Corrected bug causing user sessions to be lost
+* Minor style changes
+
 # v0.5.8
 * Map additional directories into container for local yum cache
 
