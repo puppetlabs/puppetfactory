@@ -33,7 +33,7 @@ class Puppetfactory::Plugins::Docker < Puppetfactory::Plugins
         "/var/yum:/var/yum",
         "/var/cache:/var/cache",
         "/etc/pki/rpm-gpg:/etc/pki/rpm-gpg",
-        "/etc/yum.repos.d:/etc/yum.repos.d",
+#        "/etc/yum.repos.d:/etc/yum.repos.d", # we can't share this because of pe_repo.repo
         "/opt/puppetlabs/server:/opt/puppetlabs/server",
         "/home/#{username}/puppet:#{@confdir}",
         "/sys/fs/cgroup:/sys/fs/cgroup:ro"
