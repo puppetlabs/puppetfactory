@@ -93,12 +93,18 @@ class Puppetfactory::Plugins::Gitea < Puppetfactory::Plugins
     end
 
     def make_branch(username)
-      Dir.chdir(@repopath) do
-        output, status = Open3.capture2e('git', 'branch', username)
-        raise output unless status.success?
+      # prevent race conditions when multiple git processes are fighting for the repo
+      File.open(@repopath) do |file|
+        file.flock(File::LOCK_EX)
 
-        output, status = Open3.capture2e('git', 'push', 'origin', username)
-        raise output unless status.success?
+        Dir.chdir(@repopath) do
+          output, status = Open3.capture2e('git', 'branch', username)
+          raise output unless status.success?
+
+          output, status = Open3.capture2e('git', 'push', 'origin', username)
+          raise output unless status.success?
+        end
+
       end
     end
 
