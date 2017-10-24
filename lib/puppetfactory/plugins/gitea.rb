@@ -18,16 +18,19 @@ class Puppetfactory::Plugins::Gitea < Puppetfactory::Plugins
     @admin_password = options[:gitea_admin_password] || 'puppetlabs'
     @gitea_port     = options[:gitea_port]           || '3000'
     @gitea_user     = options[:gitea_user]           || 'git'
+    @gitea_homedir  = Dir.home(@gitea_user)
 
-    migrate_repo! unless File.directory?(@repopath)
+    migrate_repo! unless File.directory?(@cache_dir)
   end
 
   def create(username, password)
     begin
       make_user(username, password)
-      add_collaborator(@admin_username, @reponame, username, 'write')
+      $logger.debug "Created Gitea user #{username}."
       make_branch(username)
-      $logger.info "Created Gitea user #{username}."
+      $logger.debug "Created Gitea branch #{username}."
+      add_collaborator(@admin_username, @reponame, username, 'write')
+      $logger.info "Created Gitea collaborator #{username}."
     rescue => e
       $logger.error "Error creating Gitea user #{username}: #{e.message}"
       return false
@@ -50,6 +53,7 @@ class Puppetfactory::Plugins::Gitea < Puppetfactory::Plugins
 
   private
     def migrate_repo!
+      FileUtils::mkdir_p @cache_dir
       $logger.info "Migrating repository #{@reponame}"
       begin
         RestClient.post("http://#{@admin_username}:#{@admin_password}@localhost:#{@gitea_port}/api/v1/repos/migrate", {
@@ -58,12 +62,15 @@ class Puppetfactory::Plugins::Gitea < Puppetfactory::Plugins
                           'repo_name'  => @reponame,
                        })
 
-        FileUtils::mkdir_p @cache_dir
+        # make sure the server has time to finish cloning from GitHub
+        sleep 5
+
         Dir.chdir(@cache_dir) do
           repo_uri = "http://#{@admin_username}:#{@admin_password}@localhost:#{@gitea_port}/#{@admin_username}/#{@controlrepo}"
           output, status = Open3.capture2e('git', 'clone', '--depth', '1', repo_uri)
           raise output unless status.success?
         end
+
       rescue => e
         $logger.error "Error migrating repository: #{e.message}"
         return false
@@ -71,18 +78,22 @@ class Puppetfactory::Plugins::Gitea < Puppetfactory::Plugins
     end
 
     def make_user(username, password)
-      Dir.chdir(Dir.home(@gitea_user)) do
-        uid = Etc.getpwnam(@gitea_user).uid
-        Process.fork do
-          ENV['USER']  = @gitea_user
-          Process.uid  = uid
-          Process.euid = uid
+      # Gitea is surprisingly prone to race conditions under load
+      File.open(@gitea_homedir) do |file|
+        file.flock(File::LOCK_EX)
+        Dir.chdir(@gitea_homedir) do
+          uid = Etc.getpwnam(@gitea_user).uid
+          Process.fork do
+            ENV['USER']  = @gitea_user
+            Process.uid  = uid
+            Process.euid = uid
 
-          output, status = Open3.capture2e(@gitea_cmd, 'admin', 'create-user',
-                                            '--name',     username,
-                                            '--password', password,
-                                            '--email',    "#{username}@#{@suffix}")
-          raise output unless status.success?
+            output, status = Open3.capture2e(@gitea_cmd, 'admin', 'create-user',
+                                              '--name',     username,
+                                              '--password', password,
+                                              '--email',    "#{username}@#{@suffix}")
+            raise output unless status.success?
+          end
         end
       end
     end
@@ -98,7 +109,8 @@ class Puppetfactory::Plugins::Gitea < Puppetfactory::Plugins
         file.flock(File::LOCK_EX)
 
         Dir.chdir(@repopath) do
-          output, status = Open3.capture2e('git', 'branch', username)
+          # use --force in case the branch already exists
+          output, status = Open3.capture2e('git', 'branch', '--force', username)
           raise output unless status.success?
 
           output, status = Open3.capture2e('git', 'push', 'origin', username)
