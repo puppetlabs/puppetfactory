@@ -9,6 +9,7 @@ class Puppetfactory::Plugins::Gitea < Puppetfactory::Plugins
     super(options)
 
     @cache_dir      = '/var/cache/puppetfactory/gitea'
+    @lockfile       = '/var/cache/puppetfactory/gitea.lock'
     @suffix         = options[:usersuffix]
     @controlrepo    = options[:controlrepo]
     @reponame       = File.basename(@controlrepo, '.git')
@@ -21,18 +22,27 @@ class Puppetfactory::Plugins::Gitea < Puppetfactory::Plugins
     @gitea_homedir  = Dir.home(@gitea_user)
 
     migrate_repo! unless File.directory?(@cache_dir)
+    FileUtils.touch @lockfile
   end
 
   def create(username, password)
     begin
-      make_user(username, password)
-      $logger.debug "Created Gitea user #{username}."
-      make_branch(username)
-      $logger.debug "Created Gitea branch #{username}."
-      add_collaborator(@admin_username, @reponame, username, 'write')
-      $logger.info "Created Gitea collaborator #{username}."
+      # since we're changing directories, none of this can be done concurrently; lock it all.
+      #
+      # TODO: consider forking worker processes so that CWD doesn't leak between threads.
+      File.open(@lockfile) do |file|
+        file.flock(File::LOCK_EX)
+
+        make_user(username, password)
+        $logger.debug "Created Gitea user #{username}."
+        make_branch(username)
+        $logger.debug "Created Gitea branch #{username}."
+        add_collaborator(@admin_username, @reponame, username, 'write')
+        $logger.info "Created Gitea collaborator #{username}."
+      end
     rescue => e
-      $logger.error "Error creating Gitea user #{username}: #{e.message}"
+      $logger.error "Error configuring Gitea for #{username}: #{e.message}"
+      $logger.error e.backtrace.join("\n")
       return false
     end
 
@@ -62,7 +72,7 @@ class Puppetfactory::Plugins::Gitea < Puppetfactory::Plugins
                           'repo_name'  => @reponame,
                        })
 
-        # make sure the server has time to finish cloning from GitHub
+        # make sure the server has time to finish cloning from GitHub before cloning
         sleep 5
 
         Dir.chdir(@cache_dir) do
@@ -73,28 +83,30 @@ class Puppetfactory::Plugins::Gitea < Puppetfactory::Plugins
 
       rescue => e
         $logger.error "Error migrating repository: #{e.message}"
+        $logger.error e.backtrace.join("\n")
         return false
       end
     end
 
     def make_user(username, password)
-      # Gitea is surprisingly prone to race conditions under load
-      File.open(@gitea_homedir) do |file|
-        file.flock(File::LOCK_EX)
-        Dir.chdir(@gitea_homedir) do
-          uid = Etc.getpwnam(@gitea_user).uid
-          Process.fork do
-            ENV['USER']  = @gitea_user
-            Process.uid  = uid
-            Process.euid = uid
+      Dir.chdir(@gitea_homedir) do
+        uid = Etc.getpwnam(@gitea_user).uid
+        pid = Process.fork do
+          ENV['USER']  = @gitea_user
+          Process.uid  = uid
+          Process.euid = uid
 
-            output, status = Open3.capture2e(@gitea_cmd, 'admin', 'create-user',
-                                              '--name',     username,
-                                              '--password', password,
-                                              '--email',    "#{username}@#{@suffix}")
-            raise output unless status.success?
-          end
+          output, status = Open3.capture2e(@gitea_cmd, 'admin', 'create-user',
+                                            '--name',     username,
+                                            '--password', password,
+                                            '--email',    "#{username}@#{@suffix}")
+
+          $logger.error output unless status.success?
+          exit status.exitstatus
         end
+
+        pid, status = Process.wait2(pid)
+        raise "Error creating Gitea user #{username}" unless status.success?
       end
     end
 
@@ -104,19 +116,13 @@ class Puppetfactory::Plugins::Gitea < Puppetfactory::Plugins
     end
 
     def make_branch(username)
-      # prevent race conditions when multiple git processes are fighting for the repo
-      File.open(@repopath) do |file|
-        file.flock(File::LOCK_EX)
+      Dir.chdir(@repopath) do
+        # use --force in case the branch already exists
+        output, status = Open3.capture2e('git', 'branch', '--force', username)
+        raise output unless status.success?
 
-        Dir.chdir(@repopath) do
-          # use --force in case the branch already exists
-          output, status = Open3.capture2e('git', 'branch', '--force', username)
-          raise output unless status.success?
-
-          output, status = Open3.capture2e('git', 'push', 'origin', username)
-          raise output unless status.success?
-        end
-
+        output, status = Open3.capture2e('git', 'push', 'origin', username)
+        raise output unless status.success?
       end
     end
 
