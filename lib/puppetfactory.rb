@@ -98,7 +98,12 @@ class Puppetfactory < Sinatra::Base
 
     session[:username] = username
     {"status" => "ok"}.to_json
-    redirect '/'
+    redirect '/'    
+  end
+  
+  get '/users/deactive/:username' do |username|
+    session.delete :username
+    redirect '/'    
   end
 
   # admin login
