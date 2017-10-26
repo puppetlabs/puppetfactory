@@ -22,7 +22,6 @@ class Puppetfactory::Plugins::Gitea < Puppetfactory::Plugins
     @gitea_homedir  = Dir.home(@gitea_user)
 
     migrate_repo! unless File.directory?(@cache_dir)
-    FileUtils.touch @lockfile
   end
 
   def create(username, password)
@@ -30,7 +29,7 @@ class Puppetfactory::Plugins::Gitea < Puppetfactory::Plugins
       # since we're changing directories, none of this can be done concurrently; lock it all.
       #
       # TODO: consider forking worker processes so that CWD doesn't leak between threads.
-      File.open(@lockfile) do |file|
+      File.open(@lockfile, 'w') do |file|
         file.flock(File::LOCK_EX)
 
         make_user(username, password)
