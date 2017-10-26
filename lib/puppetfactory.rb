@@ -37,7 +37,7 @@ class Puppetfactory < Sinatra::Base
     # IE is cache happy. Let's make that go away.
     cache_control :no_cache, :max_age => 0
   end
-  
+
   def initialize(app=nil)
     super(app)
 
@@ -85,6 +85,17 @@ class Puppetfactory < Sinatra::Base
 
   # set the currently active user. This should probably be a PUT action.
   get '/users/active/:username' do |username|
+    username ||= myParams[user]
+
+    users ||= load_users()
+
+    unless users.include?(username)
+      return {
+        "status"  => "failure",
+        "message" => "invalid user"
+      }.to_json
+    end
+
     session[:username] = username
     {"status" => "ok"}.to_json
     redirect '/'
