@@ -10,6 +10,7 @@
   <script type="text/javascript" src="js/jquery.activity-indicator-1.0.0.min.js"></script>
   <script type="text/javascript" src="jstree-3.3.3/jstree.min.js"></script>
   <script type="text/javascript" src="js/loginscripts.js"></script>
+  <script type="text/javascript" src="js/usermanagement.js"></script>
 </head>
 <body>
   <div id="tabs">
@@ -32,23 +33,24 @@
         <a href="/admin-login" id="admin-login">Admin Login</a>
       <% end %>
     </header>
-    <article>
-      <h1>PuppetFactory</h1>
+    <article>    
+    <h1>PuppetFactory</h1>
       <div id="home">
         <div class="flexrow">
           <div class="flex-7 flex-left">
             <%= erb :shell %>
           </div>
-          <div class="flex-3 flex-right">
+          <div id="user-wrapper" class="flex-3 flex-right">
           <% if @current %>
             <%= erb :currentuser %>
           <% else %>
             <%= erb :newuser %>
+            <%= erb :userlogin %>
           <% end -%>
           </div>
         </div>
       </div>
-    </article>
+    </article>    
   </div>
 </body>
 </html>

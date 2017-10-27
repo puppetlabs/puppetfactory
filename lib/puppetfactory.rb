@@ -101,7 +101,7 @@ class Puppetfactory < Sinatra::Base
     redirect '/'    
   end
   
-  get '/users/deactive/:username' do |username|
+  get '/users/deactive' do
     session.delete :username
     redirect '/'    
   end
