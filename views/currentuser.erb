@@ -26,9 +26,6 @@
 <% if settings.plugins.include? :Dashboard -%>
     <tr><th class="header">Spec Tests:</th>  <td><a href="/dashboard/details/<%= @current[:username] %>" target="_results">results</a> <small>(may not always be available)</small></td></tr>
 <% end -%>
-<% if action_enabled? :deploy -%>
-    <tr class="actions"><td colspan=2><i class="fa"></i><input type="button" id="deploy" data-user="<%= @current[:username] %>" value="Deploy Environment"></td></tr>
-<% end -%>
 <% if @current[:tree] -%>
   <tr>
     <th class="header">Environment Structure:</th>
@@ -36,6 +33,12 @@
   </tr>
 <% end -%>
   </table>
+  <% if action_enabled? :deploy -%>
+    <i class="fa"></i><input type="button" id="deploy" data-user="<%= @current[:username] %>" value="Deploy Environment">
+  <% end -%>
+  <div>
+    <a class="user-logout" href="/users/deactive">Logout</a>
+  </div>
 <% end %>
 
 <% if @current and @current[:tree] %>

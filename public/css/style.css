@@ -15,7 +15,7 @@ footer {
 }
 
 article {
-  margin: 6em 4em 2em 4em;
+  margin: 2em 4em 2em 4em;
 }
 
 a {
@@ -72,7 +72,8 @@ header a:hover,
 }
 
 input[type="button"],
-.ui-dialog button {
+.ui-dialog button,
+.button {
   padding: .5em 1em;
   border: none;
   background-color: #ffae1a;
@@ -100,6 +101,21 @@ th, td {
 
 tr:nth-child(2n+2) {
   background: #dedede;
+}
+
+input[type="text"],
+input[type="password"] {
+  font-size: .8em;
+  width: 100%;
+  max-width: 100%;
+  padding: 8px 12px;
+  border: 2px solid #dedede;
+  outline: none;
+}
+
+input.fail {
+  background-color: #f88484;
+  border-color: #d63700;
 }
 
 .flexrow { display: flex; }
@@ -137,7 +153,7 @@ tr:nth-child(2n+2) {
   display: none;
 }
 
-#newuser div {
+#user-wrapper div {
   margin: .5em 0;
 }
 
@@ -146,32 +162,12 @@ tr:nth-child(2n+2) {
   border: #4e4e4e;
 }
 
-#newuser label {
-  display: inline-block;
-  width: 6em;
-}
-
-#newuser input[type="text"],
-#newuser input[type="password"] {
-  font-size: .8em;
-  width: 100%;
-  max-width: 100%;
-  padding: 8px 12px;
-  border: 2px solid #dedede;
-  outline: none;
-}
-
-#newuser input.fail {
-  background-color: #f88484;
-  border-color: #d63700;
-}
-
-#currentuser-wrapper h3 {
+#user-wrapper h3 {
   margin-top: 0;
 }
 
 #currentuser {
-  margin-bottom: 4em;
+  margin-bottom: 1em;
 }
 
 #currentuser th.header {
