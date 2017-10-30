@@ -21,7 +21,7 @@ hr {
 }
 
 article {
-  margin: 2em 4em 2em 4em;
+  margin: 6em 4em 2em 4em;
 }
 
 a {
@@ -62,7 +62,7 @@ header ul {
 }
 
 header a {
-  margin: 1.2em 2em;
+  margin: 1.2em 1em;
   color: #ffffff;
 }
 
@@ -144,7 +144,7 @@ input.fail {
 
 #nav-logo {
   float: left;
-  padding: 1em 2em;
+  padding: 1em 1em 1em 2em;
   height: 2em;
 }
 
