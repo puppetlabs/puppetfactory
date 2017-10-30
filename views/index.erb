@@ -27,7 +27,7 @@
       <a href="http://<%= request.host %>:9090" target="_blank">Presentation</a>
       <a href="https://<%= request.host %>" target="_blank">PE Console</a>
       <% if settings.plugins.include? :Gitea -%> 
-        <a href="https://<%= request.host %>:3000" target="_gitea">Code Repository</a>
+        <a href="http://<%= request.host %>:3000" target="_gitea">Code Repository</a>
       <% end %>
       <% if privileged? %>
         <a href="/admin-logout" id="admin-logout">Logout</a>
