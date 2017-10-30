@@ -14,6 +14,12 @@ footer {
   width: 100%;
 }
 
+hr {
+  border: none;
+  border-top: 2px solid #222222;
+  margin: 2em 0 1em;
+}
+
 article {
   margin: 2em 4em 2em 4em;
 }
@@ -192,7 +198,6 @@ input.fail {
   height: 36em;
 }
 
-#alternate,
 #explanation {
   display: none;
 }
@@ -265,4 +270,11 @@ input.fail {
 #gitviz {
   width: 100%;
   min-height: 600px;
+}
+
+@media ( max-width: 1024px ) {
+  .flexrow { flex-direction: column; }
+  
+  .flex-right { margin-left:  0; }
+  .flex-left  { margin-right: 0; }
 }
