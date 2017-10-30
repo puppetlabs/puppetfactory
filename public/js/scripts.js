@@ -26,5 +26,11 @@ function updatePage(name) {
     var idx = $("#tabs").tabs("option","active");
   }
 
-  $("#tabs").tabs('load', idx);
+  // force a hard reload if we're already on the desired page
+  if ($("#tabs").tabs("option","active") == idx) {
+    location.reload(true);
+  }
+  else {
+    $("#tabs").tabs('load', idx);
+  }
 }
