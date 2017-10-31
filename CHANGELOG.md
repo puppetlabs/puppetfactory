@@ -1,3 +1,11 @@
+# v0.6.0
+* Major UI overhaul--single page interface for users
+* More robust user management
+* Remove race conditions with Gitea integration
+* Made it much less likely for users to get raw html error dialogs when provisioning
+* Removed some minor shell injection vulnerabilities
+* Stopped mapping the yum repo directory, so no more extraneous permission changes from pe_repo
+
 # v0.5.9
 * Add link to Gitea when enabled
 * Correct caching issue with IE preventing users from deploying code
