@@ -1,43 +1,4 @@
 <div id="usercontent">
-
-<% if @current %>
-  <h3>Selected User</h3>
-  <table id="currentuser">
-    <tr><th class="header">Username:</th>    <td><%= @current[:username] %></td></tr>
-    <tr><th class="header">Certname:</th>    <td><%= @current[:certname] %></td></tr>
-<% if @current[:port] -%>
-    <tr><th class="header">Webserver URL:</th> <td><a href="/port/<%= @current[:port] %>/"><%= @current[:url] %></a></td></tr>
-<% end -%>
-<% if @current[:container_status] -%>
-    <tr><th class="header">Container:</th>   <td><%= @current[:container_status]['Description'] %></td></tr>
-<% end -%>
-<% if @current[:node_group_url] -%>
-    <tr><th class="header">Node Group:</th>  <td><a href="https://<%= request.host %>/<%= @current[:node_group_url] %>" target="_console">Console login</a></td></tr>
-<% end -%>
-<% if @current[:controlrepo] -%>
-    <tr><th class="header">Control Repo:</th>  <td><a href="<%= @current[:controlrepo] %>" target="_repository"><%= @current[:controlrepo] %></a></td></tr>
-<% end -%>
-<% if @current[:latestcommit] -%>
-    <tr><th class="header">Latest Commit:</th>
-      <td>
-        <a href="<%= @current[:latestcommit][:url] %>" target="_repository"><%= @current[:latestcommit][:message] %></a>
-        <small>(<%= @current[:latestcommit][:time] %>)</small>
-    </td></tr>
-<% end -%>
-<% if settings.plugins.include? :Dashboard -%>
-    <tr><th class="header">Spec Tests:</th>  <td><a href="/dashboard/details/<%= @current[:username] %>" target="_results">results</a> <small>(may not always be available)</small></td></tr>
-<% end -%>
-<% if action_enabled? :deploy -%>
-    <tr class="actions"><td colspan=2><i class="fa"></i><input type="button" id="deploy" data-user="<%= @current[:username] %>" value="Deploy Environment"></td></tr>
-<% end -%>
-<% if @current[:tree] -%>
-  <tr>
-    <th class="header">Environment Structure:</th>
-    <td><div id="tree"></div></td>
-  </tr>
-<% end -%>
-  </table>
-<% end %>
   <h3>All Users</h3>
   <table id="users">
     <tr class="header">
@@ -60,32 +21,3 @@
     <% end %>
   </table>
 </div>
-
-<div id="newuserwrapper">
-  <input type="button" id="showuser" value="+ New User" />
-  <div id="newuser">
-    <div>
-      <label for="user">Username:</label><input type="text" id="user" value="" />
-    </div>
-    <div>
-      <label for="password">Password:</label><input type="password" id="password" value="" />
-    </div>
-    <div>
-      <label for="password2">Repeat:</label><input type="password" id="password2" value="" />
-    </div>
-    <div>
-      <label for="session">Session ID:</label><input type="text" id="session" value="" />
-    </div>
-    <input type="button" id="hideuser" value="Cancel" />
-    <input type="button" id="save" value="Save" />
-  </div>
-</div>
-
-<script type="text/javascript" src="js/usermanagement.js"></script>
-<% if @current and @current[:tree] %>
-<script type="text/javascript">
-  $(document).ready(function() {
-      $('#tree').jstree({ 'core': { 'data': <%= @current[:tree] %> } });
-  });
-</script>
-<% end %>

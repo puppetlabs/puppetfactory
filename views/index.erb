@@ -1,37 +1,59 @@
 <html>
 <head>
-    <title>Puppet Training Classroom Manager</title>
-    <link rel="stylesheet" type="text/css" href="font-awesome/css/font-awesome.min.css">
-    <link rel="stylesheet" type="text/css" href="jstree-3.3.3/themes/default/style.min.css" />
-    <link rel="stylesheet" type="text/css" href="css/style.css" />
-    <script type="text/javascript" src="js/jquery.js"></script>
-    <script type="text/javascript" src="js/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="js/scripts.js"></script>
-    <script type="text/javascript" src="js/jquery.activity-indicator-1.0.0.min.js"></script>
-    <script type="text/javascript" src="jstree-3.3.3/jstree.min.js"></script>
+  <title>PuppetFactory</title>
+  <link rel="stylesheet" type="text/css" href="font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" type="text/css" href="jstree-3.3.3/themes/default/style.min.css" />
+  <link rel="stylesheet" type="text/css" href="css/style.css" />
+  <script type="text/javascript" src="js/jquery.js"></script>
+  <script type="text/javascript" src="js/jquery-ui.min.js"></script>
+  <script type="text/javascript" src="js/scripts.js"></script>
+  <script type="text/javascript" src="js/jquery.activity-indicator-1.0.0.min.js"></script>
+  <script type="text/javascript" src="jstree-3.3.3/jstree.min.js"></script>
+  <script type="text/javascript" src="js/usermanagement.js"></script>
 </head>
 <body>
   <div id="tabs">
     <header>
+      <img src="/images/Puppet-Logo-Mark-Amber-sm.png" alt="logo" id="nav-logo">
       <ul>
-        <img src="/images/Puppet-Logo-Amber-White-sm.png" alt="logo" id="nav-logo">
-        <li><a href="#home">Home</a></li>
-        <li><a href="/users">Users</a></li>
-        <li><a class="cache" href="/shell">SSH Login</a></li>
-        <% @tabs.each do |url, title| %>
-          <li><a href="/<%= url %>"><%= title %></a></li>
+        <li><a href="#home" class="cache">Home</a></li>
+        <% if privileged? %>
+          <li><a href="/users">Users</a></li>
+          <% @tabs.each do |url, title| %>
+            <li><a href="/<%= url %>"><%= title %></a></li>
+          <% end %>
         <% end %>
-        <li class="right">
-          <% unless privileged? %><a href="/login" id="login">Admin Login</a><% end %>
-        </li>
       </ul>
+      <a href="http://<%= request.host %>:9090" target="_presentation">Presentation</a>
+      <a href="https://<%= request.host %>" target="_console">PE Console</a>
+      <% if settings.plugins.include? :Gitea -%> 
+        <a href="http://<%= request.host %>:3000" target="_gitea">Code Repository</a>
+      <% end %>
+      <% if privileged? %>
+        <a href="/admin-logout" id="admin-logout">Logout</a>
+      <% else %>
+        <a href="/admin-login" id="admin-login">Admin Login</a>
+      <% end %>
     </header>
-    <article>
-      <h1>Puppet Training Classroom Manager</h1>
+    <article>    
+      <h2>Puppet Classroom</h2>
       <div id="home">
-        <%= erb :home %>
+        <div class="flexrow">
+          <div class="flex-7 flex-left">
+            <%= erb :shell %>
+          </div>
+          <div id="user-wrapper" class="flex-3 flex-right">
+          <% if @current %>
+            <%= erb :currentuser %>
+          <% else %>
+            <%= erb :newuser %>
+            <hr>
+            <%= erb :userlogin %>
+          <% end -%>
+          </div>
+        </div>
       </div>
-    </article>
+    </article>    
   </div>
 </body>
 </html>

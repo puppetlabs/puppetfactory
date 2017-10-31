@@ -14,7 +14,7 @@
 
       // use timeout instead of an interval so that in case of network error
       // we don't end up with a queue of requests stacked up.
-      setTimeout(loadLogs, 5000);
+      setTimeout(function(){loadLogs}, 5000);
     });
   }
 
@@ -22,12 +22,3 @@
     loadLogs(true);
   });
 </script>
-
-<style>
-  #logs .data {
-    font-family: monospace;
-    white-space: pre-wrap;
-    height: 500px;
-    overflow-y: scroll;
-  }
-</style>

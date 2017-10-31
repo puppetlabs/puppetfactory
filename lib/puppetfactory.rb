@@ -26,7 +26,7 @@ class Puppetfactory < Sinatra::Base
 
   configure :production, :development do
     enable :logging
-    use Rack::Session::Cookie, 
+    use Rack::Session::Cookie,
       :key          => 'puppetfactory.session',
       :path         => '/',
       :expire_after => 2592000, # In seconds
@@ -37,7 +37,7 @@ class Puppetfactory < Sinatra::Base
     # IE is cache happy. Let's make that go away.
     cache_control :no_cache, :max_age => 0
   end
-  
+
   def initialize(app=nil)
     super(app)
 
@@ -66,12 +66,9 @@ class Puppetfactory < Sinatra::Base
   # UI tab endpoints
   get '/' do
     @tabs = merge(plugins(:tabs, privileged?))
+    @current = merge(plugins(:userinfo, session[:username], true)) if session.include? :username
 
     erb :index
-  end
-
-  get '/home' do
-    erb :home
   end
 
   get '/users' do
@@ -88,13 +85,35 @@ class Puppetfactory < Sinatra::Base
 
   # set the currently active user. This should probably be a PUT action.
   get '/users/active/:username' do |username|
+    username ||= myParams[user]
+
+    users ||= load_users()
+
+    unless users.include?(username)
+      return {
+        "status"  => "failure",
+        "message" => "invalid user"
+      }.to_json
+    end
+
     session[:username] = username
     {"status" => "ok"}.to_json
+    redirect '/'
+  end
+
+  get '/users/deactive' do
+    session.delete :username
+    redirect '/'
   end
 
   # admin login
-  get '/login' do
+  get '/admin-login' do
     protected!
+    redirect '/'
+  end
+
+  get '/admin-logout' do
+    remove_privileges!
     redirect '/'
   end
 
@@ -300,9 +319,13 @@ class Puppetfactory < Sinatra::Base
         session[:privileges] = 'admin'
         true
       else
-        session.delete :privileges
+        remove_privileges!
         false
       end
+    end
+
+    def remove_privileges!
+      session.delete :privileges
     end
 
   end

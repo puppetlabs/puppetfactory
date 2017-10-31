@@ -9,19 +9,6 @@ $(document).ready(function(){
     return true;
   };
 
-  function open() {
-    $('#showuser').hide();
-    $('#newuserwrapper').addClass("open");
-    $('#newuser').slideDown("fast");
-    $('#user').focus();
-  }
-
-  function close() {
-    $('#showuser').show();
-    $('#newuserwrapper').removeClass("open");
-    $('#newuser').hide();
-  }
-
   function start_processing() {
     $('#newuser input[type=button]').attr("disabled", true);
     $('#newuser').addClass("processing");
@@ -48,13 +35,20 @@ $(document).ready(function(){
     close();
   });
 
-  $('#users .select a').click(function(event){
+  $('#users .select a, #user-logout').click(function(event){
     event.preventDefault();
     var action = $(this).attr('href');
-
     $.get(action, function(data) {
       updatePage();
     });
+  });
+
+  $('#login-submit').click(function (event) {
+    event.preventDefault();
+    var action = $(this).attr('href');
+    var user = $('#login-user').val();
+
+    $.get(action, {user: user});
   });
 
   // save the new user

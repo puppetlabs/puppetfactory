@@ -85,7 +85,7 @@ options[:gituser]      ||= 'puppetlabs'
 options[:controlrepo]  ||= 'control-repo.git'
 options[:repomodel]    ||= :single
 
-options[:plugins]      ||= [:ShellUser, :Logs]
+options[:plugins]      ||= [:ShellUser, :Logs, :LoginShell]
 
 def validate(options, option, values)
   unless values.include? options[option]
@@ -106,7 +106,10 @@ $logger.formatter = proc { |severity,datetime,progname,msg| "[#{datetime}] #{sev
 
 # if no arguments, start up the server
 if ARGV.size == 0
- Puppetfactory.run! options
+  # TODO: remove this insane timeout once we have a progressive user creation dialog
+  Puppetfactory.run!(options) do |server|
+    server.timeout = 180
+  end
 
 #   opts = {
 #           :Port               => 8000,

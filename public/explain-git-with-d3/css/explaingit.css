@@ -9,6 +9,7 @@ p {
 
 .container {
   padding: 0;
+  min-width: 1150px;
 }
 
 #menuwrapper {
