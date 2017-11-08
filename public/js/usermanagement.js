@@ -35,11 +35,16 @@ $(document).ready(function(){
     close();
   });
 
-  $('#users .select a, #user-logout').click(function(event){
+  $('article').on('click', '#users .select a, #user-logout', function(event){
     event.preventDefault();
     var action = $(this).attr('href');
     $.get(action, function(data) {
-      updatePage();
+      var results = $.parseJSON(data);
+      if (results.status == 'ok') {
+        location.replace('/');
+      } else {
+        alert('User selection failed');
+      }
     });
   });
 
