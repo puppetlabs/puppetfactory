@@ -20,6 +20,9 @@ class Puppetfactory::Plugins::Gitea < Puppetfactory::Plugins
     @gitea_port     = options[:gitea_port]           || '3000'
     @gitea_user     = options[:gitea_user]           || 'git'
     @gitea_homedir  = Dir.home(@gitea_user)
+    
+    # gitea will scream if the admin's .ssh directory doesn't exist
+    FileUtils.mkdir_p(File.expand_path("~#{@admin_username}/.ssh"))
 
     migrate_repo! unless File.directory?(@cache_dir)
   end
