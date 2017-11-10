@@ -1,3 +1,7 @@
+# v0.6.1
+* Fix user selection bug
+* Ensure that the gitea admin's .ssh directory exists
+
 # v0.6.0
 * Major UI overhaul--single page interface for users
 * More robust user management
