@@ -20,7 +20,10 @@ class Puppetfactory::Plugins::Gitea < Puppetfactory::Plugins
     @gitea_port     = options[:gitea_port]           || '3000'
     @gitea_user     = options[:gitea_user]           || 'git'
     @gitea_homedir  = Dir.home(@gitea_user)
-    
+
+    # the rest of this method is for the big boys only
+    return unless Process.euid == 0
+
     # gitea will scream if the admin's .ssh directory doesn't exist
     FileUtils.mkdir_p(File.expand_path("~#{@admin_username}/.ssh"))
 

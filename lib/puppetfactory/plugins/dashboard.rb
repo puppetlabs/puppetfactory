@@ -16,7 +16,7 @@ class Puppetfactory::Plugins::Dashboard < Puppetfactory::Plugins
     @current_test = 'summary'
     @test_running = false
 
-    start_testing()
+    start_testing() if Process.euid == 0
 
     @server.get '/dashboard' do
       protected!
