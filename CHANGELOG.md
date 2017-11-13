@@ -1,3 +1,6 @@
+# v0.6.2
+* Correct user login crasher
+
 # v0.6.1
 * Fix user selection bug
 * Ensure that the gitea admin's .ssh directory exists
