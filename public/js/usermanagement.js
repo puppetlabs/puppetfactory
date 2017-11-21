@@ -50,10 +50,16 @@ $(document).ready(function(){
 
   $('#login-submit').click(function (event) {
     event.preventDefault();
-    var action = $(this).attr('href');
-    var user = $('#login-user').val();
+    var action = $(this).attr('href') + $('#login-user').val();
 
-    $.get(action, {user: user});
+    $.get(action, function(data) {
+      var results = $.parseJSON(data);
+      if (results.status == 'ok') {
+        location.replace('/');
+      } else {
+        alert('User selection failed');
+      }
+    });
   });
 
   // save the new user
