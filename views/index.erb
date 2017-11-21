@@ -14,7 +14,7 @@
 <body>
   <div id="tabs">
     <header>
-      <img src="/images/Puppet-Logo-Mark-Amber-sm.png" alt="logo" id="nav-logo"> Classroom
+        <img src="/images/Puppet-Logo-Mark-Amber-sm.png" alt="logo" id="nav-logo"> Classroom
       <ul>
         <li><a href="#home" class="cache">Home</a></li>
         <% if privileged? %>
@@ -38,10 +38,10 @@
     <article>    
       <div id="home">
         <div class="flexrow">
-          <div class="flex-7 flex-left">
+          <div class="flex-6 flex-left">
             <%= erb :shell %>
           </div>
-          <div id="user-wrapper" class="flex-3 flex-right">
+          <div class="flex-2 flex-right">
           <% if @current %>
             <%= erb :currentuser %>
           <% else %>

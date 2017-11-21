@@ -106,7 +106,7 @@ th, td {
 }
 
 tr:nth-child(2n+2) {
-  background: #dedede;
+  background: #ECEFF1;
 }
 
 input[type="text"],
@@ -126,11 +126,11 @@ input.fail {
 
 .flexrow { display: flex; }
 
-.flex-7 { flex: 7; }
-.flex-3 { flex: 3; }
+.flex-6 { flex: 6; }
+.flex-2 { flex: 2; }
 
-.flex-right { margin-left:  1em; }
-.flex-left  { margin-right: 1em; }
+.flex-right { margin-left:  .5em; }
+.flex-left  { margin-right: .5em; }
 
 .ui-dialog {
   background-color: #ffffff;
@@ -140,6 +140,10 @@ input.fail {
 
 .ui-dialog-titlebar-close {
   display: none;
+}
+
+.pull-right {
+  float: right;
 }
 
 #nav-logo {
@@ -159,26 +163,31 @@ input.fail {
   display: none;
 }
 
-#user-wrapper div {
-  margin: .5em 0;
-}
-
 #newuser.processing input {
   background: #dedede;
   border: #4e4e4e;
 }
 
-#user-wrapper h3 {
-  margin-top: 0;
+#currentuser div {
+  margin: 0;
+  padding: .5em 1em;
 }
 
-#currentuser {
-  margin-bottom: 1em;
+#currentuser div:nth-child(2n+1) {
+  background: #ECEFF1;
 }
 
-#currentuser th.header {
-  text-align: right;
-  padding-right: 1em;
+#currentuser div div {
+  margin: 0;
+  padding: 0;
+}
+
+#currentuser label {
+  font-size: .8em;
+}
+
+#currentuser input {
+  margin-top: 1em;
 }
 
 #users {

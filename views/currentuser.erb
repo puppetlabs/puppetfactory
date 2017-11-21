@@ -1,44 +1,59 @@
-<div id="currentuser-wrapper">
 <% if @current %>
-  <h3>Selected User</h3>
-  <table id="currentuser">
-    <tr><th class="header">Username:</th>    <td><%= @current[:username] %></td></tr>
-    <tr><th class="header">Certname:</th>    <td><%= @current[:certname] %></td></tr>
-<% if @current[:port] -%>
-    <tr><th class="header">Webserver URL:</th> <td><a href="/port/<%= @current[:port] %>/"><%= @current[:url] %></a></td></tr>
-<% end -%>
-<% if @current[:container_status] -%>
-    <tr><th class="header">Container:</th>   <td><%= @current[:container_status]['Description'] %></td></tr>
-<% end -%>
-<% if @current[:node_group_url] -%>
-    <tr><th class="header">Node Group:</th>  <td><a href="https://<%= request.host %>/<%= @current[:node_group_url] %>" target="_console">Console login</a></td></tr>
-<% end -%>
-<% if @current[:controlrepo] -%>
-    <tr><th class="header">Control Repo:</th>  <td><a href="<%= @current[:controlrepo] %>" target="_repository"><%= @current[:controlrepo] %></a></td></tr>
-<% end -%>
-<% if @current[:latestcommit] -%>
-    <tr><th class="header">Latest Commit:</th>
-      <td>
-        <a href="<%= @current[:latestcommit][:url] %>" target="_repository"><%= @current[:latestcommit][:message] %></a>
-        <small>(<%= @current[:latestcommit][:time] %>)</small>
-    </td></tr>
-<% end -%>
-<% if settings.plugins.include? :Dashboard -%>
-    <tr><th class="header">Spec Tests:</th>  <td><a href="/dashboard/details/<%= @current[:username] %>" target="_results">results</a> <small>(may not always be available)</small></td></tr>
-<% end -%>
-<% if @current[:tree] -%>
-  <tr>
-    <th class="header">Environment Structure:</th>
-    <td><div id="tree"></div></td>
-  </tr>
-<% end -%>
-  </table>
-  <% if action_enabled? :deploy -%>
-    <i class="fa"></i><input type="button" id="deploy" data-user="<%= @current[:username] %>" value="Deploy Environment">
+  <div id="currentuser">
+    <div>
+      <label for="">Username</label>
+      <div><%= @current[:username] %> <a id="user-logout" class="pull-right" href="/users/deactive">Logout</a></div>
+    </div>
+    <div>
+      <label for="">Certname</label>
+      <div><%= @current[:certname] %></div> 
+    </div>
+  <% if @current[:port] -%>
+      <div>
+        <label for="">Webserver URL</label>
+        <div><a href="/port/<%= @current[:port] %>/"><%= @current[:url] %></a></div> 
+      </div>
   <% end -%>
-  <div>
-    <a id="user-logout" href="/users/deactive">Logout</a>
-  </div>
+  <% if @current[:container_status] -%>
+      <div>
+        <label for="">Container</label>
+        <div><%= @current[:container_status]['Description'] %></div> 
+      </div>
+  <% end -%>
+  <% if @current[:node_group_url] -%>
+      <div>
+        <label for="">Node Group</label>
+        <div><a href="https://<%= request.host %>/<%= @current[:node_group_url] %>" target="_console">Console login</a></div> 
+      </div>
+  <% end -%>
+  <% if @current[:controlrepo] -%>
+      <div>
+        <label for="">Control Repo</label>
+        <div><a href="<%= @current[:controlrepo] %>" target="_repository"><%= @current[:controlrepo] %></a></div> 
+      </div>
+  <% end -%>
+  <% if @current[:latestcommit] -%>
+      <div>
+        <label for="">Latest Commit</label>
+        <div><a href="<%= @current[:latestcommit][:url] %>" target="_repository"><%= @current[:latestcommit][:message] %></a>
+          <small>(<%= @current[:latestcommit][:time] %>)</small></div> 
+      </div>
+  <% end -%>
+  <% if settings.plugins.include? :Dashboard -%>
+      <div>
+        <label for="">Spec Tests</label>
+        <div><a href="/dashboard/details/<%= @current[:username] %>" target="_results">results</a> <small>(may not always be available)</small></div> 
+      </div>
+  <% end -%>
+  <% if @current[:tree] -%>
+    <div>
+      <label for="">Environment Structure:</label>
+      <div id="tree"></div>
+    </div>
+  <% end -%>
+  <% if action_enabled? :deploy -%>
+    <input type="button" id="deploy" data-user="<%= @current[:username] %>" value="Deploy Environment">
+  <% end -%>
 <% end %>
 
 <% if @current and @current[:tree] %>
@@ -48,4 +63,3 @@
   });
 </script>
 <% end %>
-</div>
