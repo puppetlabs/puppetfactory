@@ -146,6 +146,34 @@ input.fail {
   float: right;
 }
 
+.tabs {
+  display: flex;
+}
+
+.tab {
+  padding: .5em 1em;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.tab.active {
+  background: #ECEFF1;  
+}
+
+.tab-content {
+  display: none;
+  padding: 1em;
+  background: #ECEFF1;
+}
+
+.tab-content.current {
+  display: block;
+}
+
+.tab-content div {
+  margin-bottom: 1em;
+}
+
 #nav-logo {
   float: left;
   padding: 1em 1em 1em 2em;

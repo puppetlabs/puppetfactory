@@ -1,19 +1,39 @@
-<div id="newuser">
-  <h3>Create a new user</h3>
-  <div>
-    <label for="user">Username:</label><input type="text" id="user" value="" />
+<div class="tabs-wrapper">
+  <div class="tabs">
+    <div class="tab active" data-tabcontent="newuser">
+      New User
+    </div>
+    <div class="tab" data-tabcontent="login">
+      Login
+    </div>
   </div>
-  <div>
-    <label for="password">Password:</label><input type="password" id="password" value="" />
+
+  <div id="newuser" class="tab-content current">
+    <div>
+      <label for="user">Username:</label><input type="text" id="user" value="" />
+    </div>
+    <div>
+      <label for="password">Password:</label><input type="password" id="password" value="" />
+    </div>
+    <div>
+      <label for="password2">Repeat:</label><input type="password" id="password2" value="" />
+    </div>
+    <div>
+      <label for="session">Session ID:</label><input type="text" id="session" value="" />
+      <p></p>
+    </div>
+    <div>
+      <input type="button" id="save" value="Submit" />
+    </div>
   </div>
-  <div>
-    <label for="password2">Repeat:</label><input type="password" id="password2" value="" />
+  
+  <div id="login" class="tab-content">
+    <div>
+      <label for="login-user">Username:</label><input type="text" id="login-user" value="" />
+    </div>
+    <div>
+      <a href="/users/active/" id="login-submit" class="button">Login</a>
+    </div>
   </div>
-  <div>
-    <label for="session">Session ID:</label><input type="text" id="session" value="" />
-    <p></p>
-  </div>
-  <div>
-    <input type="button" id="save" value="Submit" />
-  </div>
+
 </div>
