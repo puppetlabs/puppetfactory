@@ -35,6 +35,17 @@ $(document).ready(function(){
     close();
   });
 
+  $('.tab').on('click', function(event) {
+    event.preventDefault();
+    var tabs = $(this).closest('.tabs-wrapper');
+    
+    tabs.find('.tab.active').removeClass('active');
+    $(this).addClass('active');
+    
+    tabs.find('.tab-content.current').removeClass('current');
+    $('#' + this.dataset.tabcontent).addClass('current');
+  });
+
   $('article').on('click', '#users .select a, #user-logout', function(event){
     event.preventDefault();
     var action = $(this).attr('href');
