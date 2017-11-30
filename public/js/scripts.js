@@ -16,6 +16,10 @@ $(document).ready(function(){
       return keepLoading;
     },
   });
+
+  $('article').on('click', '.toggle', function(event){
+    $("#" + $(this).data('target')).toggle();
+  });
 });
 
 function updatePage(name) {
