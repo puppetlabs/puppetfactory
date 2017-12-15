@@ -108,7 +108,7 @@ $logger.formatter = proc { |severity,datetime,progname,msg| "[#{datetime}] #{sev
 if ARGV.size == 0
   # TODO: remove this insane timeout once we have a progressive user creation dialog
   Puppetfactory.run!(options) do |server|
-    server.timeout = 180
+    server.timeout = 180 if server.respond_to?('timeout=')
   end
 
 #   opts = {
