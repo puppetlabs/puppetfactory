@@ -9,7 +9,7 @@
       var elem = $(this)[0]
       // track the bottom of the logs, unless we've scrolled away
       if(force || (elem.scrollHeight - elem.scrollTop - elem.clientHeight < 100)) {
-        $(this).animate({scrollTop: elem.scrollHeight}, 500);
+        $('body').animate({scrollTop: elem.scrollHeight}, 500);
       }
 
       // use timeout instead of an interval so that in case of network error
