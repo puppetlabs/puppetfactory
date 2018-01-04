@@ -1,3 +1,9 @@
+# v0.6.3
+* Set server timeout property correctly
+* UI/UX fixes
+* Fixed user login/logout issues
+* Upgrade JQuery to Latest stable
+
 # v0.6.2
 * Correct user login crasher
 
