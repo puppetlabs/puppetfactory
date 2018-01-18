@@ -19,9 +19,9 @@
         <li><a href="#home" class="cache">Home</a></li>
         <% if privileged? %>
           <li><a href="/users">Users</a></li>
-          <% @tabs.each do |url, title| %>
-            <li><a href="/<%= url %>"><%= title %></a></li>
-          <% end %>
+        <% end %>
+        <% @tabs.each do |url, title| %>
+          <li><a href="/<%= url %>"><%= title %></a></li>
         <% end %>
       </ul>
       <a href="http://<%= request.host %>:9090" target="_presentation">Presentation</a>
