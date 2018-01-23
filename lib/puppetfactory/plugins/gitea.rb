@@ -14,6 +14,7 @@ class Puppetfactory::Plugins::Gitea < Puppetfactory::Plugins
     @controlrepo    = options[:controlrepo]
     @reponame       = File.basename(@controlrepo, '.git')
     @repopath       = "#{@cache_dir}/#{@reponame}"
+    @gitea_upstream = options[:gitea_upstream]       || "https://github.com/puppetlabs-education/#{@controlrepo}"
     @gitea_cmd      = options[:gitea_cmd]            || '/home/git/go/bin/gitea'
     @admin_username = options[:gitea_admin_username] || 'root'
     @admin_password = options[:gitea_admin_password] || 'puppetlabs'
@@ -72,7 +73,7 @@ class Puppetfactory::Plugins::Gitea < Puppetfactory::Plugins
       $logger.info "Migrating repository #{@reponame}"
       begin
         RestClient.post("http://#{@admin_username}:#{@admin_password}@localhost:#{@gitea_port}/api/v1/repos/migrate", {
-                          'clone_addr' => "https://github.com/puppetlabs-education/#{@controlrepo}",
+                          'clone_addr' => @gitea_upstream,
                           'uid'        => 1,
                           'repo_name'  => @reponame,
                        })
