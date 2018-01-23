@@ -47,6 +47,8 @@ code {
 header {
   height: 4em;
   top: 0;
+  overflow-x: scroll;
+  white-space: nowrap;
 }
 
 header ul,
@@ -157,7 +159,7 @@ input.fail {
 }
 
 .tab.active {
-  background: #ECEFF1;  
+  background: #ECEFF1;
 }
 
 .tab-content {
