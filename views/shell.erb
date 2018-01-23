@@ -12,7 +12,7 @@
 
   <% else %>
     <h2>Welcome to the Puppet Classroom.</h2>
-    <p>Please log in or create a user account.</p>    
+    <p>Please log in or create a user account.</p>
   <% end -%>
   <div id="instruction">
     <p>
@@ -28,13 +28,13 @@
         Built-in to Mac OSX and Linux:
         <ol>
           <li>Start Terminal.app or any terminal emulator to get to the command line</li>
-          <li>Run <code>ssh <%= request.host %></code></li>
+          <li>Run <code>ssh <% if @current %><%= @current[:username] %>@<% end %><%= request.host %></code></li>
         </ol>
       </li>
       <li>
         Windows:
         <ul>
-          <li><a href="https://github.com/PowerShell/Win32-OpenSSH/wiki/Install-Win32-OpenSSH">OpenSSH</a></li>    
+          <li><a href="https://github.com/PowerShell/Win32-OpenSSH/wiki/Install-Win32-OpenSSH">OpenSSH</a></li>
           <li><a href="http://the.earth.li/~sgtatham/putty/latest/x86/putty.exe">PuTTY</a></li>
           <li><a href="http://winscp.net/eng/download.php#download2" target="_new">WinSCP</a></li>
           <li><a href="http://www.vandyke.com/download/securecrt/download.html" target="_new">SecureCRT</a></li>
