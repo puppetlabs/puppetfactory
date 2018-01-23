@@ -3,7 +3,7 @@ require 'date'
 
 Gem::Specification.new do |s|
   s.name              = "puppetfactory"
-  s.version           = '0.6.3'
+  s.version           = '0.6.4'
   s.date              = Date.today.to_s
   s.summary           = "Stands up a graphical classroom manager with containerized puppet agents."
   s.homepage          = "https://github.com/puppetlabs/puppetfactory"
@@ -14,7 +14,7 @@ Gem::Specification.new do |s|
   s.require_path      = "lib"
   s.executables       = ["pfsh", "puppetfactory"]
 
-  s.files             = %w( README.md LICENSE )
+  s.files             = %w( CHANGELOG.md README.md LICENSE )
   s.files            += Dir.glob("lib/**/*")
   s.files            += Dir.glob("bin/**/*")
   s.files            += Dir.glob("views/**/*")

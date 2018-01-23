@@ -1,3 +1,10 @@
+# v0.6.4
+* Corrected some UI artifacts.
+* Display username in alternate login section.
+* Add upstream parameter for Gitea configuration.
+* Restored *deploy* button spinner.
+* Restored missing Gitviz tab.
+
 # v0.6.3
 * Set server timeout property correctly
 * UI/UX fixes
