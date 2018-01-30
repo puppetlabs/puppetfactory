@@ -10,6 +10,7 @@ class Puppetfactory::Plugins::Gitea < Puppetfactory::Plugins
 
     @cache_dir      = '/var/cache/puppetfactory/gitea'
     @lockfile       = '/var/cache/puppetfactory/gitea.lock'
+    @templatedir    = options[:templatedir]
     @suffix         = options[:usersuffix]
     @controlrepo    = options[:controlrepo]
     @reponame       = File.basename(@controlrepo, '.git')
@@ -86,6 +87,12 @@ class Puppetfactory::Plugins::Gitea < Puppetfactory::Plugins
           output, status = Open3.capture2e('git', 'clone', '--depth', '1', repo_uri)
           raise output unless status.success?
         end
+
+        hookfile = File.expand_path("~#{@gitea_user}/gitea-repositories/root/#{@controlrepo}/hooks/pre-receive.d/pre-receive")
+        File.open(hookfile, 'w') do |f|
+          f.write ERB.new(File.read("#{@templatedir}/pre-receive.erb")).result(binding)
+        end
+        FileUtils.chmod 0755, hookfile
 
       rescue => e
         $logger.error "Error migrating repository: #{e.message}"
