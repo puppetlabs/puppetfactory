@@ -1,0 +1,19 @@
+#! /bin/sh
+while read oldrev newrev refname; do
+  author=$(git log -1 --format='%an' $newrev)
+
+  # superuser always gets a pass
+  if [[ "${author}" == "<%= @admin_username %>" ]]; then
+    continue
+
+  # creating a new branch
+  elif [[ "${oldrev}" == "0000000000000000000000000000000000000000" ]]; then
+    continue
+
+  elif [[ ! $refname =~ ^refs/heads/${author}-? ]]; then
+    echo "<br><br><br>-- Hi there. You should be working on the '${author}' branch or a feature branch. --<br><br><br>"
+    exit 1
+  fi
+done
+
+exit 0
