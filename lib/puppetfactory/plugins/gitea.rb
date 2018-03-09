@@ -29,7 +29,7 @@ class Puppetfactory::Plugins::Gitea < Puppetfactory::Plugins
     # gitea will scream if the admin's .ssh directory doesn't exist
     FileUtils.mkdir_p(File.expand_path("~#{@admin_username}/.ssh"))
 
-    migrate_repo! unless File.directory?(@cache_dir)
+    migrate_repo! unless File.directory?(@repopath)
   end
 
   def create(username, password)
