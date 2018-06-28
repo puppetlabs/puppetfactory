@@ -1,3 +1,8 @@
+# v0.6.5
+* Support recloning the control repo if the master is misclassified
+* Prevent users from committing to branches they don't own
+* Update the Docker container mount points
+
 # v0.6.4
 * Corrected some UI artifacts.
 * Display username in alternate login section.
